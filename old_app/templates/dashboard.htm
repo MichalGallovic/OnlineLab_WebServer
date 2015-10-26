@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>ONLINE LABORATORY MANAGER</title>
+	<meta name="keywords" content="" />
+	<meta name="description" content="" />
+	<meta name="Author" content="" />
+	<meta name="Generator" content="" />
+	<meta name="Copyright" content="" />
+	<meta name="Robots" content="ALL,FOLLOW" />
+	<meta name="Resource-Type" content="document" />
+	<meta http-equiv="Content-Language" content="sk" />
+	<meta http-equiv="Cache-Control" content="Public" />
+
+	<link rel="icon" href="" type="image/x-icon" />
+	<link rel="shortcut icon" href="" type="image/x-icon" />
+	<link href="{ROOT_PATH}css/jquery-ui-custom.css" rel="stylesheet" type="text/css" />
+	<link href="{ROOT_PATH}css/default.css" rel="stylesheet" type="text/css" />
+	
+	<script type="text/javascript" src="{ROOT_PATH}js/jquery.js"></script>
+	<script type="text/javascript" src="{ROOT_PATH}js/jquery-ui.js"></script>
+	<script type="text/javascript" src="{ROOT_PATH}js/default.js"></script>
+	
+	<!-- SUPER GLOBALNE PREMENNE S KTORYMI PRACUJU VIACERE MODULY NARAZ -->
+	<script type="text/javascript">
+		var ROOT_PATH = '{ROOT_PATH}';
+		var chart; //globa;na premenna ktora handluje pracu s grafom
+		var tempPointsArray = []; // pole v ktorome sa zbieraju data pre vykreslenie grafu
+		var tempInputPointsArray = [] ; //pole v ktorom drzim data Vstupu
+		var tempTemperatureArray = []; //pole v ktorom drzim data teploty
+		var tempFilterTemperatureArray =[];
+		var tempFilterIntenzitaArray = [];
+		var tempCurrentArray = [];
+		var tempRotationArray =[];
+		var isPauseForChartDrawing = true;  //premenna detekujuca zastavenie vykreslovania
+	</script>
+	
+	<style type="text/css">
+		@media only screen
+		and (max-width : 800px) {
+			#dashboard_mainview{width:800px;}
+			#livechart-modul{position:relative!important;width:100%!important;float:left!important;}
+			#reservation-modul{position:static!important;width:100%!important;float:left!important;}
+			#experiment-modul{position:static!important;width:100%!important;float:left!important;}
+			#livechart-modul .box-content{width:100%!important;}
+			#chart_container{width:100%!important;}
+			
+			
+			.left_navig_title{display:none!important;}
+			#dashboard_mainview{margin-left:51px!important;}
+			#dashboard_left-navig{width:50px!important;}
+			ul.collpase-menu{display:block!important;;}
+			ul.menu{display:none!important;}
+			#left_navig_back{width:50px!important;}
+			a.collapse{display:none!important}
+			a.uncollapse{display:block!important}
+		}
+		
+		/* Smartphones (portrait and landscape) ----------- */
+		@media only screen
+		and (min-device-width : 320px)
+		and (max-device-width : 480px) {
+			#dashboard_mainview{min-width: 800px;width: 100%;}
+			#livechart-modul{position:relative!important;width:100%!important;float:left!important;}
+			#reservation-modul{position:static!important;width:100%!important;float:left!important;}
+			#experiment-modul{position:static!important;width:100%!important;float:left!important;}
+			
+			#livechart-modul .box-content{width:100%!important;}
+			#chart_container{width:100%!important;}
+			
+			.left_navig_title{display:none!important;}
+			#dashboard_mainview{margin-left:51px!important;}
+			#dashboard_left-navig{width:50px!important;}
+			ul.collpase-menu{display:block!important;;}
+			ul.menu{display:none!important;}
+			#left_navig_back{width:50px!important;}
+			a.collapse{display:none!important}
+			a.uncollapse{display:block!important}
+		}
+		
+		/* iPads (portrait and landscape) ----------- */
+		@media only screen
+		and (min-device-width : 768px)
+		and (max-device-width : 1024px) {
+			#dashboard_mainview{min-width: 800px;width: 100%;}
+			#livechart-modul{position:relative!important;width:100%!important;float:left!important;}
+			#reservation-modul{position:static!important;width:100%!important;float:left!important;}
+			#experiment-modul{position:static!important;width:100%!important;float:left!important;}
+			
+			.left_navig_title{display:none!important;}
+			#dashboard_mainview{margin-left:51px!important;}
+			#dashboard_left-navig{width:50px!important;}
+			ul.collpase-menu{display:block!important;;}
+			ul.menu{display:none!important;}
+			#left_navig_back{width:50px!important;}
+			a.collapse{display:none!important}
+			a.uncollapse{display:block!important}
+		}
+
+		
+	</style>
+</head>
+
+<body>
+	<div class="dashboard_overlay"></div>
+	<div id="content">
+		<div id="left_navig_back" style="{DASHBOARD_LEFT_NAVIG_WIDTH}"></div>
+		<div id="dashboard_left-navig" style="{DASHBOARD_LEFT_NAVIG_WIDTH}">
+			{LEFT_NAVIG}
+		</div>
+		
+		<div id="dashboard_mainview" style="{DASHBOARD_MAINVIEW_MARGIN}">
+			<div id="action_holder">
+				<div id="action_listener"></div>
+			</div>
+			
+			{HEADER}
+			<div id="containment-wrapper">
+				{MAIN_CONTENT}
+			</div>
+			
+		</div>
+	</div>
+	
+	<div class="breaker"></div>
+
+</body>
+
+</html>
+

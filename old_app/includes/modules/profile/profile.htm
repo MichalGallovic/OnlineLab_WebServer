@@ -1,0 +1,69 @@
+<link href="{ROOT_PATH}includes/modules/profile/css/default.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="{ROOT_PATH}includes/modules/profile/js/default.js"></script>
+
+<div id="profile">
+	
+	<div id="profile-warning" class="warning_msg"></div>
+	<div id="profile-succes" class="succes_msg"></div>
+	
+	<form action="" id="update-prfile-form" method="post" enctype="multipart/form-data" onSubmit="set_profile();return false;">
+	<table>
+		<tr>
+			<td class="first">{USR_LOGIN}</td>
+			<td><input type="text" value="{USER_LOGIN}" name="login" readonly="readonly" class="readonly"/><span class="info">{USR_I}</span></td>
+		</tr>
+		<tr>
+			<td>{USR_ROLE}</td>
+			<td>                            
+                            <select name="role_code">
+                                {RULE_ACCESS}
+                            </select>
+                        </td>
+		</tr>
+		<tr>
+			<td>{USR_NAME}</td>
+			<td><input type="text" value="{USER_NAME}" name="name" /></td>
+		</tr>
+		<tr>
+			<td>{USR_SURNAME}</td>
+			<td><input type="text" value="{USER_SURNAME}" name="surname" /></td>
+		</tr>
+		<tr>
+			<td>E-mail</td>
+			<td><input type="text" value="{USER_EMAIL}" name="email" /></td>
+		</tr>
+		<tr>
+			<td>{USR_LANG}</td>
+			<td>
+				<select name="language_code">
+				<!-- BEGIN DYNAMIC BLOCK: language_row -->
+				<option {LANG_SELECTED} value="{LANG_CODE}">{LANG_NAME}</option>
+				<!-- END DYNAMIC BLOCK: language_row -->
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>{USR_NEW_PASSWORD}</td>
+			<td><input type="password" value="" name="pass" /><span class="info">{USR_NEW_PASSWORD_I}</span></td>
+		</tr>
+		<tr>
+			<td>{USR_NEW_PASSWORD_R}</td>
+			<td><input type="password" value="" name="pass2" /></td>
+		</tr>
+		<tr style="height:20px;">
+			<td colspan="2"></td>
+		</tr>
+		<tr>
+			<td style="text-align:left;">
+				<input type="submit" value="{USR_SAVE}" class="default-submit-btn" />
+				<input type="hidden" value="1" name="attempt_profile_update">
+			</td>
+			<td>
+				<div id="profile-process-loader">
+					<img width="25" alt="ajax-loader" src="{ROOT_PATH}includes/modules/profile/images/3.gif">
+				</div>
+			</td>
+		</tr>
+	</table>
+	</form>
+</div>

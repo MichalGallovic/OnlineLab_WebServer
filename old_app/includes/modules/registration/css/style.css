@@ -1,0 +1,13 @@
+//css document
+
+.warning{border:1px #FF0000 solid;}
+.info{color:#FF0000;margin-bottom:10px;display:none;}
+.red-border{border:1px #FF0000 solid!important;}
+.reg-loader{float:left;display:none;}
+
+.reg-success-holder{display:none;text-align:center;margin-top:30px;}
+.reg-succes-title{margin:0px!important;margin-bottom:10px!important;}
+
+
+#login-check-message-holder{display:none;}
+#passwords-check-message-holder{display:none;}
