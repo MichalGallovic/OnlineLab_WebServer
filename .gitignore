@@ -4,3 +4,13 @@ Homestead.yaml
 Homestead.json
 .env
 
+# PHPStorm
+.idea/
+**/.idea/workspace.xml
+**/.idea/tasks.xml
+
+# Mac specific
+.DS_Store
+
+Vagrantfile
+
