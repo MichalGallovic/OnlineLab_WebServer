@@ -1,0 +1,15 @@
+{
+    "name": "Experiment",
+    "alias": "experiment",
+    "description": "",
+    "keywords": [],
+    "active": 1,
+    "order": 0,
+    "providers": [
+        "Modules\\Experiment\\Providers\\ExperimentServiceProvider"
+    ],
+    "aliases":{},
+    "files": [
+        "start.php"
+    ]
+}

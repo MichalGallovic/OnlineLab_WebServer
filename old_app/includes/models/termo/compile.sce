@@ -1,0 +1,1 @@
+ilib_for_link('termo','termo.o',[],'c','Makelib','loader.sce','','','-lusb');

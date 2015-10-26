@@ -1,0 +1,15 @@
+{
+    "name": "Livechart",
+    "alias": "livechart",
+    "description": "",
+    "keywords": [],
+    "active": 1,
+    "order": 0,
+    "providers": [
+        "Modules\\Livechart\\Providers\\LivechartServiceProvider"
+    ],
+    "aliases":{},
+    "files": [
+        "start.php"
+    ]
+}
