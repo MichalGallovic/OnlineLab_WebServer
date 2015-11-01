@@ -149,7 +149,8 @@ return [
          * 3rd party Service Providers ...
          */
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
-        Pingpong\Modules\ModulesServiceProvider::class
+        Pingpong\Modules\ModulesServiceProvider::class,
+        Pingpong\Widget\WidgetServiceProvider::class,
     ],
 
     /*
@@ -202,7 +203,8 @@ return [
         /*
          * 3rd party Facades
          */
-        'Module'    => Pingpong\Modules\Facades\Module::class
+        'Module'    =>  Pingpong\Modules\Facades\Module::class,
+        'Widget'    =>  \Pingpong\Widget\WidgetFacade::class,
 
     ],
 

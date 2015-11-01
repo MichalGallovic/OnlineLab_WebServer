@@ -21,7 +21,7 @@ class User extends Model implements AuthenticatableContract,
      *
      * @var string
      */
-    protected $table = 'users';
+    protected $table = 'olm_admin_users';
 
     /**
      * The attributes that are mass assignable.
@@ -36,4 +36,8 @@ class User extends Model implements AuthenticatableContract,
      * @var array
      */
     protected $hidden = ['password', 'remember_token'];
+
+    public function role() {
+        return $this->belongsTo('App\Role','account_type_id');
+    }
 }
