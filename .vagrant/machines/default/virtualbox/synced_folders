@@ -1,0 +1,1 @@
+{"virtualbox":{"/home/vagrant/new-app":{"type":null,"mount_options":[],"guestpath":"/home/vagrant/new-app","hostpath":"/Users/michalgallovic/Documents/FEI/Diplomovka/OLM/new_app","disabled":false},"/vagrant":{"guestpath":"/vagrant","hostpath":"/Users/michalgallovic/Documents/FEI/Diplomovka/OLM/new_app","disabled":false}}}
