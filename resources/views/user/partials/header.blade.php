@@ -12,7 +12,7 @@
                 <span class="logged_user"> <a href="#" title="Profil užívateľa">{{ Auth::user()->name }}</a></span>
             </div>
             <div class="right">
-                <a class="logout" href="{{ url('auth/logout') }}" title="{{ trans('auth.logout') }}"></a>
+                <a class="logout" href="{{ url('auth/logout') }}" title="{!! trans('auth.logout') !!}"></a>
             </div>
         </div>
     </div>

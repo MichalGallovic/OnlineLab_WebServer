@@ -62,15 +62,15 @@ a img{border:0px black solid;}
 
 h1.dashboard{font-size:26px;color:#53637d;font-family:Arial, Helvetica, sans-serif;font-weight:normal;margin:0px;padding:0px;line-height:46px;}
 .dashboard_ico{background:url(../pictures/ico-dashboard.png) 0px 8px no-repeat;padding-left:43px!important;}
-.reservation_ico {background: url("../images/calendar-ico2.png") no-repeat scroll 0 5px transparent;padding-left: 43px !important;}
-.report_ico{background:url(../images/report-icon.png) 0px 6px no-repeat;padding-left:43px!important;}
+.reservation_ico {background: url("../pictures/calendar-ico2.png") no-repeat scroll 0 5px transparent;padding-left: 43px !important;}
+.report_ico{background:url(../pictures/report-icon.png) 0px 6px no-repeat;padding-left:43px!important;}
 
 
-.controller_ico{background:url(../images/controllers.png) 0px 8px no-repeat;padding-left:43px!important;}
-.profile_ico{background:url(../images/profile.png) 0px 4px no-repeat;padding-left:43px!important;}
-.users_ico {background:url(../images/users.png) 0px 4px no-repeat;padding-left:43px!important;}
-.equipments_ico{background:url(../images/real_device_usb.png) 0px 4px no-repeat;padding-left:43px!important;}
-.virtualization_ico{background:url(../images/VirtualBox.png) 0px 4px no-repeat;padding-left:43px!important;}
+.controller_ico{background:url(../pictures/controllers.png) 0px 8px no-repeat;padding-left:43px!important;}
+.profile_ico{background:url(../pictures/profile.png) 0px 4px no-repeat;padding-left:43px!important;}
+.users_ico {background:url(../pictures/users.png) 0px 4px no-repeat;padding-left:43px!important;}
+.equipments_ico{background:url(../pictures/real_device_usb.png) 0px 4px no-repeat;padding-left:43px!important;}
+.virtualization_ico{background:url(../pictures/VirtualBox.png) 0px 4px no-repeat;padding-left:43px!important;}
 
 h4{margin:0px;padding:0px;font-size:15px;font-weight:bold;color:#000000;margin-bottom:8px;}
 
@@ -114,13 +114,14 @@ h5{margin:0px;padding:0px;font-size:13px;font-weight:bold;color:#000000;margin-b
 
 
 
-#dashboard-btn-options-wrapper a, #dashboard-btn-info-wrapper a{display:block;line-height:22px;height:22px; padding: 0 16px 0 6px;color:#777777;}
+#dashboard-btn-options-wrapper a, #dashboard-btn-info-wrapper a{display:block;line-height:22px;height:22px; padding: 0 16px 0 6px;color:#777777;}
+
 #dashboard-btn-options-wrapper a:hover, #dashboard-btn-info-wrapper a:hover{text-decoration:none;color:#000000;}
 #dashboard-btn-info-wrapper a{display:block;line-height:22px;height:22px; padding: 0 16px 0 6px;color:#777777;}
 #dashboard-btn-info-wrapper a:hover{text-decoration:none;color:#000000;}
-#open-options, #info-dashboard-open{background:url(../images/arrows.png) right 4px no-repeat;}
-#close-options, #info-dashboard-close{background:url(../images/arrows.png) right -31px no-repeat;}
-#info-dashboard{background:url(../images/arrows.png) right 4px no-repeat;}
+#open-options, #info-dashboard-open{background:url(../pictures/arrows.png) right 4px no-repeat;}
+#close-options, #info-dashboard-close{background:url(../pictures/arrows.png) right -31px no-repeat;}
+#info-dashboard{background:url(../pictures/arrows.png) right 4px no-repeat;}
 
 #modules-options{float:left;}
 #modules-options label{line-height:30px;height:30px; padding-right:15px;display:block;float:left;}
@@ -205,7 +206,7 @@ h5{margin:0px;padding:0px;font-size:13px;font-weight:bold;color:#000000;margin-b
 
 
 #dashboard_left-navig a.collapse{
-	background: url(../images/arrows-circle2.png) no-repeat scroll 0px 0px transparent;
+	background: url(../pictures/arrows-circle2.png) no-repeat scroll 0px 0px transparent;
 	padding-left:22px;
 	color:#AAAAAA;
 	float:right;
@@ -215,7 +216,7 @@ h5{margin:0px;padding:0px;font-size:13px;font-weight:bold;color:#000000;margin-b
 }
 
 #dashboard_left-navig a.uncollapse{
-	background: url(../images/arrows-circle2-back.png) no-repeat scroll 0px 0px transparent;
+	background: url(../pictures/arrows-circle2-back.png) no-repeat scroll 0px 0px transparent;
 	display:block;
 	width:19px;
 	height:19px;
@@ -225,8 +226,8 @@ h5{margin:0px;padding:0px;font-size:13px;font-weight:bold;color:#000000;margin-b
 	color:#AAAAAA;
 }
 
-#dashboard_left-navig a.collapse:hover{background: url(../images/arrows-circle2.png) no-repeat scroll 0px -18px transparent;text-decoration:none;color:#938d8d;}
-#dashboard_left-navig a.uncollapse:hover{background: url(../images/arrows-circle2-back.png) no-repeat scroll 0px -18px transparent;text-decoration:none;color:#938d8d;}
+#dashboard_left-navig a.collapse:hover{background: url(../pictures/arrows-circle2.png) no-repeat scroll 0px -18px transparent;text-decoration:none;color:#938d8d;}
+#dashboard_left-navig a.uncollapse:hover{background: url(../pictures/arrows-circle2-back.png) no-repeat scroll 0px -18px transparent;text-decoration:none;color:#938d8d;}
 
 
 #dashboard_left-navig ul.level2{border-bottom:1px #8faad9 solid;font-size:11px;}
@@ -273,7 +274,7 @@ h5{margin:0px;padding:0px;font-size:13px;font-weight:bold;color:#000000;margin-b
 
 .default-box .header span{color:#222222;font-weight:bold;padding-left:10px;}
 
-.default-box .ui-resizable-se{background:url(../images/resize-ico.jpg) top left no-repeat;width:16px;height:16px;bottom:2px;right:2px;}
+.default-box .ui-resizable-se{background:url(../pictures/resize-ico.jpg) top left no-repeat;width:16px;height:16px;bottom:2px;right:2px;}
 
 #dashboard .default-box div.header{cursor:move;}
 #dashboard-settings .default-box{border: 1px dashed red!important;}
@@ -307,7 +308,7 @@ h5{margin:0px;padding:0px;font-size:13px;font-weight:bold;color:#000000;margin-b
 .default-dialog .ui-dialog-title{color:#444444;font-size:14px;margin:0px;padding:0px;}
 
 .default-dialog .ui-dialog-titlebar-close{
-	background:url(../images/close.png) 0px -18px no-repeat;
+	background:url(../pictures/close.png) 0px -18px no-repeat;
 	display:block;
 	width:19px!important;
 	height:17px!important;
@@ -317,7 +318,7 @@ h5{margin:0px;padding:0px;font-size:13px;font-weight:bold;color:#000000;margin-b
 }
 
 .default-dialog .ui-dialog-titlebar-close:hover{
-	background:url(../images/close.png) 0px 0px no-repeat;
+	background:url(../pictures/close.png) 0px 0px no-repeat;
 	padding:0px;
 	border:none;
 }
@@ -457,7 +458,7 @@ h5{margin:0px;padding:0px;font-size:13px;font-weight:bold;color:#000000;margin-b
 
 #register-form-holder{padding: 20px 20px !important;}
 a.close-register-btn{ 
-	background: url("../images/close2.png") no-repeat scroll 0 -14px transparent;
+	background: url("../pictures/close2.png") no-repeat scroll 0 -14px transparent;
     cursor: pointer;
     display: block;
     height: 15px;
@@ -468,7 +469,7 @@ a.close-register-btn{
 	z-index:9999;
 }
 
-a.close-register-btn:hover{background:url(../images/close2.png) 0px 0px no-repeat;}
+a.close-register-btn:hover{background:url(../pictures/close2.png) 0px 0px no-repeat;}
 
 #register-form-holder h2{margin:0;padding:0;color:#555555;margin-bottom:10px;}
 #register-form-holder label{color:#777777;font-size:14px;float:left;}
@@ -490,7 +491,7 @@ a.close-register-btn:hover{background:url(../images/close2.png) 0px 0px no-repea
 #register-form-holder input[type="button"],
 #login input[type="submit"]
 {
-	background:url(../images/button-grad.png) top left repeat-x;
+	background:url(../pictures/button-grad.png) top left repeat-x;
 	border:none;
 	color:#FFFFFF;
 	border:1px #298CBA solid;
@@ -513,7 +514,7 @@ a.close-register-btn:hover{background:url(../images/close2.png) 0px 0px no-repea
 }
 
 div.register-btn{
-	background:url(../images/button_register.png) top left no-repeat;
+	background:url(../pictures/button_register.png) top left no-repeat;
 	width:154px;
 	height:30px;
 	margin:0 auto;
@@ -525,11 +526,11 @@ div.register-btn a{
 	font-size:120%;
 	font-weight:bold;
 	color:#FFFFFF;
-	background:url(../images/arrows-white.png) 83px 1px no-repeat;
+	background:url(../pictures/arrows-white.png) 83px 1px no-repeat;
 	padding-right:15px;
 }
 
-div.register-btn a:hover{text-decoration:none;color:#FFFFFF;background:url(../images/arrows-white.png) 83px 1px no-repeat;}
+div.register-btn a:hover{text-decoration:none;color:#FFFFFF;background:url(../pictures/arrows-white.png) 83px 1px no-repeat;}
 
 
 /*Login styles*/
@@ -542,7 +543,7 @@ div.register-btn a:hover{text-decoration:none;color:#FFFFFF;background:url(../im
 }
 
 #login h1 a{
-	background:url(../images/logo.png) top left no-repeat;
+	background:url(../pictures/logo.png) top left no-repeat;
 	overflow:hidden;
 	text-indent:-9999px;
 	display:block;
@@ -586,11 +587,11 @@ div.register-btn a:hover{text-decoration:none;color:#FFFFFF;background:url(../im
 }
 
 #login label{ color: #777777;font-size: 14px;}
-#login label.google_auth_label{background:url(../images/google_ico.gif) center left no-repeat;padding-left:17px;}
-#login label.local_auth_label{background:url(../images/ico-logo.png) top left no-repeat;padding-left:17px;}
-#login label.stuldap_auth_label{background:url(../images/ico-stu.png) top left no-repeat;padding-left:22px;}
+#login label.google_auth_label{background:url(../pictures/google_ico.gif) center left no-repeat;padding-left:17px;}
+#login label.local_auth_label{background:url(../pictures/ico-logo.png) top left no-repeat;padding-left:17px;}
+#login label.stuldap_auth_label{background:url(../pictures/ico-stu.png) top left no-repeat;padding-left:22px;}
 .button_login{
-	background:url(images/login.jpg) top left no-repeat;
+	background:url(pictures/login.jpg) top left no-repeat;
 	border:none;
 	width:34px;
 	height:32px;
@@ -622,7 +623,7 @@ div.register-btn a:hover{text-decoration:none;color:#FFFFFF;background:url(../im
 .btn1{
 	font-family: sans-serif;
 	color: #464646;
-	background:url(../images/white-grad.png) top left repeat-x #FFFFFF;
+	background:url(../pictures/white-grad.png) top left repeat-x #FFFFFF;
 	border-radius: 11px;
 	-moz-border-radius: 11px;
 	-khtml-border-radius: 11px;

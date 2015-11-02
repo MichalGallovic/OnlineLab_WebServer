@@ -8,8 +8,12 @@
     "providers": [
         "Modules\\Localization\\Providers\\LocalizationServiceProvider"
     ],
-    "aliases":{},
+    "aliases": [],
     "files": [
-        "start.php"
-    ]
+        "start.php",
+        "widgets.php"
+    ],
+    "routes": {
+        "main": "lang.settings"
+    }
 }
