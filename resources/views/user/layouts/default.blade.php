@@ -20,16 +20,32 @@
 
 </head>
 <body>
-@include('user.partials.header')
-@yield('content')
+    <div class="dashboard_overlay"></div>
+    <div id="content">
+        <div id="left_navig_back" style="{DASHBOARD_LEFT_NAVIG_WIDTH}"></div>
+        <div id="dashboard_left-navig" style="{DASHBOARD_LEFT_NAVIG_WIDTH}">
+            @include('user.partials.sidebar')
+        </div>
 
+        <div id="dashboard_mainview" style="{DASHBOARD_MAINVIEW_MARGIN}">
+            <div id="action_holder">
+                <div id="action_listener"></div>
+            </div>
+            @include('user.partials.header')
+            <div id="containment-wrapper">
+                @yield('content')
+            </div>
+
+        </div>
+    </div>
+<div class="breaker"></div>
 <script type="text/javascript">
     var ROOT_PATH = '{ROOT_PATH}';
 </script>
 <script type="text/javascript" src="{{ asset('js/jquery.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/jquery-ui.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/default.js') }}"></script>
-<script src="{{ asset('js/bootstrap.min.js') }}"></script>
+{{--<script src="{{ asset('js/bootstrap.min.js') }}"></script>--}}
 @yield('page_js')
 </body>
 </html>

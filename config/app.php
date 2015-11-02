@@ -149,7 +149,7 @@ return [
          * 3rd party Service Providers ...
          */
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
-        Pingpong\Modules\ModulesServiceProvider::class,
+        \App\Extensions\Modules\ExtendedModuleServiceProvider::class,
         Pingpong\Widget\WidgetServiceProvider::class,
     ],
 

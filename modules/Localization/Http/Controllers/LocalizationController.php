@@ -13,5 +13,10 @@ class LocalizationController extends Controller {
 
 		return redirect()->back();
 	}
+
+	public function getSettings()
+	{
+		return "CESC";
+	}
 	
 }
