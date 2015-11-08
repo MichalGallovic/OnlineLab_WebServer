@@ -11,6 +11,8 @@
 |
 */
 
+
+
 Route::get('/', function() {
     return Redirect::to('auth/login');
 });
@@ -31,5 +33,5 @@ Route::get('password/email', 'Auth\PasswordController@getEmail');
 
 // If logged in
 Route::group(['as'  =>  'user::', 'middleware'  =>  'auth'], function() {
-    Route::get('dashboard', 'DashboardController@getDashboard');
+    Route::get('dashboard', ['as' => 'dashboard', 'uses' => 'DashboardController@getDashboard']);
 });

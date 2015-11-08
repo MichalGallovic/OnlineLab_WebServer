@@ -107,7 +107,7 @@ class RewriteOldModules extends Command
             File::makeDirectory($newModulePath."/Resources/lang/sk",null, null, true);
             foreach($langFiles as $filePath) {
                 $fileName = File::name($filePath);
-                $newFileName = $newModulePath . "/Resources/lang/" . $fileName ."/" . $fileName . ".php";
+                $newFileName = $newModulePath . "/Resources/lang/" . $fileName ."/" . "default.php";
                 $newFileData = $this->transformLangFile(File::get($filePath));
                 File::put($newFileName, $newFileData);
             }

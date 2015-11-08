@@ -5,11 +5,15 @@
     "keywords": [],
     "active": 1,
     "order": 0,
+    "visible": true,
     "providers": [
         "Modules\\Controller\\Providers\\ControllerServiceProvider"
     ],
     "aliases":{},
     "files": [
         "start.php"
-    ]
+    ],
+    "routes": {
+        "main": "controller.index"
+    }
 }

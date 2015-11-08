@@ -5,6 +5,7 @@
     "keywords": [],
     "active": 1,
     "order": 0,
+    "visible": false,
     "providers": [
         "Modules\\Experiment\\Providers\\ExperimentServiceProvider"
     ],

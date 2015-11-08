@@ -151,6 +151,8 @@ return [
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         \App\Extensions\Modules\ExtendedModuleServiceProvider::class,
         Pingpong\Widget\WidgetServiceProvider::class,
+        \App\Providers\ViewComposerServiceProvider::class,
+        HieuLe\Active\ActiveServiceProvider::class,
     ],
 
     /*
@@ -205,6 +207,7 @@ return [
          */
         'Module'    =>  Pingpong\Modules\Facades\Module::class,
         'Widget'    =>  \Pingpong\Widget\WidgetFacade::class,
+        'Active'    =>  HieuLe\Active\Facades\Active::class,
 
     ],
 

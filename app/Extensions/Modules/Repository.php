@@ -1,6 +1,7 @@
 <?php namespace App\Extensions\Modules;
 
 use Pingpong\Modules\Json;
+use Request;
 
 class Repository extends \Pingpong\Modules\Repository
 {
@@ -64,5 +65,47 @@ class Repository extends \Pingpong\Modules\Repository
         }
 
         return $this->formatCached($this->getCached());
+    }
+
+    /**
+     * Vrati prave pouzivany modul
+     *
+     * @return mixed
+     */
+    public function current()
+    {
+
+        $segment = Request::segment(1);
+
+        // Skusime vratit modul na zaklade 1.url segmentu
+        // to je vo vacsine pripadov, ak sme neprepisali
+        // v routes.php route::group url prefix
+        // ktory je rovnaky ako nazov modulu
+        $module = $this->get($segment);
+
+        if(!$module) {
+            $module = $this->moduleFromUrlSegment($segment);
+        }
+
+        return $module;
+    }
+
+    /**
+     * Hladame modul na zaklade url segmentu
+     *
+     * @param $segment
+     * @return Module|null
+     */
+    protected function moduleFromUrlSegment($segment)
+    {
+        $modules = $this->scan();
+
+        foreach($modules as $module) {
+            if($module->hasUrlSegment($segment)) {
+                return $module;
+            }
+        }
+
+        return null;
     }
 }

@@ -1,12 +1,13 @@
 <?php namespace Modules\Profile\Http\Controllers;
 
+use Module;
 use Pingpong\Modules\Routing\Controller;
 
 class ProfileController extends Controller {
 	
-	public function index()
+	public function getSettings()
 	{
-		return view('profile::index');
+		return view('profile::settings');
 	}
 	
 }

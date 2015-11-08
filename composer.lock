@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "5f0e0f0cf4a524c57a1da580db0ab49a",
-    "content-hash": "ed9ece52ad777a740b8e54cf07deec0f",
+    "hash": "95925cc858ba86f310ddae72880216c6",
+    "content-hash": "4cb3baca1eb9152625ab9af11acb4d84",
     "packages": [
         {
             "name": "classpreloader/classpreloader",
@@ -220,16 +220,16 @@
         },
         {
             "name": "doctrine/cache",
-            "version": "v1.5.0",
+            "version": "v1.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/cache.git",
-                "reference": "eb8a73619af4f1c8711e2ce482f5de3643258a1f"
+                "reference": "2b9cec5a5e722010cbebc91713d4c11eaa064d5e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/cache/zipball/eb8a73619af4f1c8711e2ce482f5de3643258a1f",
-                "reference": "eb8a73619af4f1c8711e2ce482f5de3643258a1f",
+                "url": "https://api.github.com/repos/doctrine/cache/zipball/2b9cec5a5e722010cbebc91713d4c11eaa064d5e",
+                "reference": "2b9cec5a5e722010cbebc91713d4c11eaa064d5e",
                 "shasum": ""
             },
             "require": {
@@ -286,7 +286,7 @@
                 "cache",
                 "caching"
             ],
-            "time": "2015-10-28 11:27:45"
+            "time": "2015-11-02 18:35:48"
         },
         {
             "name": "doctrine/collections",
@@ -500,16 +500,16 @@
         },
         {
             "name": "doctrine/inflector",
-            "version": "v1.0.1",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/inflector.git",
-                "reference": "0bcb2e79d8571787f18b7eb036ed3d004908e604"
+                "reference": "90b2128806bfde671b6952ab8bea493942c1fdae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/inflector/zipball/0bcb2e79d8571787f18b7eb036ed3d004908e604",
-                "reference": "0bcb2e79d8571787f18b7eb036ed3d004908e604",
+                "url": "https://api.github.com/repos/doctrine/inflector/zipball/90b2128806bfde671b6952ab8bea493942c1fdae",
+                "reference": "90b2128806bfde671b6952ab8bea493942c1fdae",
                 "shasum": ""
             },
             "require": {
@@ -521,7 +521,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.0.x-dev"
+                    "dev-master": "1.1.x-dev"
                 }
             },
             "autoload": {
@@ -563,7 +563,7 @@
                 "singularize",
                 "string"
             ],
-            "time": "2014-12-20 21:24:13"
+            "time": "2015-11-06 14:35:42"
         },
         {
             "name": "doctrine/lexer",
@@ -701,6 +701,56 @@
                 "parser"
             ],
             "time": "2015-01-25 14:52:34"
+        },
+        {
+            "name": "hieu-le/active",
+            "version": "2.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/letrunghieu/active.git",
+                "reference": "2d4655f1af55c53bbddf631ac70caf6e0e4690c2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/letrunghieu/active/zipball/2d4655f1af55c53bbddf631ac70caf6e0e4690c2",
+                "reference": "2d4655f1af55c53bbddf631ac70caf6e0e4690c2",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/http": "~5.0",
+                "illuminate/routing": "~5.0",
+                "illuminate/support": "~5.0",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "dev-master",
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "HieuLe\\Active\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Hieu Le",
+                    "email": "letrunghieu.cse09@gmail.com",
+                    "homepage": "http://www.hieule.info"
+                }
+            ],
+            "description": "The helper class for Laravel 4 applications to get active class base on current route",
+            "homepage": "http://www.hieule.info/products/active-class-helper-laravel-4/",
+            "keywords": [
+                "active",
+                "laravel",
+                "routing"
+            ],
+            "time": "2015-07-22 02:27:22"
         },
         {
             "name": "jakub-onderka/php-console-color",
@@ -849,16 +899,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v5.1.22",
+            "version": "v5.1.23",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "11d9627c7cd4d12b6e884b87daa7a2f898cf54cb"
+                "reference": "a4ea877d2bb6a68796b244a741594968796c1c4e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/11d9627c7cd4d12b6e884b87daa7a2f898cf54cb",
-                "reference": "11d9627c7cd4d12b6e884b87daa7a2f898cf54cb",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/a4ea877d2bb6a68796b244a741594968796c1c4e",
+                "reference": "a4ea877d2bb6a68796b244a741594968796c1c4e",
                 "shasum": ""
             },
             "require": {
@@ -974,20 +1024,20 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2015-10-28 21:58:18"
+            "time": "2015-11-03 16:32:33"
         },
         {
             "name": "laravelcollective/html",
-            "version": "v5.1.6",
+            "version": "v5.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LaravelCollective/html.git",
-                "reference": "8b7c357e78b8fb6a2e48377cf2441441aac6dd1e"
+                "reference": "5ad8377968ba3b4da91fc60ca98b2eef4df380fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LaravelCollective/html/zipball/8b7c357e78b8fb6a2e48377cf2441441aac6dd1e",
-                "reference": "8b7c357e78b8fb6a2e48377cf2441441aac6dd1e",
+                "url": "https://api.github.com/repos/LaravelCollective/html/zipball/5ad8377968ba3b4da91fc60ca98b2eef4df380fc",
+                "reference": "5ad8377968ba3b4da91fc60ca98b2eef4df380fc",
                 "shasum": ""
             },
             "require": {
@@ -1024,7 +1074,7 @@
                     "email": "adam@laravelcollective.com"
                 }
             ],
-            "time": "2015-09-03 17:16:48"
+            "time": "2015-11-06 18:14:38"
         },
         {
             "name": "league/flysystem",
@@ -1233,16 +1283,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "1.20.0",
+            "version": "1.21.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "bfd3eaba109c9a2405c92174c8e17f20c2b9caf3"
+                "reference": "7b08ec6f75791e130012f206e3f7b0e76e18e3d7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/bfd3eaba109c9a2405c92174c8e17f20c2b9caf3",
-                "reference": "bfd3eaba109c9a2405c92174c8e17f20c2b9caf3",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/7b08ec6f75791e130012f206e3f7b0e76e18e3d7",
+                "reference": "7b08ec6f75791e130012f206e3f7b0e76e18e3d7",
                 "shasum": ""
             },
             "require": {
@@ -1250,12 +1300,12 @@
                 "symfony/translation": "~2.6|~3.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "~4.0"
+                "phpunit/phpunit": "~4.0|~5.0"
             },
             "type": "library",
             "autoload": {
-                "psr-0": {
-                    "Carbon": "src"
+                "psr-4": {
+                    "Carbon\\": "src/Carbon/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1276,7 +1326,7 @@
                 "datetime",
                 "time"
             ],
-            "time": "2015-06-25 04:19:39"
+            "time": "2015-11-04 20:07:17"
         },
         {
             "name": "nikic/php-parser",
@@ -1419,16 +1469,16 @@
         },
         {
             "name": "pingpong/modules",
-            "version": "v2.1.4",
+            "version": "v2.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pingpong-labs/modules.git",
-                "reference": "00c8d86611d5442d49aa2e06ecd5084a1c2d9b6b"
+                "reference": "cc2b4bdcd528f992d0ed27369f0c4b6523bf988a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pingpong-labs/modules/zipball/00c8d86611d5442d49aa2e06ecd5084a1c2d9b6b",
-                "reference": "00c8d86611d5442d49aa2e06ecd5084a1c2d9b6b",
+                "url": "https://api.github.com/repos/pingpong-labs/modules/zipball/cc2b4bdcd528f992d0ed27369f0c4b6523bf988a",
+                "reference": "cc2b4bdcd528f992d0ed27369f0c4b6523bf988a",
                 "shasum": ""
             },
             "require": {
@@ -1466,7 +1516,7 @@
                 "modules",
                 "pingpong"
             ],
-            "time": "2015-06-30 08:35:01"
+            "time": "2015-11-06 06:53:58"
         },
         {
             "name": "pingpong/support",

@@ -3,6 +3,8 @@
 use Closure;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\App;
+use Module;
+
 class Language {
 
     /**
@@ -14,8 +16,12 @@ class Language {
      */
     public function handle($request, Closure $next)
     {
-        if(Session::has('applocale') AND array_key_exists(Session::get('applocale'), config('localization.langs'))) {
-            App::setLocale(Session::get('applocale'));
+        $localization = Module::get('Localization');
+
+        if($localization->enabled()) {
+            if(Session::has('applocale') AND array_key_exists(Session::get('applocale'), config('localization.langs'))) {
+                App::setLocale(Session::get('applocale'));
+            }
         }
 
     	return $next($request);

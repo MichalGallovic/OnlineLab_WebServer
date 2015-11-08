@@ -65,6 +65,9 @@ h1.dashboard{font-size:26px;color:#53637d;font-family:Arial, Helvetica, sans-ser
 .reservation_ico {background: url("../pictures/calendar-ico2.png") no-repeat scroll 0 5px transparent;padding-left: 43px !important;}
 .report_ico{background:url(../pictures/report-icon.png) 0px 6px no-repeat;padding-left:43px!important;}
 
+.heading_icon {
+	width: 32px;
+}
 
 .controller_ico{background:url(../pictures/controllers.png) 0px 8px no-repeat;padding-left:43px!important;}
 .profile_ico{background:url(../pictures/profile.png) 0px 4px no-repeat;padding-left:43px!important;}

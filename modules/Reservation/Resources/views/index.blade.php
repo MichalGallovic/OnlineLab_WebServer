@@ -1,4 +1,4 @@
-@extends('reservation::layouts.master')
+@extends('user.layouts.default')
 
 @section('content')
 	
