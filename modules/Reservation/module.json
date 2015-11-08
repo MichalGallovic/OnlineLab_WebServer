@@ -5,11 +5,15 @@
     "keywords": [],
     "active": 1,
     "order": 0,
+    "visible": true,
     "providers": [
         "Modules\\Reservation\\Providers\\ReservationServiceProvider"
     ],
     "aliases":{},
     "files": [
         "start.php"
-    ]
+    ],
+    "routes": {
+        "main": "reservation.calendar"
+    }
 }

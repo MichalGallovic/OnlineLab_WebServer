@@ -1,4 +1,4 @@
-@extends('controller::layouts.master')
+@extends('user.layouts.default')
 
 @section('content')
 	

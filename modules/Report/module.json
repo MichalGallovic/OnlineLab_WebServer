@@ -11,5 +11,8 @@
     "aliases":{},
     "files": [
         "start.php"
-    ]
+    ],
+    "routes": {
+        "main": "report.index"
+    }
 }

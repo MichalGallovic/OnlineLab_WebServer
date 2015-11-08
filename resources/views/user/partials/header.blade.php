@@ -1,6 +1,11 @@
 <div id="dashboard_header">
     <div class="left">
-        <h1 class="dashboard {SECTION_TITLE_CLASS}">{SECTION_TITLE}</h1>
+        <h1 class="dashboard">
+            @section('heading')
+            <img class="heading_icon" src="{{ asset($module->iconPath()) }}"/>
+            <span>{!! $module->localizedName() !!}</span>
+            @show
+        </h1>
     </div>
     <div class="right">
         <div id="languages">

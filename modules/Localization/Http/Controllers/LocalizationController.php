@@ -16,7 +16,7 @@ class LocalizationController extends Controller {
 
 	public function getSettings()
 	{
-		return "CESC";
+		return view('localization::settings');
 	}
 	
 }

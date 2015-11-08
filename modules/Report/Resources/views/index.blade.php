@@ -1,4 +1,4 @@
-@extends('report::layouts.master')
+@extends('user.layouts.default')
 
 @section('content')
 	
