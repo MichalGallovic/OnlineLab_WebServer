@@ -9,7 +9,7 @@
     "providers": [
         "Modules\\Profile\\Providers\\ProfileServiceProvider"
     ],
-    "aliases":{},
+    "aliases": [],
     "files": [
         "start.php"
     ],
