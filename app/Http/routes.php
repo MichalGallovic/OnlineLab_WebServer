@@ -33,5 +33,6 @@ Route::get('password/email', 'Auth\PasswordController@getEmail');
 
 // If logged in
 Route::group(['as'  =>  'user::', 'middleware'  =>  'auth'], function() {
-    Route::get('dashboard', ['as' => 'dashboard', 'uses' => 'DashboardController@getDashboard']);
+    Route::get('dashboard', ['as' => 'dashboard.home', 'uses' => 'DashboardController@getDashboard']);
+    Route::get('dashboard/settings', ['as' => 'dashboard.settings', 'uses' => 'DashboardController@getDashboardSettings']);
 });

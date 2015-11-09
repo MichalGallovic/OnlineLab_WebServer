@@ -1,7 +1,6 @@
 @extends('user.layouts.default')
 
-@section('user.partials.header.heading')
-@endsection
+@include('user.dashboard.navigation')
 
 @section('content')
 @endsection

@@ -2,8 +2,10 @@
     <div class="left">
         <h1 class="dashboard">
             @section('heading')
-            <img class="heading_icon" src="{{ asset($module->iconPath()) }}"/>
-            <span>{!! $module->localizedName() !!}</span>
+                @if(isset($module))
+                    <img class="heading_icon" src="{{ asset($module->iconPath()) }}"/>
+                    <span>{!! $module->localizedName() !!}</span>
+                @endif
             @show
         </h1>
     </div>
