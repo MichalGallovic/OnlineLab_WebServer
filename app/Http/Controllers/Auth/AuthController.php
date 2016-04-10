@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Role;
+use App\Account;
+use App\LoginData;
 use App\User;
 use Validator;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
+
+use Illuminate\Http\Request;
+use Auth;
+use Socialite;
 
 class AuthController extends Controller
 {
@@ -31,8 +36,10 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest', ['except' => 'getLogout']);
+        $this->middleware('guest', ['except' => ['getLogout', 'handleProviderCallback']]);
     }
+
+    protected $redirectPath = '/forum';
 
     /**
      * Get a validator for an incoming registration request.
@@ -44,7 +51,7 @@ class AuthController extends Controller
     {
         return Validator::make($data, [
             'name' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:olm_admin_users',
+            'email' => 'required|email|max:255',
             'password' => 'required|confirmed|min:6',
         ]);
     }
@@ -57,16 +64,19 @@ class AuthController extends Controller
      */
     protected function create(array $data)
     {
-        $userRole = Role::where('name','user')->first();
-
         $user = new User;
         $user->name = $data['name'];
-        $user->email = $data['email'];
-        $user->password = bcrypt($data['password']);
-        $user->role()->associate($userRole);
+        $user->role = 'user';
         $user->save();
 
-        return $user;
+        $account = new Account;
+        $account->user()->associate($user);
+        $account->password = bcrypt($data['password']);
+        $account->type = 'local';
+        $account->email = $data['email'];
+        $account->save();
+
+        return $account;
     }
 
     /**
@@ -87,6 +97,149 @@ class AuthController extends Controller
     public function getRegister()
     {
         return view('guest.auth.temp.register');
+    }
+
+    public function login(Request $request){
+        //return var_dump($request->email);
+        if(isset($request->local)){
+            return $this->postLogin($request);
+        }elseif(isset($request->ldap)){
+            return $this->postLdap($request);
+        }
+    }
+
+    public function postLdap($credentials){
+        $ldaprdn  = 'uid='.$credentials->email.', ou=People, DC=stuba, DC=sk';
+        $dn  = 'ou=People, DC=stuba, DC=sk';
+
+        // connect to ldap server
+        $ldapconn = ldap_connect("ldap.stuba.sk") or die("Could not connect to LDAP server.");
+        ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
+
+        if ($ldapconn) {
+
+            // binding to ldap server
+            $ldapbind = ldap_bind($ldapconn, $ldaprdn, $credentials->password);
+
+            // verify binding
+            if ($ldapbind) {
+                $filter="uid=".$credentials->email;
+                //$justthese = array("givenname","employeetype","surname","mail","faculty","cn");
+                $justthese = array("givenname","surname","mail");
+
+                $sr=ldap_search($ldapconn, $dn, $filter, $justthese);
+
+                $info = ldap_get_entries($ldapconn, $sr);
+
+                //return var_dump($info);
+                $account =  Account::where('type', 'ldap')->whereIn('email', $info[0]['mail'])->first();
+
+                if(!$account){
+                    $user = new User;
+                    $user->name = $info[0]['givenname'][0];
+                    $user->surname = $info[0]['sn'][0];
+                    $user->save();
+
+                    $account = new Account;
+                    $account->type = 'ldap';
+                    $account->email = $info[0]['mail'][0];
+                    $account->confirmation_code = str_random(30);
+                    $account->user()->associate($user);
+                    $account->save();
+
+                    Auth::login($account, true);
+
+                    $this->logLogin($account);
+                    //$account->password = Hash::make($credentials['password']);
+
+                    return redirect()->route('user::linkAccounts');
+                }
+
+                Auth::login($account, true);
+
+                $this->logLogin($account);
+
+                //return var_dump($info);
+                return redirect()->route('forum.index');
+            } else {
+                echo "LDAP bind failed...";
+            }
+        }
+    }
+
+    public function redirectToProvider($provider)
+    {
+        return Socialite::with($provider)->redirect();
+    }
+
+    public function handleProviderCallback($provider)
+    {
+        $user = Socialite::with($provider)->user();
+
+        if(Auth::check()){
+            $account = Account::create([
+                'user_id' => Auth::user()->user->id,
+                'email' => $user->email,
+                'type' => $provider,
+                'confirmation_code' => str_random(30),
+                'login_id' => $user->id,
+            ]);
+
+            $this->logLogin($account);
+
+            return redirect()->route('profile.settings', compact('user'));
+        }else{
+           $account = $this->findOrCreateUser($user, $provider);
+        }
+
+        Auth::login($account, true);
+
+        $this->logLogin($account);
+
+        if($account->firstLogin){
+            return redirect()->route('user::linkAccounts');
+        }
+
+        return redirect()->route('forum.index');
+        //Todo domovská stránka
+    }
+
+    private function findOrCreateUser($user, $provider){
+        $account =  Account::where(['type' => $provider,'login_id' => $user->id])->first();
+
+        if (!$account){
+
+            $authUser =  User::create([
+                'name' => isset($user->givenName) ? $user->givenName : strtok($user->name, " "),
+                'surname' => isset($user->faimlyName) ? $user->familyName : substr($user->name, strpos($user->name, ' ') + 1)
+            ]);
+
+            $account = Account::create([
+                'login_id' => $user->id,
+                'user_id' => $authUser->id,
+                'email' => $user->email,
+                'type' => $provider,
+                'confirmation_code' => str_random(30)
+            ]);
+
+        }else{
+            $account->firstLogin = false;
+        }
+
+        return $account;
+    }
+
+    private function logLogin($account){
+
+        $ipAddress = $_SERVER['REMOTE_ADDR'];
+
+        if (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER)) {
+            $ipAddress = array_pop(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']));
+        }
+        LoginData::create([
+            'user_account_id' =>  $account->id,
+            'ip' => $ipAddress
+        ]);
     }
 
 }

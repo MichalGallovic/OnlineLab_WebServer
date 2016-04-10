@@ -87,7 +87,6 @@ class Repository extends \Pingpong\Modules\Repository
             $module = $this->moduleFromUrlSegment($segment);
         }
 
-
         return $module;
     }
 
@@ -99,7 +98,7 @@ class Repository extends \Pingpong\Modules\Repository
      */
     protected function moduleFromUrlSegment($segment)
     {
-        $modules = $this->enabled();
+        $modules = $this->scan();
 
         foreach($modules as $module) {
             if($module->hasUrlSegment($segment)) {
