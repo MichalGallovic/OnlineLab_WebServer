@@ -226,9 +226,6 @@ table.wc-time-slots {
    z-index: 1000;
 }
 
-
-<!--- DEMO CSS -->
-
 .wc-header td {
     background:url(../images/wc-header-bg.png) top left repeat-x;
 }
