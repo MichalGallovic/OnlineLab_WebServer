@@ -3,18 +3,8 @@
 
 <ul class="menu">
     <li>
-        <a class="{{ Active::pattern('dashboard*',"selected") }}" href="{{ route('user::dashboard.home') }}">{!! trans('default.DASHBOARD') !!}</a>
+        <a href="{{ route('user::dashboard') }}">{!! trans('default.DASHBOARD') !!}</a>
     </li>
-    @if(Active::pattern('dashboard*'))
-        <ul class="level2">
-            <li >
-                <a href="{{ route('user::dashboard.home') }}" class="{{ Active::route('user::dashboard.home',"selected") }}" title="{!! trans('default.DASHBOARD_HOME') !!}">{!! trans('default.DASHBOARD_HOME') !!}</a>
-            </li>
-            <li >
-                <a href="{{ route('user::dashboard.settings') }}" class="{{ Active::route('user::dashboard.settings',"selected") }}" title="{!! trans('default.DASHBOARD_LAYOUT') !!}">{!! trans('default.DASHBOARD_LAYOUT') !!}</a>
-            </li>
-        </ul>
-    @endif
     @foreach(Module::getOrdered() as $module)
         @if($module->isVisible())
         <li ><a href="{{ $module->mainRoute() }}" style="{SECT_BORDER_BOTTOM}" class="{{ $module->isActive() }}" title="{{ $module->localizedName() }}">{{ $module->localizedName() }}</a></li>
@@ -22,6 +12,7 @@
     @endforeach
 </ul>
 
+{{-- @TODO <ul class="collpase-menu {MENU_COLLPASE_SHOW}">--}}
 <ul class="collpase-menu nodisplay">
     @foreach(Module::getOrdered() as $module)
         @if($module->isVisible())

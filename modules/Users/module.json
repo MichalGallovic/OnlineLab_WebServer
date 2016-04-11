@@ -5,12 +5,14 @@
     "keywords": [],
     "active": 1,
     "order": 0,
-    "visible": false,
     "providers": [
         "Modules\\Users\\Providers\\UsersServiceProvider"
     ],
     "aliases":{},
     "files": [
         "start.php"
-    ]
+    ],
+    "routes": {
+        "main": "users.index"
+    }
 }

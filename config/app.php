@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'debug' => env('APP_DEBUG', false),
+    'debug' => env('APP_DEBUG', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -78,7 +78,7 @@ return [
     |
     */
 
-    'key' => env('APP_KEY', 'SomeRandomString'),
+    'key' => env('APP_KEY', '0SoopwezlcCpsVJBp02qpz7qXC7SkW0s'),
 
     'cipher' => 'AES-256-CBC',
 
@@ -153,6 +153,10 @@ return [
         Pingpong\Widget\WidgetServiceProvider::class,
         \App\Providers\ViewComposerServiceProvider::class,
         HieuLe\Active\ActiveServiceProvider::class,
+        Laravel\Socialite\SocialiteServiceProvider::class,
+        Laracasts\Flash\FlashServiceProvider::class,
+        Illuminate\Html\HtmlServiceProvider::class,
+        Intervention\Image\ImageServiceProvider::class,
     ],
 
     /*
@@ -208,7 +212,13 @@ return [
         'Module'    =>  Pingpong\Modules\Facades\Module::class,
         'Widget'    =>  \Pingpong\Widget\WidgetFacade::class,
         'Active'    =>  HieuLe\Active\Facades\Active::class,
-
+        'Socialite' => Laravel\Socialite\Facades\Socialite::class,
+        'Flash' => Laracasts\Flash\Flash::class,
+        'Form'     => Illuminate\Html\FormFacade::class,
+        'Html'     => Illuminate\Html\HtmlFacade::class,
+        'Image' => Intervention\Image\Facades\Image::class,
     ],
+
+
 
 ];

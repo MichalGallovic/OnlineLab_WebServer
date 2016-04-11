@@ -8,14 +8,7 @@ use App\Http\Controllers\Controller;
 
 class DashboardController extends Controller
 {
-    public function getDashboard()
-    {
-        return view('user.dashboard.home');
+    public function getDashboard() {
+        return view('user.dashboard');
     }
-
-    public function getDashboardSettings()
-    {
-        return view('user.dashboard.settings');
-    }
-
 }
