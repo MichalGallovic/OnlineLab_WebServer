@@ -57,7 +57,7 @@ return [
             'host'      => env('DB_HOST', 'localhost'),
             'database'  => env('DB_DATABASE', 'forge'),
             'username'  => env('DB_USERNAME', 'forge'),
-            'password'  => env('DB_PASSWORD', ''),
+            'password'  => env('DB_PASSWORD', 'calamadalolo6'),
             'charset'   => 'utf8',
             'collation' => 'utf8_unicode_ci',
             'prefix'    => '',
@@ -119,6 +119,10 @@ return [
             'host'     => '127.0.0.1',
             'port'     => 6379,
             'database' => 0,
+            'timeout' => 0,
+            'connection_timeout' => 0,
+            'read_write_timeout' => -1,
+
         ],
 
     ],
