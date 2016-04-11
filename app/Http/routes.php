@@ -1,5 +1,6 @@
 <?php
 
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -35,4 +36,8 @@ Route::get('password/email', 'Auth\PasswordController@getEmail');
 Route::group(['as'  =>  'user::', 'middleware'  =>  'auth'], function() {
     Route::get('dashboard', ['as' => 'dashboard.home', 'uses' => 'DashboardController@getDashboard']);
     Route::get('dashboard/settings', ['as' => 'dashboard.settings', 'uses' => 'DashboardController@getDashboardSettings']);
+});
+
+Route::get('test', function() {
+    app('Illuminate\Contracts\Bus\Dispatcher')->dispatch(new \App\Jobs\TestJob());
 });

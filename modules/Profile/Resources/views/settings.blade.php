@@ -1,5 +1,5 @@
 @extends('user.layouts.default')
 
 @section('content')
-    User's profile
+    {{ trans("profile::default.name") }}
 @endsection
