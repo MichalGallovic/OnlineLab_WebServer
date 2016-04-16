@@ -15,7 +15,7 @@ class Server
 	 * Server ip address
 	 * @var [type]
 	 */
-	protected $server;
+	protected $ip;
 
 	/**
 	 * Guzzle HTTP client
@@ -47,9 +47,9 @@ class Server
 	 */
 	protected $deviceTypes;
 
-	public function __construct($server)
+	public function __construct($ip)
 	{
-		$this->server = mb_substr($server, -1) != "/" ? $server . "/" : $server;
+		$this->ip = mb_substr($ip, -1) != "/" ? $ip . "/" : $ip;
 		$this->client = new Client();
 	}
 
@@ -98,14 +98,21 @@ class Server
 	protected function getExperiments()
 	{
 		$url = $this->prepareUrl("server/experiments");
+
 		$body = $this->responseToArray($this->client->get($url));
-		return isset($body["data"]) ? $body["data"] : [];
+		$experiments = isset($body["data"]) ? $body["data"] : [];
+		
+		foreach ($experiments as $key => $experiment) {
+			$experiments[$key]["ip"] = $this->ip;
+		}
+
+		return $experiments;
 	}
 
 	protected function prepareUrl($segments = null)
 	{
 		$segments = $segments[0] != "/" ? "/" . $segments : $segments;
-		return $this->server . $this->apiPrefix . $segments;
+		return $this->ip . $this->apiPrefix . $segments;
 	}
 
 	protected function responseToArray($response)

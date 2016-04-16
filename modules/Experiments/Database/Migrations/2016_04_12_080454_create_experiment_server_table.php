@@ -18,6 +18,7 @@ class CreateExperimentServerTable extends Migration {
             
             $table->integer('server_id')->unsigned();
             $table->integer('experiment_id')->unsigned();
+            $table->boolean("available")->default(false);
 
             $table->foreign('server_id')
             ->references('id')

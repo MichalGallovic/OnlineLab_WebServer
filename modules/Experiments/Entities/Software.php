@@ -5,7 +5,7 @@ use Modules\Experiments\Entities\Experiment;
 
 class Software extends Model {
 
-    protected $fillable = [];
+    protected $fillable = ["name"];
 
     public function experiments() {
     	return $this->belongsToMany(Experiment::class);

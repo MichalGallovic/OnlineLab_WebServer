@@ -4,6 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Experiments\Entities\Device;
+use Modules\Experiments\Entities\Server;
 use Modules\Experiments\Entities\Software;
 use Modules\Experiments\Entities\Experiment;
 
@@ -29,6 +30,18 @@ class ExperimentsTableSeeder extends Seeder {
 
 		$this->cleanDatabase();
 		
+		Server::create([
+			"name"	=>	"s1",
+			"ip"	=>	"192.168.100.100",
+			"port"	=>	"80"
+		]);
+
+		Server::create([
+			"name"	=>	"s2",
+			"ip"	=>	"192.168.100.110",
+			"port"	=>	"80"
+		]);
+
 		Device::create([
 			"name"	=>	"tos1a"
 		]);

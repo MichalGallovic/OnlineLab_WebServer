@@ -1,8 +1,8 @@
 <div id="dashboard_header">
     <div class="left">
         <h1 class="dashboard">
-            @section('heading')
             <img class="heading_icon" src="{{ asset($module->iconPath()) }}"/>
+            @section('heading')
             <span>{!! $module->localizedName() !!}</span>
             @show
         </h1>

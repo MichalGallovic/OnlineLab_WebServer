@@ -730,11 +730,12 @@ border-bottom-left-radius: 3px;}
         text-decoration: none;
 }
 
-table tr td:last-child {
+/*@Todo PLS toto daj do classy*/
+/*table tr td:last-child {
 	white-space: nowrap;
 	/*width: 1px;*/
-	text-align:right;
-}
+	/*text-align:right;*/
+}*/
 
 .profile-picture-frame {
 	color: #ccc;

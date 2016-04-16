@@ -23,7 +23,7 @@ class System
 	protected $servers;
 
 
-	public function __construct(array $ips)
+	public function __construct(array $ips = [])
 	{
 		$this->servers = $this->initServers($ips);
 		$this->ips = $ips;
@@ -34,7 +34,23 @@ class System
 		return $this->getExperiments();
 	}
 
-	
+	public function uniqueExperiments()
+	{
+		$experiments = $this->experiments()->unique(function($item) {
+			return $item["device"].$item["software"];
+		});
+
+		$unique = new Collection();
+
+		foreach ($experiments as $experiment) {
+			unset($experiment["ip"]);
+			unset($experiment["id"]);
+			$unique->push($experiment);
+		}
+
+		return $unique;
+	}
+
 	protected function getExperiments()
 	{
 		$experiments = new Collection();

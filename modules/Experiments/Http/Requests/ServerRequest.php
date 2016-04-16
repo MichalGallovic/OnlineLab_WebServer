@@ -23,7 +23,7 @@ class ServerRequest extends FormRequest {
 	{
 		return [
 			"name"	=>	"required",
-			"ip"	=>	"required"
+			"ip"	=>	"required|ip"
 		];
 	}
 
