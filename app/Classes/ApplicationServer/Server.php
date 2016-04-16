@@ -4,6 +4,7 @@ namespace App\Classes\ApplicationServer;
 
 use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
+use GuzzleHttp\Exception\ConnectException;
 
 /**
 *  Olm App server communication wrapper
@@ -47,10 +48,22 @@ class Server
 	 */
 	protected $deviceTypes;
 
+	/**
+	 * Is server reachable ?
+	 * @var boolean
+	 */
+	protected $notAvailable;
+
 	public function __construct($ip)
 	{
-		$this->ip = mb_substr($ip, -1) != "/" ? $ip . "/" : $ip;
-		$this->client = new Client();
+		$this->ip = mb_substr($ip, -1) == "/" ? substr($ip, 0, count($ip) - 2) : $ip;
+
+		$this->client = new Client([
+			"base_uri"	=>	"http://" . $this->ip,
+			"timeout"	=>	3.0	
+		]);
+
+		// $this->notAvailable = false;
 	}
 
 	public function deviceTypes()
@@ -97,9 +110,8 @@ class Server
 
 	protected function getExperiments()
 	{
-		$url = $this->prepareUrl("server/experiments");
+		$body = $this->get("server/experiments");
 
-		$body = $this->responseToArray($this->client->get($url));
 		$experiments = isset($body["data"]) ? $body["data"] : [];
 		
 		foreach ($experiments as $key => $experiment) {
@@ -109,10 +121,18 @@ class Server
 		return $experiments;
 	}
 
-	protected function prepareUrl($segments = null)
+	protected function get($segments)
 	{
-		$segments = $segments[0] != "/" ? "/" . $segments : $segments;
-		return $this->ip . $this->apiPrefix . $segments;
+		$segments = substr($segments,0,1) == "/" ? substr($segments, 1, count($segments) - 1) : $segments;
+		$url = $this->apiPrefix . "/" . $segments;
+		try {
+			$response = $this->client->get($url);
+			$response = $this->responseToArray($response);
+		} catch(ConnectException $e) {
+			$this->notAvailable;
+			$response = null;
+		}
+		return $response;
 	}
 
 	protected function responseToArray($response)
