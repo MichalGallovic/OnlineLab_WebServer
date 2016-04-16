@@ -17,6 +17,7 @@
     <link href="{{ asset('css/jquery-ui-custom.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('css/select2-bootstrap.css') }}" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/helpers.css') }}">
     <link href="{{ asset('css/default.css') }}" rel="stylesheet" type="text/css" />
     @yield('page_css')
 

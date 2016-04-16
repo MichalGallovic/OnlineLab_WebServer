@@ -8,6 +8,7 @@ use Modules\Experiments\Entities\Software;
 class Experiment extends Model {
 
     protected $fillable = ["software_id", "device_id"];
+    protected $with = ["device","software"];
 
     public function device() {
     	return $this->belongsTo(Device::class);
@@ -18,7 +19,7 @@ class Experiment extends Model {
     }
 
     public function servers() {
-    	return $this->belongsToMany(Server::class);
+    	return $this->belongsToMany(Server::class)->withPivot('available');
     }
 
 }

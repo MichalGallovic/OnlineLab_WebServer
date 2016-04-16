@@ -15,7 +15,7 @@ class CreateSoftwaresTable extends Migration {
         Schema::create('softwares', function(Blueprint $table)
         {
             $table->increments('id');
-            $table->string('name');
+            $table->string('name')->unique();
             $table->timestamps();
         });
     }
