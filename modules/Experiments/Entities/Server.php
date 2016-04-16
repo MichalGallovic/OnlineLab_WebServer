@@ -12,9 +12,4 @@ class Server extends Model {
     	return $this->belongsToMany(Experiment::class)->withPivot('available');
     }
 
-    public function availableExperiments()
-    {
-    	return $this->belongsToMany(Experiment::class)->withPivot('available')->where('available',true);
-    }
-
 }
