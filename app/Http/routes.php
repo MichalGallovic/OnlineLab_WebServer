@@ -75,6 +75,6 @@ Route::group(['as'  =>  'user::', 'middleware'  =>  'auth'], function() {
     });
 });
 
-// Route::get('test', function() {
-//     app('Illuminate\Contracts\Bus\Dispatcher')->dispatch(new \App\Jobs\TestJob());
+// Route::post('test/data', function() {
+    
 // });

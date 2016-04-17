@@ -25,38 +25,4 @@ class ExperimentsController extends Controller {
 
 		return view('experiments::index', compact('servers', 'experiments'));
 	}
-
-	public function sync()
-	{
-		$system = new SystemService();
-		$system->syncWithServers();
-
-		return redirect()->back();
-	}
-
-	
-	public function refresh()
-	{
-
-	}
-
-	public function createServer()
-	{
-		// $ips = ["http://192.168.100.100","http://192.168.100.110"];
-
-		// $system = new System($ips);
-		// dd($system->experiments());
-
-		// $devices = $experiments->unique('device')->values()->lists("device");
-		// $softwares = $experiments->unique('software')->values()->lists("software");
-
-		return view('experiments::servers.create');
-	}
-
-	public function storeServer(ServerRequest $request)
-	{
-		ServerModel::create($request->all());
-
-		return redirect()->route('experiments.index');
-	}
 }

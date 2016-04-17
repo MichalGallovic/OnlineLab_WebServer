@@ -3,7 +3,7 @@
         <table class="table table-bordered table-striped table-hover">
             <thead>
             <tr>
-                <th>ID</th><th>Name</th><th>IP</th><th>Port</th><th>Experiments</th>
+                <th>ID</th><th>Name</th><th>IP</th><th>Port</th><th>Experiments</th><th></th><th></th>
             </tr>
             </thead>
             <tbody>
@@ -33,12 +33,20 @@
                     <td>{{ $server->ip }}</td>
                     <td>{{ $server->port }}</td>
                     <td>{{ $server->experiments()->wherePivot("available",true)->count() }}</td>
+                    <td class="col-md-1">
+                        <a href="{{ route("servers.edit", $server->id) }}" class="btn btn-xs btn-warning btn-block"><i class="glyphicon glyphicon-edit"></i> Edit</a>
+                    </td>
+                    <td class="col-md-1">
+                        {!! Form::open(['method' => 'DELETE']) !!}
+                            <button class="btn btn-xs btn-danger btn-block" type="submit"><i class="glyphicon glyphicon-remove"></i> Delete</button>
+                        {!! Form::close() !!}
+                    </td>
                 </tr>
             @endforeach
             </tbody>
             <tfoot>
             <tr>
-                <th>ID</th><th>Name</th><th>IP</th><th>Port</th><th>Experiments</th>
+                <th>ID</th><th>Name</th><th>IP</th><th>Port</th><th>Experiments</th><th></th><th></th>
             </tr>
             </tfoot>
         </table>
