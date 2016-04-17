@@ -5,8 +5,9 @@
 		<div class="panel-heading">
 			<div class="clearfix">
 				<h3 class="panel-title pull-left">Servers</h3>
-				<a href="{{ route('experiments.server.sync') }}" class="btn btn-default btn-xs pull-right marginl20">Sync servers</a>
-				<a href="{{ route('experiments.server.create') }}" class="btn btn-success btn-xs pull-right">Add server</a>
+				<a href="{{ route('servers.sync') }}" class="btn btn-default btn-xs pull-right marginl20"><i class="glyphicon glyphicon-sort"></i> Sync experiments</a>
+				<a href="{{ route('servers.refreshStatus') }}" class="btn btn-info btn-xs pull-right marginl20"><i class="glyphicon glyphicon-refresh"></i> Refresh status</a>
+				<a href="{{ route('servers.create') }}" class="btn btn-success btn-xs pull-right"><i class="glyphicon glyphicon-plus"></i> Add server</a>
 			</div>
 		</div>
 		@include("experiments::servers.partials.index")
@@ -20,4 +21,9 @@
 		</div>
 		@include("experiments::experiments.partials.index")
 	</div>
+@stop
+
+@section('page_js')
+	@parent
+	<script type="text/javascript" src="{{ asset('js/animations.js') }}"></script>
 @stop
