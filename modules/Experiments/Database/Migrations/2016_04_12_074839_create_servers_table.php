@@ -18,7 +18,11 @@ class CreateServersTable extends Migration {
             $table->string('name');
             $table->string('ip');
             $table->string('port');
-            $table->boolean("available")->default(true);
+            $table->boolean("available")->default(false);
+            $table->boolean("database")->default(false);
+            $table->boolean("reachable")->default(false);
+            $table->boolean("queue")->default(false);
+            $table->boolean("redis")->default(false);
             $table->timestamps();
         });
     }
