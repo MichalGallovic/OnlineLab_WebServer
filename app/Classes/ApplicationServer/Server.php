@@ -4,6 +4,7 @@ namespace App\Classes\ApplicationServer;
 
 use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 
 /**
@@ -52,7 +53,37 @@ class Server
 	 * Is server reachable ?
 	 * @var boolean
 	 */
-	protected $notAvailable;
+	protected $available;
+
+	/**
+	 * Is redis available
+	 * @var boolean
+	 */
+	protected $redisAvailable;
+
+	/**
+	 * Is queue available
+	 * @var boolean
+	 */
+	protected $queueAvailable;
+
+	/**
+	 * Is database available
+	 * @var [type]
+	 */
+	protected $databaseAvailable;
+
+	/**
+	 * Is server reachable
+	 * @var boolean
+	 */
+	protected $reachable;
+
+	/**
+	 * Last response code
+	 * @var [type]
+	 */
+	protected $lastResponseCode;
 
 	public function __construct($ip)
 	{
@@ -60,11 +91,50 @@ class Server
 
 		$this->client = new Client([
 			"base_uri"	=>	"http://" . $this->ip,
-			"timeout"	=>	3.0	
+			"timeout"	=>	2.0	
 		]);
 
-		// $this->notAvailable = false;
+		$this->check();
 	}
+
+	 /**
+     * Gets the Server ip address.
+     *
+     * @return [type]
+     */
+    public function getIp()
+    {
+        return $this->ip;
+    }
+
+    /**
+     * Gets the Is server reachable ?.
+     *
+     * @return boolean
+     */
+    public function getAvailability()
+    {
+        return $this->available;
+    }
+
+    public function check()
+    {
+    	$response = $this->get("server/status");
+
+    	$this->databaseAvailable = isset($response["database"]) ? $response["database"] : false;
+    	$this->queueAvailable = isset($response["queue"]) ? $response["queue"] : false;
+    	$this->redisAvailable = isset($response["redis"]) ? $response["redis"] : false;
+    	$this->available = $this->serverAvailable();
+    }
+
+    protected function serverAvailable()
+    {
+    	return ($this->lastResponseCode / 100) != 5 && 
+    	$this->databaseAvailable && 
+    	$this->queueAvailable &&
+    	$this->redisAvailable &&
+    	$this->reachable;
+    }
 
 	public function deviceTypes()
 	{
@@ -121,17 +191,26 @@ class Server
 		return $experiments;
 	}
 
-	protected function get($segments)
+	protected function get($segments = null, $force = false)
 	{
+		if(!is_null($this->reachable) && !$force) {
+			if(!$this->reachable || !$this->databaseAvailable) return [];
+		}
+
 		$segments = substr($segments,0,1) == "/" ? substr($segments, 1, count($segments) - 1) : $segments;
 		$url = $this->apiPrefix . "/" . $segments;
+		$response = null;
 		try {
 			$response = $this->client->get($url);
+			$this->lastResponseCode = $response->getStatusCode();
+			$this->reachable = true;
 			$response = $this->responseToArray($response);
 		} catch(ConnectException $e) {
-			$this->notAvailable;
-			$response = null;
+			$this->reachable = false;
+		} catch(ClientException $e) {
+			$this->lastResponseCode = $e->getResponse()->getStatusCode();
 		}
+
 		return $response;
 	}
 
@@ -139,5 +218,44 @@ class Server
 	{
 		return json_decode($response->getBody(), true);
 	}
-	
+
+    /**
+     * Gets the Is server reachable.
+     *
+     * @return boolean
+     */
+    public function getReachable()
+    {
+        return $this->reachable;
+    }
+
+    /**
+     * Gets the Is database available.
+     *
+     * @return [type]
+     */
+    public function getDatabaseAvailable()
+    {
+        return $this->databaseAvailable;
+    }
+
+    /**
+     * Gets the Is queue available.
+     *
+     * @return boolean
+     */
+    public function getQueueAvailable()
+    {
+        return $this->queueAvailable;
+    }
+
+    /**
+     * Gets the Is redis available.
+     *
+     * @return boolean
+     */
+    public function getRedisAvailable()
+    {
+        return $this->redisAvailable;
+    }
 }

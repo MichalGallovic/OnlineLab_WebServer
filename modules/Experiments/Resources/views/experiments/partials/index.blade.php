@@ -13,7 +13,11 @@
                     <td>{{ $experiment->software->name }}</td>
                     <td>
                         @foreach($experiment->servers()->wherePivot('available',true)->get() as $server)
-                            <span class="label label-success">{{ $server->name }}</span>
+                            @if($server->available)
+                                <span class="label label-success">{{ $server->name }}</span>
+                            @else
+                                <span class="label label-danger">{{ $server->name }}</span>
+                            @endif
                         @endforeach
                     </td>
                 </tr>

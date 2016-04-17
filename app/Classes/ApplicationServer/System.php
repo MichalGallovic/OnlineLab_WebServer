@@ -51,6 +51,13 @@ class System
 		return $unique;
 	}
 
+	public function check()
+	{
+		foreach ($this->servers as $server) {
+			$server->check();
+		}
+	}
+
 	protected function getExperiments()
 	{
 		$experiments = new Collection();
@@ -74,4 +81,14 @@ class System
 	}
 
 	
+
+    /**
+     * Gets the Servers.
+     *
+     * @return array App\Classes\ApplicationServer\Server
+     */
+    public function getServers()
+    {
+        return $this->servers;
+    }
 }
