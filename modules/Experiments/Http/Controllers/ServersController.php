@@ -64,7 +64,7 @@ class ServersController extends Controller {
 
 	public function disable(Request $request, $id)
 	{
-		$server = Server::find($id);
+		$server = Server::findOrFail($id);
 		$server->disabled = true;
 		$server->save();
 
@@ -73,9 +73,12 @@ class ServersController extends Controller {
 
 	public function enable(Request $request, $id)
 	{
-		$server = Server::find($id);
+		$server = Server::findOrFail($id);
 		$server->disabled = false;
 		$server->save();
+
+		$system = new SystemService();
+		$system->syncWithServers();
 
 		return redirect()->back();
 	}

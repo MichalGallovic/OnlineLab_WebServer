@@ -157,6 +157,7 @@ return [
         Laracasts\Flash\FlashServiceProvider::class,
         Illuminate\Html\HtmlServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
+        Morrislaptop\LaravelQueueClear\LaravelQueueClearServiceProvider::class
     ],
 
     /*

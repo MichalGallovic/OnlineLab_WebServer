@@ -20,6 +20,10 @@ class CreateExperimentServerTable extends Migration {
             $table->integer('experiment_id')->unsigned();
             $table->integer("instances")->default(0);
 
+            $table->text("commands")->nullable();
+            $table->text("experiment_commands")->nullable();
+            $table->text("output_arguments")->nullable();
+
             $table->foreign('server_id')
             ->references('id')
             ->on('servers')

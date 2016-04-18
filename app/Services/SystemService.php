@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use App\Repositories\ServersRepository;
 use Modules\Experiments\Entities\Device;
@@ -96,10 +97,12 @@ class SystemService
 		$experiments = Experiment::all();
 		$experimentInstances = $this->system->experiments()->groupBy('ip');
 
+
 		$availableExperimentInstances = new Collection();
-		$numberOfInstances = [];
+
 		foreach ($experimentInstances as $ip => $serverExperiments) {
 			foreach ($serverExperiments as $experiment) {
+
 				$serverIp = str_replace("/", "", $ip);
 				$server = $this->servers->where('ip',$serverIp)->first();
 				
@@ -115,6 +118,11 @@ class SystemService
 						"server_id"	=>	$server->id,
 						"experiment_id"	=>	$webServerExperiment->id
 					]);
+
+				$server_experiment->commands = Arr::get($experiment,"input_arguments.data");
+				$server_experiment->output_arguments = Arr::get($experiment,"output_arguments.data");
+				$server_experiment->experiment_commands = Arr::get($experiment,"experiment_commands.data");
+				$server_experiment->save();
 
 				$availableExperimentInstances->push($server_experiment);
 			}
