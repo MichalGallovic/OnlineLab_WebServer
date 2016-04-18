@@ -157,6 +157,17 @@ class Server
 		return $this->experiments;
 	}
 
+	public function queueExperiment(array $input)
+	{
+		return $this->postQueueExperiment($input);
+	}
+
+	protected function postQueueExperiment(array $input)
+	{
+		$body = $this->post("experiments/queue", $input);
+		return $body;
+	}
+
 	protected function getDeviceTypes()
 	{
 		$experiments = $this->getExperimentsCollection();
@@ -180,7 +191,7 @@ class Server
 
 	protected function getExperiments()
 	{
-		$body = $this->get("server/experiments");
+		$body = $this->get("server/experiments?include=input_arguments,output_arguments,experiment_commands");
 
 		$experiments = isset($body["data"]) ? $body["data"] : [];
 		
@@ -197,8 +208,8 @@ class Server
 			if(!$this->reachable || !$this->databaseAvailable) return [];
 		}
 
-		$segments = substr($segments,0,1) == "/" ? substr($segments, 1, count($segments) - 1) : $segments;
-		$url = $this->apiPrefix . "/" . $segments;
+		$url = $this->prepareUrl($segments);
+
 		$response = null;
 		try {
 			$response = $this->client->get($url);
@@ -212,6 +223,38 @@ class Server
 		}
 
 		return $response;
+	}
+
+	protected function post($segments = null, $input = null, $force = false)
+	{
+		if(!is_null($this->reachable) && !$force) {
+			if(!$this->reachable || !$this->databaseAvailable) return [];
+		}
+
+		$url = $this->prepareUrl($segments);
+		$response = null;
+		try {
+			$response = $this->client->request("POST",$url, [
+					"json" => $input
+				]);
+
+			$this->lastResponseCode = $response->getStatusCode();
+			$this->reachable = true;
+			$response = $this->responseToArray($response);
+		} catch(ConnectException $e) {
+			$this->reachable = false;
+		} catch(ClientException $e) {
+			$this->lastResponseCode = $e->getResponse()->getStatusCode();
+			$response = $this->responseToArray($e->getResponse());
+		}
+
+		return $response;
+	}
+
+	protected function prepareUrl($segments = null)
+	{
+		$segments = substr($segments,0,1) == "/" ? substr($segments, 1, count($segments) - 1) : $segments;
+		return $this->apiPrefix . "/" . $segments;
 	}
 
 	protected function responseToArray($response)

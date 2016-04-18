@@ -13,7 +13,8 @@
 */
 
 use Intervention\Image\Facades\Image;
-use Modules\Experiments\Entities\Server;
+use App\Classes\ApplicationServer\Server;
+use Modules\Experiments\Entities\ServerExperiment;
 
 Route::get('/', function() {
     return Redirect::to('auth/login');
@@ -77,6 +78,20 @@ Route::group(['as'  =>  'user::', 'middleware'  =>  'auth'], function() {
 });
 
 Route::get('test/data', function() {
-    $server = Server::where('ip','192.168.100.110')->first();
-    dd($server->experiments->first()->sum('instances'));
+
+    $server = new Server("192.168.100.110");
+    $res = $server->queueExperiment([
+            "device" => "tos1a",
+            "software" => "openloop",
+            "input" => [
+                "start" => [
+                    "c_fan" => 30,
+                    "c_led" => 50,
+                    "c_lamp" => 50,
+                    "t_sim" => 5,
+                    "s_rate" => 50
+                ]
+            ]
+        ]);
+    dd($res);
 });

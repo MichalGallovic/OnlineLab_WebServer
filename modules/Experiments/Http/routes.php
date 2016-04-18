@@ -15,3 +15,8 @@ Route::group(['prefix' => 'experiments', 'namespace' => 'Modules\Experiments\Htt
 	Route::get('servers/sync', ['as' => 'servers.sync', "uses" => 'ServersController@sync']);
 	Route::get('servers/status/refresh', ['as' => 'servers.refreshStatus', "uses" => 'ServersController@refresh']);
 });
+
+Route::group(["prefix" => "api", "namespace" => 'Modules\Experiments\Http\Controllers'], function() {
+	Route::get("experiments", ['uses' => 'ApiController@experiments']);
+	Route::post("experiments/{id}/queue", ['uses' => 'ApiController@queue']);
+});

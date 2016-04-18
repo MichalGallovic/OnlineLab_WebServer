@@ -17,7 +17,9 @@
         "caffeinated/modules": "^2.2",
         "predis/predis": "^1.0",
         "intervention/image": "dev-master",
-        "laravelcollective/html": "~5.0"
+        "laravelcollective/html": "~5.0",
+        "league/fractal": "^0.13.0",
+        "morrislaptop/laravel-queue-clear": "~1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
