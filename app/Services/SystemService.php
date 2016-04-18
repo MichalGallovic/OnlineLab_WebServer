@@ -94,11 +94,11 @@ class SystemService
 
 
 		$experiments = Experiment::all();
-		$exprimentInstances = $this->system->experiments()->groupBy('ip');
+		$experimentInstances = $this->system->experiments()->groupBy('ip');
 
 		$availableExperimentInstances = new Collection();
-
-		foreach ($exprimentInstances as $ip => $serverExperiments) {
+		$numberOfInstances = [];
+		foreach ($experimentInstances as $ip => $serverExperiments) {
 			foreach ($serverExperiments as $experiment) {
 				$serverIp = str_replace("/", "", $ip);
 				$server = $this->servers->where('ip',$serverIp)->first();
@@ -109,23 +109,28 @@ class SystemService
 					$q->where('name',$experiment["software"]);
 				})->first();
 				
+
+
 				$server_experiment = ServerExperiment::where("experiment_id",$webServerExperiment->id)->firstOrCreate([
 						"server_id"	=>	$server->id,
 						"experiment_id"	=>	$webServerExperiment->id
 					]);
 
-				$server_experiment->available = true;
-				$server_experiment->save();
-
 				$availableExperimentInstances->push($server_experiment);
 			}
 		}
 
-		$experimentInstancesToDisable = ServerExperiment::all()->diff($availableExperimentInstances);
-		foreach ($experimentInstancesToDisable as $experimentInstance) {
-			$experimentInstance->available = false;
-			$experimentInstance->save();
-		}
+		$availableExperimentInstances->groupBy('id')->each(function($groupOfInstances, $key) {
+			$server_experiment = $groupOfInstances->first();
+			$server_experiment->instances = $groupOfInstances->count();
+			$server_experiment->save();
+		});
+	
+		ServerExperiment::all()->diff($availableExperimentInstances)->each(function($server_experiment) {
+			$server_experiment->instances = 0;
+			$server_experiment->save();
+		});		
+
 
 		$this->updateAvailability();
 	}

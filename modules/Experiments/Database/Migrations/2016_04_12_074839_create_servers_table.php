@@ -18,11 +18,13 @@ class CreateServersTable extends Migration {
             $table->string('name');
             $table->string('ip')->unique();
             $table->string('port');
+            $table->boolean("disabled")->default(false);
             $table->boolean("available")->default(false);
             $table->boolean("database")->default(false);
             $table->boolean("reachable")->default(false);
             $table->boolean("queue")->default(false);
             $table->boolean("redis")->default(false);
+            $table->string('color')->default("#009051");
             $table->timestamps();
         });
     }

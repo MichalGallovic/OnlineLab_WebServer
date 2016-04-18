@@ -13,6 +13,7 @@
 */
 
 use Intervention\Image\Facades\Image;
+use Modules\Experiments\Entities\Server;
 
 Route::get('/', function() {
     return Redirect::to('auth/login');
@@ -75,6 +76,7 @@ Route::group(['as'  =>  'user::', 'middleware'  =>  'auth'], function() {
     });
 });
 
-// Route::post('test/data', function() {
-    
-// });
+Route::get('test/data', function() {
+    $server = Server::where('ip','192.168.100.110')->first();
+    dd($server->experiments->first()->sum('instances'));
+});
