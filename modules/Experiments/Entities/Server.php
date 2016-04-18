@@ -5,11 +5,21 @@ use Modules\Experiments\Entities\Experiment;
 
 class Server extends Model {
 
-    protected $fillable = ["name","ip","port"];
+    protected $fillable = ["name","ip","port","color"];
 
     public function experiments()
     {
-    	return $this->belongsToMany(Experiment::class)->withPivot('available');
+    	return $this->belongsToMany(Experiment::class)->withPivot('instances');
+    }
+
+    public function sumExperimentInstances()
+    {	
+    	$experiments = $this->experiments;
+    	$count = 0;
+    	foreach ($experiments as $experiment) {
+    		$count += $experiment->pivot->instances;
+    	}
+    	return $count;
     }
 
 }

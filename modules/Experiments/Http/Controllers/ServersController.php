@@ -5,6 +5,7 @@ use App\Services\SystemService;
 use Modules\Experiments\Entities\Server;
 use Pingpong\Modules\Routing\Controller;
 use Modules\Experiments\Http\Requests\ServerRequest;
+use Modules\Experiments\Http\Requests\ServerUpdateRequest;
 
 class ServersController extends Controller {
 	
@@ -44,12 +45,39 @@ class ServersController extends Controller {
 		return view('experiments::servers.edit', compact('server'));
 	}
 
-	public function update(ServerRequest $request, $id)
+	public function update(ServerUpdateRequest $request, $id)
 	{
 		$server = Server::findOrFail($id);
 		$server->update($request->all());
 
 		return redirect()->route("experiments.index");
+	}
+
+	public function destroy(Request $request, $id)
+	{
+		Server::destroy($id);
+		$system = new SystemService();
+		$system->syncWithServers();
+
+		return redirect()->back();
+	}
+
+	public function disable(Request $request, $id)
+	{
+		$server = Server::find($id);
+		$server->disabled = true;
+		$server->save();
+
+		return redirect()->back();
+	}
+
+	public function enable(Request $request, $id)
+	{
+		$server = Server::find($id);
+		$server->disabled = false;
+		$server->save();
+
+		return redirect()->back();
 	}
 	
 }

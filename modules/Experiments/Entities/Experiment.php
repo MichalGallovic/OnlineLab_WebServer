@@ -19,7 +19,7 @@ class Experiment extends Model {
     }
 
     public function servers() {
-    	return $this->belongsToMany(Server::class)->withPivot('available');
+    	return $this->belongsToMany(Server::class)->withPivot('instances');
     }
 
 }

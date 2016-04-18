@@ -3,7 +3,7 @@
         <table class="table table-bordered table-striped table-hover">
             <thead>
             <tr>
-                <th>ID</th><th>Name</th><th>IP</th><th>Port</th><th>Experiments</th><th></th><th></th>
+                <th>ID</th><th>Name</th><th>IP</th><th>Port</th><th>Experiments</th><th></th><th></th><th></th>
             </tr>
             </thead>
             <tbody>
@@ -11,8 +11,8 @@
                 <tr>
                     <td>{{ $server->id }}</td>
                     <td>
-                    @if($server->available)
-                        <span class="label label-success">{{ $server->name }}</span>
+                    @if($server->available && !$server->disabled)
+                        <span class="label" style="background-color: {{ $server->color }}">{{ $server->name }}</span>
                     @else
                         <span class="label label-danger">{{ $server->name }}</span>
                         @if(! $server->reachable)
@@ -27,17 +27,29 @@
                             @if(! $server->queue)
                                 <span class="label label-warning">queue</span>
                             @endif
+                            @if($server->disabled)
+                                <span class="label label-warning">disabled</span>
+                            @endif
                         @endif
                     @endif
                     </td>
                     <td>{{ $server->ip }}</td>
                     <td>{{ $server->port }}</td>
-                    <td>{{ $server->experiments()->wherePivot("available",true)->count() }}</td>
+                    <td>{{ $server->sumExperimentInstances() }}</td>
                     <td class="col-md-1">
                         <a href="{{ route("servers.edit", $server->id) }}" class="btn btn-xs btn-warning btn-block"><i class="glyphicon glyphicon-edit"></i> Edit</a>
                     </td>
+                    @if(!$server->disabled)
+                        <td class="col-md-1">
+                            <a href="{{ route("servers.disable", $server->id) }}" class="btn btn-xs btn-danger btn-block"><i class="glyphicon glyphicon-off"></i> Disable</a>
+                        </td>
+                    @else
+                        <td class="col-md-1">
+                            <a href="{{ route("servers.enable", $server->id) }}" class="btn btn-xs btn-success btn-block"><i class="glyphicon glyphicon-off"></i> Enable</a>
+                        </td>
+                    @endif
                     <td class="col-md-1">
-                        {!! Form::open(['method' => 'DELETE']) !!}
+                        {!! Form::open(['method' => 'DELETE','route' => ['servers.destroy',$server->id]]) !!}
                             <button class="btn btn-xs btn-danger btn-block" type="submit"><i class="glyphicon glyphicon-remove"></i> Delete</button>
                         {!! Form::close() !!}
                     </td>
@@ -46,7 +58,7 @@
             </tbody>
             <tfoot>
             <tr>
-                <th>ID</th><th>Name</th><th>IP</th><th>Port</th><th>Experiments</th><th></th><th></th>
+                <th>ID</th><th>Name</th><th>IP</th><th>Port</th><th>Experiments</th><th></th><th></th><th></th>
             </tr>
             </tfoot>
         </table>

@@ -33,6 +33,13 @@
 					{!! $errors->first('port', '<p class="help-block">:message</p>') !!}
 				</div>
 			</div>
+			<div class="form-group {{ $errors->has('color') ? 'has-error' : ''}}" >
+				{!! Form::label("color", "Color", [ "class" => "control-label col-sm-3"]) !!}
+				<div class="col-sm-6">
+					<input type="color" name="color" value="{{ $server->color }}"></input>
+					{!! $errors->first('colof', '<p class="help-block">:message</p>') !!}
+				</div>
+			</div>
 			<div class="col-lg-9">
 				<div class="form-group">
 					{!! Form::submit("Update Server", [ "class" => "btn btn-success pull-right" ]) !!}
