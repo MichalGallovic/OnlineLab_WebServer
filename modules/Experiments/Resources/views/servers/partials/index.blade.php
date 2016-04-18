@@ -3,7 +3,7 @@
         <table class="table table-bordered table-striped table-hover">
             <thead>
             <tr>
-                <th>ID</th><th>Name</th><th>IP</th><th>Port</th><th>Experiments</th><th></th><th></th><th></th>
+                <th>ID</th><th>Name</th><th>IP</th><th>Port</th><th>Deployed for</th><th>Experiments</th><th></th><th></th><th></th>
             </tr>
             </thead>
             <tbody>
@@ -35,6 +35,13 @@
                     </td>
                     <td>{{ $server->ip }}</td>
                     <td>{{ $server->port }}</td>
+                    <td>
+                        @if($server->production)
+                            <span class="label label-success">production</span>
+                        @else
+                            <span class="label label-warning">testing</span>
+                        @endif
+                    </td>
                     <td>{{ $server->sumExperimentInstances() }}</td>
                     <td class="col-md-1">
                         <a href="{{ route("servers.edit", $server->id) }}" class="btn btn-xs btn-warning btn-block"><i class="glyphicon glyphicon-edit"></i> Edit</a>
@@ -58,7 +65,7 @@
             </tbody>
             <tfoot>
             <tr>
-                <th>ID</th><th>Name</th><th>IP</th><th>Port</th><th>Experiments</th><th></th><th></th><th></th>
+                <th>ID</th><th>Name</th><th>IP</th><th>Port</th><th>Deployed for</th><th>Experiments</th><th></th><th></th><th></th>
             </tr>
             </tfoot>
         </table>

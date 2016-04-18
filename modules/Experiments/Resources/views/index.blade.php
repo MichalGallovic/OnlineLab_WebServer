@@ -16,7 +16,7 @@
 	<div class="panel panel-primary">
 		<div class="panel-heading">
 			<div class="clearfix">
-				<h3 class="panel-title pull-left">Experiments</h3>
+				<h3 class="panel-title pull-left">User experiments</h3>
 			</div>
 		</div>
 		@include("experiments::experiments.partials.index")
@@ -30,7 +30,7 @@
 				<div class="form-group">
 					<label>Experiment</label>
 					<select v-model="selectedExperiment" class="form-control">
-						<option v-for='experiment in experiments' v-bind:value="experiment">@{{ experiment.device }} - @{{ experiment.software }} - @{{ experiment.server }}</option>
+						<option v-for='experiment in experiments' v-bind:value="experiment">@{{ experiment.device }} - @{{ experiment.software }}</option>
 					</select>
 				</div>
 				<div class="form-group" v-for="commandName in selectedExperiment.experiment_commands">

@@ -21,7 +21,9 @@ class ExperimentsController extends Controller {
 	public function index()
 	{
 		$servers = ServerModel::all();
-		$experiments = Experiment::where('available',true)->get();
+		$experiments = Experiment::available()->get();
+
+		// dd($experiments);
 
 		return view('experiments::index', compact('servers', 'experiments'));
 	}

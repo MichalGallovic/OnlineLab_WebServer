@@ -3,6 +3,7 @@
 namespace Modules\Experiments\Transformers;
 
 use League\Fractal\TransformerAbstract;
+use Modules\Experiments\Entities\Experiment;
 use Modules\Experiments\Entities\ServerExperiment;
 
 
@@ -16,28 +17,31 @@ class AvailableExperimentTransformer extends TransformerAbstract
 		"experiment_commands"
 	];
 
-	public function transform(ServerExperiment $server_experiment)
+	protected $experimentInstance;
+
+	public function transform(Experiment $experiment)
 	{
+		$this->experimentInstance = ServerExperiment::where('experiment_id', $experiment->id)->first();
+		
 		return [
-			"id"	=>	$server_experiment->id,
-			"device" 		=>	$server_experiment->experiment->device->name,
-			"software"	=>	$server_experiment->experiment->software->name,
-			"server"	=>	$server_experiment->server->name
+			"id"	=>	$experiment->id,
+			"device" 		=>	$experiment->device->name,
+			"software"	=>	$experiment->software->name
 		];
 	}
 
-	public function includeCommands(ServerExperiment $server_experiment)
+	public function includeCommands(Experiment $experiment)
 	{
-		return $this->item($server_experiment->commands, new GeneralArrayTransformer);
+		return $this->item($this->experimentInstance->commands, new GeneralArrayTransformer);
 	}
 
-	public function includeOutputArguments(ServerExperiment $server_experiment)
+	public function includeOutputArguments(Experiment $experiment)
 	{
-		return $this->item($server_experiment->output_arguments, new GeneralArrayTransformer);
+		return $this->item($this->experimentInstance->output_arguments, new GeneralArrayTransformer);
 	}
 
-	public function includeExperimentCommands(ServerExperiment $server_experiment)
+	public function includeExperimentCommands(Experiment $experiment)
 	{
-		return $this->item($server_experiment->experiment_commands, new GeneralArrayTransformer);
+	return $this->item($this->experimentInstance->experiment_commands, new GeneralArrayTransformer);
 	}
 }

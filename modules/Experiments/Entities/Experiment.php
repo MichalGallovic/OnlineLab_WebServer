@@ -22,4 +22,11 @@ class Experiment extends Model {
     	return $this->belongsToMany(Server::class)->withPivot('instances');
     }
 
+    public function scopeAvailable($query)
+    {
+        return $query->where('available', true)->whereHas('servers', function($query) {
+            $query->available()->hasExperiments();
+        });
+    }
+
 }

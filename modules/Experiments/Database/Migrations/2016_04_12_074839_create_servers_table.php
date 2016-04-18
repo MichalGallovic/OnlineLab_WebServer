@@ -18,6 +18,7 @@ class CreateServersTable extends Migration {
             $table->string('name');
             $table->string('ip')->unique();
             $table->string('port');
+            $table->boolean('production')->default(false);
             $table->boolean("disabled")->default(false);
             $table->boolean("available")->default(false);
             $table->boolean("database")->default(false);
