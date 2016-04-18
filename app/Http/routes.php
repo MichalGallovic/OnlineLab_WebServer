@@ -14,6 +14,7 @@
 
 use Intervention\Image\Facades\Image;
 use App\Classes\ApplicationServer\Server;
+use Modules\Experiments\Entities\Experiment;
 use Modules\Experiments\Entities\ServerExperiment;
 
 Route::get('/', function() {
@@ -79,19 +80,23 @@ Route::group(['as'  =>  'user::', 'middleware'  =>  'auth'], function() {
 
 Route::get('test/data', function() {
 
-    $server = new Server("192.168.100.110");
-    $res = $server->queueExperiment([
-            "device" => "tos1a",
-            "software" => "openloop",
-            "input" => [
-                "start" => [
-                    "c_fan" => 30,
-                    "c_led" => 50,
-                    "c_lamp" => 50,
-                    "t_sim" => 5,
-                    "s_rate" => 50
-                ]
-            ]
-        ]);
-    dd($res);
+    // $server = new Server("192.168.100.110");
+    // $res = $server->queueExperiment([
+    //         "device" => "tos1a",
+    //         "software" => "openloop",
+    //         "input" => [
+    //             "start" => [
+    //                 "c_fan" => 30,
+    //                 "c_led" => 50,
+    //                 "c_lamp" => 50,
+    //                 "t_sim" => 5,
+    //                 "s_rate" => 50
+    //             ]
+    //         ]
+    //     ]);
+    // dd($res);
+    $experiments = Experiment::available()->get();
+
+    dd($experiments);
+    dd($experiment->servers()->available()->freeExperiment()->firstOrFail());
 });

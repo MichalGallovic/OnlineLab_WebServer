@@ -13,18 +13,22 @@ class ApiController extends ApiBaseController {
 	
 	public function experiments()
 	{
-		$experiments = ServerExperiment::where('instances', '>', 0)->get();
-		
-		$experimentVersions = $experiments->groupBy("experiment_id")->map(function($server_experiments) {
-			return $server_experiments->unique('commands');
-		})->collapse();
+		$experiments = Experiment::available()->get();
 
-		return $this->respondWithCollection($experimentVersions, new AvailableExperimentTransformer);
+		return $this->respondWithCollection($experiments, new AvailableExperimentTransformer);
+		// $experiments = ServerExperiment::where('instances', '>', 0)->get();
+		
+		// $experimentVersions = $experiments->groupBy("experiment_id")->map(function($server_experiments) {
+		// 	return $server_experiments->unique('commands');
+		// })->collapse();
+
+		// return $this->respondWithCollection($experimentVersions, new AvailableExperimentTransformer);
 	}
 
 	public function queue(QueueExperimentRequest $request, $id)
 	{
-		$experiment = ServerExperiment::findOrFail($id);
+		$experiment = Experiment::findOrFail($id);
+		dd($experiment->servers);
 		$experimentService = new ExperimentService($experiment, $request->input());
 		$experimentService->queue();
 

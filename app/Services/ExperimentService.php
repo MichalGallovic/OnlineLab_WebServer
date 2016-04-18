@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
+use Modules\Experiments\Entities\Experiment;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Modules\Experiments\Jobs\RunExperimentJob;
-use Modules\Experiments\Entities\ServerExperiment;
 /**
 * Experiment Service
 */
@@ -12,12 +12,12 @@ class ExperimentService
 {
 	use DispatchesJobs;
 	
-	protected $experimentInstance;
+	protected $experiment;
 	protected $experimentInput;
 
-	public function __construct(ServerExperiment $experimentInstance, array $experimentInput)
+	public function __construct(Experiment $experiment, array $experimentInput)
 	{
-		$this->experimentInstance = $experimentInstance;
+		$this->experiment = $experiment;
 		$this->experimentInput = $experimentInput;
 	}
 
@@ -28,7 +28,7 @@ class ExperimentService
 
 	public function queue()
 	{
-		$this->dispatch(new RunExperimentJob($this->experimentInstance->server->ip, $this->experimentInput));
+		$this->dispatch(new RunExperimentJob($this->experiment, $this->experimentInput));
 	}
 
 

@@ -40,6 +40,31 @@
 					{!! $errors->first('colof', '<p class="help-block">:message</p>') !!}
 				</div>
 			</div>
+			<div class="form-group">
+				{!! Form::label("", "Deployed for", [ "class" => "control-label col-sm-3"]) !!}
+				<div class="col-sm-6">
+					<div class="btn-group" data-toggle="buttons">
+						@if($server->production)
+							<label class="btn btn-sm btn-warning">
+								<input type="radio" name="production" id="option1" autocomplete="off" value="0"> Testing
+							</label>
+						@else
+							<label class="btn btn-sm btn-warning active">
+								<input type="radio" name="production" id="option1" autocomplete="off" value="0" checked> Testing
+							</label>
+						@endif
+						@if($server->production)
+							<label class="btn btn-sm btn-warning active">
+								<input type="radio" name="production" id="option1" autocomplete="off" value="1" checked> Production
+							</label>
+						@else
+							<label class="btn btn-sm btn-warning">
+								<input type="radio" name="production" id="option1" autocomplete="off" value="1"> Production
+							</label>
+						@endif
+					</div>
+				</div>
+			</div>
 			<div class="col-lg-9">
 				<div class="form-group">
 					{!! Form::submit("Update Server", [ "class" => "btn btn-success pull-right" ]) !!}

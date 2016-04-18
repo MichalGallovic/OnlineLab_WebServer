@@ -19,6 +19,7 @@ class CreateExperimentServerTable extends Migration {
             $table->integer('server_id')->unsigned();
             $table->integer('experiment_id')->unsigned();
             $table->integer("instances")->default(0);
+            $table->integer("free_instances")->default(0);
 
             $table->text("commands")->nullable();
             $table->text("experiment_commands")->nullable();

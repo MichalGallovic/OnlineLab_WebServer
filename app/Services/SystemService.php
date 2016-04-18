@@ -131,6 +131,7 @@ class SystemService
 		$availableExperimentInstances->groupBy('id')->each(function($groupOfInstances, $key) {
 			$server_experiment = $groupOfInstances->first();
 			$server_experiment->instances = $groupOfInstances->count();
+			$server_experiment->free_instances = $groupOfInstances->count();
 			$server_experiment->save();
 		});
 	
