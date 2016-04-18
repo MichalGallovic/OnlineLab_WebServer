@@ -12,7 +12,7 @@
                     <td>{{ $experiment->device->name }}</td>
                     <td>{{ $experiment->software->name }}</td>
                     <td>
-                        @foreach($experiment->servers()->wherePivot('instances','>',0)->get() as $server)
+                        @foreach($experiment->servers()->hasExperiments()->get() as $server)
                             @if($server->available && !$server->disabled)
                                 @for($i = 0; $i < $server->pivot->instances; $i++)
                                     <span class="label" style="background-color: {{ $server->color }}">{{ $server->name }}</span>

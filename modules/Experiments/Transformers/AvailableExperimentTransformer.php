@@ -21,8 +21,8 @@ class AvailableExperimentTransformer extends TransformerAbstract
 
 	public function transform(Experiment $experiment)
 	{
-		$this->experimentInstance = ServerExperiment::where('experiment_id', $experiment->id)->first();
-		
+		$this->experimentInstance = ServerExperiment::hasExperiments()->where('experiment_id', $experiment->id)->first();
+
 		return [
 			"id"	=>	$experiment->id,
 			"device" 		=>	$experiment->device->name,

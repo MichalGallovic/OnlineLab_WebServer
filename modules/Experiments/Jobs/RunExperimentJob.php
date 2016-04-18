@@ -9,13 +9,17 @@ use App\Classes\ApplicationServer\Server;
 use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Modules\Experiments\Entities\Experiment;
-
+use Modules\Experiments\Entities\ServerExperiment;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 /**
 * Run experiment job
 */
 class RunExperimentJob extends Job implements SelfHandling, ShouldQueue
 {
-    use InteractsWithQueue, SerializesModels;
+    use InteractsWithQueue, SerializesModels, DispatchesJobs;
+
+    protected $experiment;
+    protected $input;
 
     /**
      * Create a new job instance.
@@ -44,6 +48,11 @@ class RunExperimentJob extends Job implements SelfHandling, ShouldQueue
      	$server = new Server($availableServer->ip);
      	$server->queueExperiment($this->input);
 
+        $serverExperiment = ServerExperiment::where('server_id', $availableServer->id)
+        ->where('experiment_id', $this->experiment->id)->first();
+
+        $serverExperiment->free_instances = $serverExperiment->free_instances - 1;
+        $serverExperiment->save();
     }
 
 }

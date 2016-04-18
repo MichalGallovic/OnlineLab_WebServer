@@ -137,6 +137,7 @@ class SystemService
 	
 		ServerExperiment::all()->diff($availableExperimentInstances)->each(function($server_experiment) {
 			$server_experiment->instances = 0;
+			$server_experiment->free_instances = 0;
 			$server_experiment->save();
 		});		
 

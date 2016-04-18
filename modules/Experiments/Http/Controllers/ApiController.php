@@ -28,7 +28,7 @@ class ApiController extends ApiBaseController {
 	public function queue(QueueExperimentRequest $request, $id)
 	{
 		$experiment = Experiment::findOrFail($id);
-		dd($experiment->servers);
+		
 		$experimentService = new ExperimentService($experiment, $request->input());
 		$experimentService->queue();
 

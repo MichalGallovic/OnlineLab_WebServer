@@ -23,4 +23,9 @@ class ServerExperiment extends Model {
     	return $this->belongsTo(Server::class);
     }
 
+    public function scopeHasExperiments($query)
+    {
+        return $this->where('instances','>',0);
+    }
+
 }

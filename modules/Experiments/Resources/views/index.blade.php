@@ -16,10 +16,19 @@
 	<div class="panel panel-primary">
 		<div class="panel-heading">
 			<div class="clearfix">
+				<h3 class="panel-title pull-left">Admin experiments</h3>
+			</div>
+		</div>
+		@include("experiments::experiments.partials.admin_index",['experiments' => $experiments])
+	</div>
+
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<div class="clearfix">
 				<h3 class="panel-title pull-left">User experiments</h3>
 			</div>
 		</div>
-		@include("experiments::experiments.partials.index")
+		@include("experiments::experiments.partials.user_index",['experiments' => $experiments])
 	</div>
 
 	<h3>Dávkové experimenty</h3>
