@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use App\Repositories\ServersRepository;
 use Modules\Experiments\Entities\Device;
 use Modules\Experiments\Entities\Server;
@@ -99,7 +100,12 @@ class SystemService
 
 
 		$availableExperimentInstances = new Collection();
-
+		
+		// $server_experiments = ServerExperiment::all();
+		// foreach ($server_experiments as $server_experiment) {
+		// 	$server_experiment->free_instances = 0;
+		// }
+		
 		foreach ($experimentInstances as $ip => $serverExperiments) {
 			foreach ($serverExperiments as $experiment) {
 
@@ -113,15 +119,25 @@ class SystemService
 				})->first();
 				
 
-
 				$server_experiment = ServerExperiment::where("experiment_id",$webServerExperiment->id)->firstOrCreate([
 						"server_id"	=>	$server->id,
 						"experiment_id"	=>	$webServerExperiment->id
 					]);
 
+				// $server_experiment = $server_experiments->where("experiment_id",$webServerExperiment->id)->first();
+
+				// if(!$server_experiment) {
+				// 	$server_experiment = ServerExperiment::create([
+				// 			"server_id"	=>	$server->id,
+				// 			"experiment_id"	=>	$webServerExperiment->id
+				// 	]);
+				// }
+
 				$server_experiment->commands = Arr::get($experiment,"input_arguments.data");
 				$server_experiment->output_arguments = Arr::get($experiment,"output_arguments.data");
 				$server_experiment->experiment_commands = Arr::get($experiment,"experiment_commands.data");
+				$server_experiment->free_instances += Arr::get($experiment,"connected") ? 1 : 0;
+				
 				$server_experiment->save();
 
 				$availableExperimentInstances->push($server_experiment);
@@ -131,7 +147,7 @@ class SystemService
 		$availableExperimentInstances->groupBy('id')->each(function($groupOfInstances, $key) {
 			$server_experiment = $groupOfInstances->first();
 			$server_experiment->instances = $groupOfInstances->count();
-			$server_experiment->free_instances = $groupOfInstances->count();
+			// $server_experiment->free_instances = $groupOfInstances->where('connected',true)->count();
 			$server_experiment->save();
 		});
 	

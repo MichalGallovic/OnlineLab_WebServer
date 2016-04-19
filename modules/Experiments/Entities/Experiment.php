@@ -29,4 +29,18 @@ class Experiment extends Model {
         });
     }
 
+    public function scopeOfDevice($query, $device)
+    {
+        return $query->whereHas('device', function($q) use ($device) {
+            $q->where('name', $device);
+        });
+    }
+
+    public function scopeOfSoftware($query, $software)
+    {
+        return $query->whereHas('software', function($q) use ($software) {
+            $q->where('name', $software);
+        });
+    }
+
 }
