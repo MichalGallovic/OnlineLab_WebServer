@@ -15,7 +15,7 @@ class ExperimentService
 	protected $experiment;
 	protected $experimentInput;
 
-	public function __construct(Experiment $experiment, array $experimentInput)
+	public function __construct(Experiment $experiment, array $experimentInput = [])
 	{
 		$this->experiment = $experiment;
 		$this->experimentInput = $experimentInput;

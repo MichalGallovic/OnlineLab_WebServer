@@ -7,6 +7,7 @@ use App\Http\Controllers\ApiBaseController;
 use Modules\Experiments\Entities\Experiment;
 use Modules\Experiments\Entities\ServerExperiment;
 use Modules\Experiments\Http\Requests\QueueExperimentRequest;
+use Modules\Experiments\Http\Requests\ServerExperimentStatusRequest;
 use Modules\Experiments\Transformers\AvailableExperimentTransformer;
 
 class ApiController extends ApiBaseController {
@@ -28,11 +29,22 @@ class ApiController extends ApiBaseController {
 	public function queue(QueueExperimentRequest $request, $id)
 	{
 		$experiment = Experiment::findOrFail($id);
-		
+
 		$experimentService = new ExperimentService($experiment, $request->input());
 		$experimentService->queue();
 
 		return $this->respondWithSuccess("Experiment queued!");
+	}
+
+	public function updateExperimentStatus(ServerExperimentStatusRequest $request)
+	{
+		$experiment = Experiment::ofDevice($request->input("device"))
+		->ofSoftware($request->input("software"))->first();
+
+		// $experimentService = new ExperimentService($experiment);
+		// $system->updateServerExperiment($request);
+		
+
 	}
 	
 }
