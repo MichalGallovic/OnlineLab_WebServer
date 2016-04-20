@@ -95,5 +95,6 @@ Route::get('test/data', function() {
     //         ]
     //     ]);
     // dd($res);
-    $experiments = Experiment::ofDevice("tos1a")->ofSoftware("openloop")->get();
+    $instance = ServerExperiment::availableForExperiment()->ofInstance()->get();
+    dd($instance);
 });

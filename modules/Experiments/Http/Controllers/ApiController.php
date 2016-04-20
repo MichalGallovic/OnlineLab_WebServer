@@ -29,7 +29,6 @@ class ApiController extends ApiBaseController {
 	public function queue(QueueExperimentRequest $request, $id)
 	{
 		$experiment = Experiment::findOrFail($id);
-
 		$experimentService = new ExperimentService($experiment, $request->input());
 		$experimentService->queue();
 
@@ -39,7 +38,7 @@ class ApiController extends ApiBaseController {
 	public function updateStatus(ServerExperimentStatusRequest $request)
 	{
 		dd($request->ip());
-		$experiment = Experiment::ofDevice($request->input("device"))
+		$experiment = ServerExperiment::ofDevice($request->input("device"))
 		->ofSoftware($request->input("software"))->first();
 
 		// $experimentService = new ExperimentService($experiment);

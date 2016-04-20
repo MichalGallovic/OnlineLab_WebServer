@@ -20,7 +20,8 @@ Vue.config.devtools = true;
     		},
     		values: [],
     		name : null,
-    		command: null
+    		command: null,
+            default: null
     	},
     	data: function() {
     		return {
@@ -28,17 +29,24 @@ Vue.config.devtools = true;
     		}
     	},
     	ready: function() {
-    		if(this.type == "checkbox") {
-    			this.input = [];
-    		}
-    		if(this.type == "select") {
-    			this.input = this.values[0];
-    		}
 
-    		if(this.type == "radio") {
-    			this.input = this.values[0];
-    		}
     	},
+        watch : {
+            values : function(val, oldVal) {
+                if(this.default != "none") {
+                    if(this.type == "checkbox") {
+                        this.input = [];
+                    }
+                    if(this.type == "select") {
+                        this.input = this.values[0];
+                    }
+
+                    if(this.type == "radio") {
+                        this.input = this.values[0];
+                    }
+                }
+            }
+        },
     	methods : {
     		getInputValues: function() {
     			var me = this;
@@ -88,6 +96,7 @@ Vue.config.devtools = true;
 		ready: function() {
 			var me = this;
 			this.getExperiments().done(function(response) {
+
 				me.experiments = response.data.map(function(experiment) {
 					experiment.commands = experiment.commands.data;
 					experiment.experiment_commands = experiment.experiment_commands.data;
@@ -121,12 +130,19 @@ Vue.config.devtools = true;
 					software: this.selectedExperiment.software,
 					input: {}
 				};
+
 				$.each(this.selectedExperiment.experiment_commands, function(index, command) {
 					request.input[command] = {};
 				});
 				$.each(inputs, function(index, input) {
 
-					request.input[input.command][input.name] = input.value;
+                    if(input.command) {
+                        request.input[input.command][input.name] = input.value;
+                    } else {
+                        if(input.name == "instance") {
+                            request.instance = input.value;
+                        }
+                    }
 				});
 
 				return request;

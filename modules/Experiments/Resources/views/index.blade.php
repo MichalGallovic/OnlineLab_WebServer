@@ -19,7 +19,7 @@
 				<h3 class="panel-title pull-left">Admin experiments</h3>
 			</div>
 		</div>
-		@include("experiments::experiments.partials.admin_index",['experiments' => $experiments])
+		@include("experiments::experiments.partials.admin_index",['experiments' => $experiments, 'experimentInstances' => $adminExperimentInstances])
 	</div>
 
 	<div class="panel panel-primary">
@@ -28,7 +28,7 @@
 				<h3 class="panel-title pull-left">User experiments</h3>
 			</div>
 		</div>
-		@include("experiments::experiments.partials.user_index",['experiments' => $experiments])
+		@include("experiments::experiments.partials.user_index",['experiments' => $experiments, 'experimentInstances' => $experimentInstances])
 	</div>
 
 	<h3>Dávkové experimenty</h3>
@@ -41,6 +41,16 @@
 					<select v-model="selectedExperiment" class="form-control">
 						<option v-for='experiment in experiments' v-bind:value="experiment">@{{ experiment.device }} - @{{ experiment.software }}</option>
 					</select>
+				</div>
+				<div class="form-group" v-show="experiments && selectedExperiment">
+					<olm-input
+					label="Run on instance"
+					name="instance"
+					type="radio"
+					default="none"
+					:values="selectedExperiment.instances"
+					>
+					</olm-input>
 				</div>
 				<div class="form-group" v-for="commandName in selectedExperiment.experiment_commands">
 					<span 

@@ -23,9 +23,23 @@ class ServerExperiment extends Model {
     	return $this->belongsTo(Server::class);
     }
 
-    public function scopeHasExperiments($query)
+    public function scopeAvailable($query)
     {
-        return $this->where('instances','>',0);
+        return $query->where('status','!=',"offline")->whereHas('server', function($q) {
+            $q->available();
+        });
+    }
+
+    public function scopeAvailableForExperiment($query)
+    {
+        return $query->where('status','=',"ready")->whereHas('server', function($q) {
+            $q->available();
+        });
+    }
+
+    public function scopeOfInstance($query, $instanceName)
+    {
+        return $query->where('device_name', $instanceName);
     }
 
 }
