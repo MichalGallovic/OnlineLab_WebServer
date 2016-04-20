@@ -13,7 +13,7 @@ class Server extends Model {
 
     public function experiments()
     {
-    	return $this->belongsToMany(Experiment::class)->withPivot('instances');
+    	return $this->belongsToMany(Experiment::class);
     }
 
     public function scopeAvailable($query)
@@ -29,9 +29,9 @@ class Server extends Model {
         return $query->has('experiments');
     }
 
-    public function scopeFreeExperiment($query)
+    public function scopeHasInstances($query, $instanceName)
     {
-        return $query->where("experiment_server.free_instances",'>',0);
+        return $query->where("experiment_server.device_name", $instanceName);
     }
 
 }

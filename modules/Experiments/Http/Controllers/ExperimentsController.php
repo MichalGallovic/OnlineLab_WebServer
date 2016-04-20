@@ -5,14 +5,12 @@ use Illuminate\Http\Request;
 use App\Services\SystemService;
 use Illuminate\Support\Collection;
 use Modules\Experiments\Entities\Device;
+use Modules\Experiments\Entities\Server;
 use Pingpong\Modules\Routing\Controller;
-use App\Classes\ApplicationServer\Server;
-use App\Classes\ApplicationServer\System;
 use Modules\Experiments\Entities\Software;
 use Modules\Experiments\Entities\Experiment;
 use Modules\Experiments\Entities\ServerExperiment;
 use Modules\Experiments\Http\Requests\ServerRequest;
-use Modules\Experiments\Entities\Server as ServerModel;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 
@@ -20,9 +18,11 @@ class ExperimentsController extends Controller {
 	
 	public function index()
 	{
-		$servers = ServerModel::all();
+		$servers = Server::all();
 		$experiments = Experiment::available()->get();
+		$experimentInstances = ServerExperiment::available()->get();
+		$adminExperimentInstances = ServerExperiment::all();
 
-		return view('experiments::index', compact('servers', 'experiments'));
+		return view('experiments::index', compact('servers', 'experiments','experimentInstances','adminExperimentInstances'));
 	}
 }

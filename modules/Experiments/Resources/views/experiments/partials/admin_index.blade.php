@@ -12,15 +12,11 @@
                     <td>{{ $experiment->device->name }}</td>
                     <td>{{ $experiment->software->name }}</td>
                     <td>
-                        @foreach($experiment->servers()->hasExperiments()->get() as $server)
-                            @if($server->available && !$server->disabled)
-                                @for($i = 0; $i < $server->pivot->instances; $i++)
-                                    <span class="label" style="background-color: {{ $server->color }}">{{ $server->name }}</span>
-                                @endfor
+                        @foreach($experimentInstances->where('experiment_id',$experiment->id) as $instance)
+                            @if($instance->server->available && !$instance->server->disabled)
+                                <span class="label" style="background-color: {{ $instance->server->color }}">{{ $instance->server->name }}</span>
                             @else
-                                @for($i = 0; $i < $server->pivot->instances; $i++)
-                                    <span class="label label-danger">{{ $server->name }}</span>
-                                @endfor
+                                <span class="label label-danger">{{ $instance->server->name }}</span>
                             @endif
                         @endforeach
                     </td>

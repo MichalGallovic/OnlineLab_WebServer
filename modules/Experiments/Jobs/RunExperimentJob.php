@@ -3,6 +3,7 @@
 namespace Modules\Experiments\Jobs;
 
 use App\Jobs\Job;
+use Illuminate\Support\Arr;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use App\Classes\ApplicationServer\Server;
@@ -41,17 +42,20 @@ class RunExperimentJob extends Job implements SelfHandling, ShouldQueue
     public function handle()
     {
         var_dump($this->experiment->device->name . " " . $this->experiment->software->name . " queued!");
-        $availableServer = $this->experiment->servers()->available()->freeExperiment()->first();
+        $instanceName = Arr::get($this->input,"instance");
 
-        if($availableServer) {
-            $server = new Server($availableServer->ip);
+        if($instanceName) {
+            $instance = ServerExperiment::availableForExperiment()->ofInstance($instanceName)->first();
+        } else {
+            $instance = ServerExperiment::availableForExperiment()->first();
+        }
+
+        if($instance) {
+            $server = new Server($instance->server->ip);
             $server->queueExperiment($this->input);
 
-            $serverExperiment = ServerExperiment::where('server_id', $availableServer->id)
-            ->where('experiment_id', $this->experiment->id)->first();
-
-            $serverExperiment->free_instances = $serverExperiment->free_instances - 1;
-            $serverExperiment->save();
+            $instance->status = "experimenting";
+            $instance->save();
         } else {
             $job = (new RunExperimentJob($this->experiment, $this->input))->delay(5);
             $this->dispatch($job);
