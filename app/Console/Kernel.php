@@ -4,7 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-
+use App\Console\Commands\OlmMigrateRefresh;
 class Kernel extends ConsoleKernel
 {
     /**
@@ -14,8 +14,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         \App\Console\Commands\Inspire::class,
-        \App\Console\Commands\RewriteOldModules::class,
-        \App\Console\Commands\RedisSubscribe::class
+        \App\Console\Commands\RedisSubscribe::class,
+        OlmMigrateRefresh::class
     ];
 
     /**

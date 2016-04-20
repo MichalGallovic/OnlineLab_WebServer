@@ -2,10 +2,14 @@
    
 use Illuminate\Database\Eloquent\Model;
 use Modules\Experiments\Entities\Experiment;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Server extends Model {
-
+    
+    use SoftDeletes;
+    
     protected $fillable = ["name","ip","port","color", "production"];
+    protected $dates = ["deleted_at"];
 
     public function experiments()
     {
