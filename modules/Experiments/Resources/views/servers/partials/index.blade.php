@@ -42,7 +42,11 @@
                             <span class="label label-warning">testing</span>
                         @endif
                     </td>
-                    <td>{{ $server->sumExperimentInstances() }}</td>
+                    <td>
+                        @foreach($server->experiments as $experiment)
+                            {{ $experiment->device->name }} - {{ $experiment->software->name }}
+                        @endforeach
+                    </td>
                     <td class="col-md-1">
                         <a href="{{ route("servers.edit", $server->id) }}" class="btn btn-xs btn-warning btn-block"><i class="glyphicon glyphicon-edit"></i> Edit</a>
                     </td>

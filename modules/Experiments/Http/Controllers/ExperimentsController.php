@@ -23,8 +23,6 @@ class ExperimentsController extends Controller {
 		$servers = ServerModel::all();
 		$experiments = Experiment::available()->get();
 
-		// dd($experiments);
-
 		return view('experiments::index', compact('servers', 'experiments'));
 	}
 }

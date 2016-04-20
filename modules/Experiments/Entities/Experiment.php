@@ -25,7 +25,7 @@ class Experiment extends Model {
     public function scopeAvailable($query)
     {
         return $query->where('available', true)->whereHas('servers', function($query) {
-            $query->available()->hasExperiments();
+            $query->available();
         });
     }
 
