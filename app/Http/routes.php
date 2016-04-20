@@ -95,6 +95,7 @@ Route::get('test/data', function() {
     //         ]
     //     ]);
     // dd($res);
-    $instance = ServerExperiment::availableForExperiment()->ofInstance()->get();
-    dd($instance);
+    $instance = ServerExperiment::first();
+    $report = new App\Services\ReportService();
+    $report->create($instance,["hee"]);
 });

@@ -33,7 +33,7 @@ Vue.config.devtools = true;
     	},
         watch : {
             values : function(val, oldVal) {
-                if(this.default != "none") {
+                if(this.default != "none" || this.values.length == 1) {
                     if(this.type == "checkbox") {
                         this.input = [];
                     }

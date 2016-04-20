@@ -4,6 +4,7 @@ namespace Modules\Experiments\Jobs;
 
 use App\Jobs\Job;
 use Illuminate\Support\Arr;
+use App\Services\ReportService;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use App\Classes\ApplicationServer\Server;
@@ -51,6 +52,12 @@ class RunExperimentJob extends Job implements SelfHandling, ShouldQueue
         }
 
         if($instance) {
+            $report = new ReportService();
+            $reportId = $report->create($instance, $this->input);
+            $this->input = array_merge($this->input, [
+                    "report_id" => $reportId
+                ]);
+
             $server = new Server($instance->server->ip);
             $server->queueExperiment($this->input);
 
