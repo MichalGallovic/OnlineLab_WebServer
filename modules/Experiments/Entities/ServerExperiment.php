@@ -23,6 +23,11 @@ class ServerExperiment extends Model {
     	return $this->belongsTo(Server::class);
     }
 
+    public function offline()
+    {
+        return $this->status == "offline";
+    }
+
     public function scopeAvailable($query)
     {
         return $query->where('status','!=',"offline")->whereHas('server', function($q) {

@@ -13,7 +13,7 @@
                     <td>{{ $experiment->software->name }}</td>
                     <td>
                         @foreach($experimentInstances->where('experiment_id',$experiment->id) as $instance)
-                            @if($instance->server->available && !$instance->server->disabled)
+                            @if($instance->server->available && !$instance->server->disabled && !$instance->offline())
                                 <span class="label" style="background-color: {{ $instance->server->color }}">{{ $instance->server->name }}</span>
                             @else
                                 <span class="label label-danger">{{ $instance->server->name }}</span>
