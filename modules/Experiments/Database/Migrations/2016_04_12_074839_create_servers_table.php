@@ -26,6 +26,7 @@ class CreateServersTable extends Migration {
             $table->boolean("queue")->default(false);
             $table->boolean("redis")->default(false);
             $table->string('color')->default("#009051");
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -36,8 +36,9 @@ class ApiController extends ApiBaseController {
 		return $this->respondWithSuccess("Experiment queued!");
 	}
 
-	public function updateExperimentStatus(ServerExperimentStatusRequest $request)
+	public function updateStatus(ServerExperimentStatusRequest $request)
 	{
+		dd($request->ip());
 		$experiment = Experiment::ofDevice($request->input("device"))
 		->ofSoftware($request->input("software"))->first();
 
