@@ -45,6 +45,7 @@ class System
 		foreach ($experiments as $experiment) {
 			unset($experiment["ip"]);
 			unset($experiment["id"]);
+			unset($experiment["device_name"]);
 			$unique->push($experiment);
 		}
 

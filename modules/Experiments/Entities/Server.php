@@ -16,16 +16,6 @@ class Server extends Model {
     	return $this->belongsToMany(Experiment::class)->withPivot('instances');
     }
 
-    public function sumExperimentInstances()
-    {	
-    	$experiments = $this->experiments;
-    	$count = 0;
-    	foreach ($experiments as $experiment) {
-    		$count += $experiment->pivot->instances;
-    	}
-    	return $count;
-    }
-
     public function scopeAvailable($query)
     {
         return $query->where('production', true)
@@ -36,7 +26,7 @@ class Server extends Model {
 
     public function scopeHasExperiments($query)
     {
-        return $query->where('experiment_server.instances','>',0);
+        return $query->has('experiments');
     }
 
     public function scopeFreeExperiment($query)

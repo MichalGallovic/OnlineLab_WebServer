@@ -15,25 +15,17 @@ class CreateReportsTable extends Migration {
         Schema::create('reports', function(Blueprint $table)
         {
             $table->increments('id');
-            $table->integer('server_id')->unsigned();
-            $table->integer('experiment_id')->unsigned();
-            $table->string("device_name");
+            $table->integer('experiment_server_id')->unsigned();
 
             $table->text('input')->nullable();
             $table->text('output')->nullable();
             $table->text("notes")->nullable();
 
-            $table->foreign("server_id")
+            $table->foreign("experiment_server_id")
             ->references('id')
-            ->on("server_id")
+            ->on("experiment_server")
             ->onUpdate('cascade')
             ->onDelete('cascade');
-
-            $table->foreing("experiment_id")
-            ->references("id")
-            ->on("experiment_id")
-            ->onUpdate("cascade")
-            ->onDelete("cascade");
 
             $table->timestamps();
         });

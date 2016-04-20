@@ -6,7 +6,7 @@ use Modules\Experiments\Entities\Experiment;
 class ServerExperiment extends Model {
 
 	protected $table = "experiment_server";
-    protected $fillable = ["server_id","experiment_id"];
+    protected $fillable = ["server_id","experiment_id","device_name"];
     protected $casts = [
     	"commands" => "array",
     	"experiment_commands" => "array",

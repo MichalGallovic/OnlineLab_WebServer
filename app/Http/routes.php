@@ -96,5 +96,4 @@ Route::get('test/data', function() {
     //     ]);
     // dd($res);
     $experiments = Experiment::ofDevice("tos1a")->ofSoftware("openloop")->get();
-    dd($experiments);
 });

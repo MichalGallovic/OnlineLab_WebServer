@@ -98,14 +98,8 @@ class SystemService
 		$experiments = Experiment::all();
 		$experimentInstances = $this->system->experiments()->groupBy('ip');
 
-
 		$availableExperimentInstances = new Collection();
-		
-		$server_experiments = ServerExperiment::all();
-		foreach ($server_experiments as $server_experiment) {
-			$server_experiment->free_instances = 0;
-		}
-		
+				
 		foreach ($experimentInstances as $ip => $serverExperiments) {
 			foreach ($serverExperiments as $experiment) {
 
@@ -119,46 +113,27 @@ class SystemService
 				})->first();
 				
 
-				// $server_experiment = ServerExperiment::where("experiment_id",$webServerExperiment->id)->firstOrCreate([
-				// 		"server_id"	=>	$server->id,
-				// 		"experiment_id"	=>	$webServerExperiment->id
-				// 	]);
-
-				$server_experiment = $server_experiments->where("experiment_id",$webServerExperiment->id)
-				->where('server_id',$server->id)->first();
-
-
-				if(!$server_experiment) {
-					$server_experiment = ServerExperiment::create([
-							"server_id"	=>	$server->id,
-							"experiment_id"	=>	$webServerExperiment->id
+				$device_name = Arr::get($experiment,"device_name",str_random(5));
+				$server_experiment = ServerExperiment::where("experiment_id",$webServerExperiment->id)
+				->where("server_id",$server->id)->where("device_name",$device_name)->firstOrCreate([
+						"server_id"	=>	$server->id,
+						"experiment_id"	=>	$webServerExperiment->id,
+						"device_name"	=>	$device_name
 					]);
-				}
 
 				$server_experiment->commands = Arr::get($experiment,"input_arguments.data");
 				$server_experiment->output_arguments = Arr::get($experiment,"output_arguments.data");
 				$server_experiment->experiment_commands = Arr::get($experiment,"experiment_commands.data");
-				$server_experiment->free_instances += Arr::get($experiment,"connected") ? 1 : 0;
-
+				$server_experiment->status = Arr::get($experiment,"status");
 				$server_experiment->save();
 
 				$availableExperimentInstances->push($server_experiment);
 			}
 		}
-
-		$availableExperimentInstances->groupBy('id')->each(function($groupOfInstances, $key) {
-			$server_experiment = $groupOfInstances->first();
-			$server_experiment->instances = $groupOfInstances->count();
-			// $server_experiment->free_instances = $groupOfInstances->where('connected',true)->count();
-			$server_experiment->save();
-		});
 	
 		ServerExperiment::all()->diff($availableExperimentInstances)->each(function($server_experiment) {
-			$server_experiment->instances = 0;
-			$server_experiment->free_instances = 0;
-			$server_experiment->save();
+			$server_experiment->status = "offline";
 		});		
-
 
 		$this->updateAvailability();
 	}

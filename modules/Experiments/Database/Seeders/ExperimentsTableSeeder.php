@@ -38,7 +38,7 @@ class ExperimentsTableSeeder extends Seeder {
 
 		Server::create([
 			"name"	=>	"s2",
-			"ip"	=>	"192.168.100.110",
+			"ip"	=>	"192.168.100.200",
 			"port"	=>	"80"
 		]);
 
