@@ -28,13 +28,11 @@ class CreateExperimentServerTable extends Migration {
             $table->foreign('server_id')
             ->references('id')
             ->on('servers')
-            ->onDelete('cascade')
             ->onUpdate('cascade');
 
             $table->foreign('experiment_id')
             ->references('id')
             ->on('experiments')
-            ->onDelete('cascade')
             ->onUpdate('cascade');
 
             $table->timestamps();

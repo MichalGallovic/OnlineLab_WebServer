@@ -22,13 +22,11 @@ class CreateExperimentsTable extends Migration {
             $table->foreign('device_id')
             ->references('id')
             ->on('devices')
-            ->onDelete('cascade')
             ->onUpdate('cascade');
             
             $table->foreign('software_id')
             ->references('id')
             ->on('softwares')
-            ->onDelete('cascade')
             ->onUpdate('cascade');
 
             $table->timestamps();

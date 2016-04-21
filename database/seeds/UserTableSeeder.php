@@ -1,7 +1,9 @@
 <?php
 
-use Illuminate\Database\Seeder;
 use App\User;
+use App\Account;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class UserTableSeeder extends Seeder
 {
@@ -12,21 +14,35 @@ class UserTableSeeder extends Seeder
      */
     public function run()
     {
-        //$admin = AccountType::where('name','admin')->first();
-        //$user->role()->associate($admin);
+        $admin = User::create([
+            "name"      =>  "Admin",
+            "role"      =>  "admin"
+        ]);
 
-        $user = new User;
-        $user->name = "Matej";
-        $user->surname = "Rábek";
-        $user->role = "admin";
+        $adminAccount = Account::create([
+            "user_id"   =>  $admin->id,
+            "type"      =>  "local",
+            "email"     =>  "admin@example.com",
+            "password"  =>  Hash::make("123123")
+        ]);
+        
+        $users = [
+            ["name" => "Elon", "surname" => "Musk"],
+            ["name" => "Casey","surname" => "Neistat"],
+            ["name" => "Conor","surname" => "McGregor"],
+        ];
 
-        //$user->password = Hash::make('tok3rAt9');
-        //$user->login = "admin";
-        //$user->email = "admin@example.com";
-        $user->language_code = 'sk';
-
-
-        $user->save();
-
+        foreach ($users as $index => $user) {
+            $user = User::create([
+                "name"      =>  $user["name"],
+                "surname"   =>  $user["surname"]
+            ]);
+            Account::create([
+                "user_id"   =>  $user->id,
+                "type"      =>  "local",
+                "email"     =>  "user".($index+1)."@example.com",
+                "password"  =>  Hash::make("123123")
+            ]);
+        }
     }
 }

@@ -16,16 +16,24 @@ class CreateReportsTable extends Migration {
         {
             $table->increments('id');
             $table->integer('experiment_server_id')->unsigned();
+            $table->integer('user_id')->unsigned()->nullable();
 
             $table->text('input')->nullable();
             $table->text('output')->nullable();
             $table->text("notes")->nullable();
+            $table->integer("simulation_time")->nullable();
+            $table->integer("sampling_rate")->nullable();
+            $table->boolean("filled")->default(false);
 
             $table->foreign("experiment_server_id")
             ->references('id')
             ->on("experiment_server")
-            ->onUpdate('cascade')
-            ->onDelete('cascade');
+            ->onUpdate('cascade');
+
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onUpdate('cascade');
 
             $table->timestamps();
         });
