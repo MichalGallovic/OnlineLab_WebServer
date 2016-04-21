@@ -14,7 +14,11 @@ class ApiController extends ApiBaseController {
 		try {
 			$report = Report::findOrFail($id);
 			$reportService = new ReportService($report);
-			$reportService->update($request->input('report'), $id);
+			$reportService->update(
+				$request->input('report'), 
+				$request->input("simulation_time"),
+				$request->input("sampling_rate")
+				);
 
 		} catch(ModelNotFoundException $e) {
 			return $this->errorNotFound("Report not found!");

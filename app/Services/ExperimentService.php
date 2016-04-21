@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Auth;
 use Modules\Experiments\Entities\Experiment;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Modules\Experiments\Jobs\RunExperimentJob;
@@ -19,6 +20,7 @@ class ExperimentService
 	{
 		$this->experiment = $experiment;
 		$this->experimentInput = $experimentInput;
+		$this->user = Auth::user()->user;
 	}
 
 	public function run()
@@ -28,7 +30,7 @@ class ExperimentService
 
 	public function queue()
 	{
-		$this->dispatch(new RunExperimentJob($this->experiment, $this->experimentInput));
+		$this->dispatch(new RunExperimentJob($this->user, $this->experiment, $this->experimentInput));
 	}
 
 

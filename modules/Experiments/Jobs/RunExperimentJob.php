@@ -2,6 +2,7 @@
 
 namespace Modules\Experiments\Jobs;
 
+use App\User;
 use App\Jobs\Job;
 use Illuminate\Support\Arr;
 use App\Services\ReportService;
@@ -23,16 +24,18 @@ class RunExperimentJob extends Job implements SelfHandling, ShouldQueue
 
     protected $experiment;
     protected $input;
+    protected $user;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(Experiment $experiment, array $input)
+    public function __construct(User $user, Experiment $experiment, array $input)
     {
     	$this->experiment = $experiment;
         $this->input = $input;
+        $this->user = $user;
     }
 
     /**
@@ -53,7 +56,7 @@ class RunExperimentJob extends Job implements SelfHandling, ShouldQueue
 
         if($instance) {
             $report = new ReportService();
-            $reportId = $report->create($instance, $this->input);
+            $reportId = $report->create($this->user, $instance, $this->input);
             $this->input = array_merge($this->input, [
                     "report_id" => $reportId
                 ]);
