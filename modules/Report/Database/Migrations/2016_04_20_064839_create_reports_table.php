@@ -16,7 +16,7 @@ class CreateReportsTable extends Migration {
         {
             $table->increments('id');
             $table->integer('experiment_server_id')->unsigned();
-            $table->integer('user_id')->unsigned()->nullable();
+            $table->integer('user_id')->unsigned();
 
             $table->text('input')->nullable();
             $table->text('output')->nullable();
