@@ -95,5 +95,6 @@ Route::get('test/data', function() {
     //         ]
     //     ]);
     // dd($res);
-
+    $experiments = Experiment::join('experiment_server','experiments.id','=','experiment_server.experiment_id')->available()->where('status','!=','offline')->get();
+    dd($experiments->toArray());
 });

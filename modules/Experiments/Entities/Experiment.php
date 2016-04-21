@@ -24,9 +24,10 @@ class Experiment extends Model {
 
     public function scopeAvailable($query)
     {
-        return $query->where('available', true)->whereHas('servers', function($query) {
+        return $query->join('experiment_server','experiments.id','=','experiment_server.experiment_id')
+        ->where('available', true)->whereHas('servers', function($query) {
             $query->available();
-        });
+        })->where('status','!=','offline');
     }
 
     public function scopeOfDevice($query, $device)

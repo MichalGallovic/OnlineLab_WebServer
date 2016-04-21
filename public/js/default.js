@@ -52,17 +52,17 @@ $(document).ready(function(){
 
 	
 	
-	//registracia
-	$("#register-form-holder").dialog({
-			autoOpen: false,
-			width: 336,
-			modal: true,
-			position: ['center', 'center'],
-			draggable: false,
-			dialogClass: 'login-dialog'
-			//buttons: {}
+	// //registracia
+	// $("#register-form-holder").dialog({
+	// 		autoOpen: false,
+	// 		width: 336,
+	// 		modal: true,
+	// 		position: ['center', 'center'],
+	// 		draggable: false,
+	// 		dialogClass: 'login-dialog'
+	// 		//buttons: {}
 			
-		});
+	// 	});
 	
 	$(".register-btn").click(function(){
 	 	$("#register-form-holder").dialog("open"); 
@@ -73,70 +73,70 @@ $(document).ready(function(){
 	});
 	
 	//pracovna plocha -nastavenia - plavajuce okna
-	$( "#dashboard-settings .default-box" ).draggable({ 
-		containment: "#containment-wrapper",
-		stack: "#dashboard-settings .default-box",
-		opacity:0.7,
-		stop: function(event, ui) { 
-					var position = $(this).position();
-					var currentId = $(this).attr('id');
-					/*nazbiereanie vsetkych z indexov*/
-					var all_zindex = new Array();
-					var zindexObject = new Object; 
-					$("#dashboard-settings .default-box").each(function() {
-						var modul = $(this).attr('id');
-						zindexObject[modul] = parseInt($(this).css("zIndex"), 10);
-					});
+	// $( "#dashboard-settings .default-box" ).draggable({ 
+	// 	containment: "#containment-wrapper",
+	// 	stack: "#dashboard-settings .default-box",
+	// 	opacity:0.7,
+	// 	stop: function(event, ui) { 
+	// 				var position = $(this).position();
+	// 				var currentId = $(this).attr('id');
+	// 				/*nazbiereanie vsetkych z indexov*/
+	// 				var all_zindex = new Array();
+	// 				var zindexObject = new Object; 
+	// 				$("#dashboard-settings .default-box").each(function() {
+	// 					var modul = $(this).attr('id');
+	// 					zindexObject[modul] = parseInt($(this).css("zIndex"), 10);
+	// 				});
 					
-					//alert(JSON.stringify(zindexObject));
+	// 				//alert(JSON.stringify(zindexObject));
 					
-					var postString = 'left=' + position.left + '&element=' + currentId + '&top=' + position.top + '&action=updateChartPosition';
-					$.post(ROOT_PATH + "ajax.php", postString, function(theResponse){});
-					var postString = 'zindex=' + JSON.stringify(zindexObject) + '&action=updateZindex';
-					$.post(ROOT_PATH + "ajax.php", postString, function(theResponse){});
-				}
-	});
+	// 				var postString = 'left=' + position.left + '&element=' + currentId + '&top=' + position.top + '&action=updateChartPosition';
+	// 				$.post(ROOT_PATH + "ajax.php", postString, function(theResponse){});
+	// 				var postString = 'zindex=' + JSON.stringify(zindexObject) + '&action=updateZindex';
+	// 				$.post(ROOT_PATH + "ajax.php", postString, function(theResponse){});
+	// 			}
+	// });
 	
-	//pracovna plocha - plavajuce okna
-	$( "#dashboard .default-box" ).draggable({ 
-		containment: "#containment-wrapper",
-		stack: "#dashboard .default-box",
-		opacity:0.7,
-		handle: "div.header",
-		stop: function(event, ui) { 
-					var position = $(this).position();
-					var currentId = $(this).attr('id');
-					/*nazbiereanie vsetkych z indexov*/
-					var all_zindex = new Array();
-					var zindexObject = new Object; 
-					$("#dashboard .default-box").each(function() {
-						var modul = $(this).attr('id');
-						zindexObject[modul] = parseInt($(this).css("zIndex"), 10);
-					});
+	// //pracovna plocha - plavajuce okna
+	// $( "#dashboard .default-box" ).draggable({ 
+	// 	containment: "#containment-wrapper",
+	// 	stack: "#dashboard .default-box",
+	// 	opacity:0.7,
+	// 	handle: "div.header",
+	// 	stop: function(event, ui) { 
+	// 				var position = $(this).position();
+	// 				var currentId = $(this).attr('id');
+	// 				/*nazbiereanie vsetkych z indexov*/
+	// 				var all_zindex = new Array();
+	// 				var zindexObject = new Object; 
+	// 				$("#dashboard .default-box").each(function() {
+	// 					var modul = $(this).attr('id');
+	// 					zindexObject[modul] = parseInt($(this).css("zIndex"), 10);
+	// 				});
 					
 					
 					
- 					var postString = 'left=' + position.left + '&element=' + currentId + '&top=' + position.top + '&action=updateChartPosition';
-					$.post(ROOT_PATH + "ajax.php", postString, function(theResponse){});
-					var postString = 'zindex=' + JSON.stringify(zindexObject) + '&action=updateZindex';
-					$.post(ROOT_PATH + "ajax.php", postString, function(theResponse){});
-				}
-	});
+ // 					var postString = 'left=' + position.left + '&element=' + currentId + '&top=' + position.top + '&action=updateChartPosition';
+	// 				$.post(ROOT_PATH + "ajax.php", postString, function(theResponse){});
+	// 				var postString = 'zindex=' + JSON.stringify(zindexObject) + '&action=updateZindex';
+	// 				$.post(ROOT_PATH + "ajax.php", postString, function(theResponse){});
+	// 			}
+	// });
 	
-	//pracovna ploch resizable
-	$( "#dashboard-settings .default-box:not(#livechart-modul)" ).resizable({
-		stop:function(event, ui){
-			var currentId = $(this).attr('id');
-			var width = ui.size.width;
-			var height = ui.size.height;
-			var postString = 'width=' + width + '&element=' + currentId + '&height=' + height + '&action=updateChartDimenstions';
-			$.post(ROOT_PATH + "ajax.php", postString, function(theResponse){});
-		}
-	});
+	// //pracovna ploch resizable
+	// $( "#dashboard-settings .default-box:not(#livechart-modul)" ).resizable({
+	// 	stop:function(event, ui){
+	// 		var currentId = $(this).attr('id');
+	// 		var width = ui.size.width;
+	// 		var height = ui.size.height;
+	// 		var postString = 'width=' + width + '&element=' + currentId + '&height=' + height + '&action=updateChartDimenstions';
+	// 		$.post(ROOT_PATH + "ajax.php", postString, function(theResponse){});
+	// 	}
+	// });
 	
-	$("#dashboard-settings #reservation-modul").resizable({minHeight: 122,minWidth: 400});
-	$("#dashboard-settings #experiment-modul").resizable({minHeight: 125,minWidth: 394});
-	$("#dashboard-settings #experimentinterface-modul").resizable({minHeight: 65,minWidth: 400});
+	// $("#dashboard-settings #reservation-modul").resizable({minHeight: 122,minWidth: 400});
+	// $("#dashboard-settings #experiment-modul").resizable({minHeight: 125,minWidth: 394});
+	// $("#dashboard-settings #experimentinterface-modul").resizable({minHeight: 65,minWidth: 400});
 	
 	
 	//pracovan plocha options panel
@@ -292,14 +292,14 @@ $(document).ready(function(){
 	
 	
 	//info okno
-	var $infoDialogContent = $("#napoveda");
-	$infoDialogContent.dialog({
-		width: 400,
-		dialogClass: "info-dialog",
-		modal: true,
-		position: ['center','center']	
+	// var $infoDialogContent = $("#napoveda");
+	// $infoDialogContent.dialog({
+	// 	width: 400,
+	// 	dialogClass: "info-dialog",
+	// 	modal: true,
+	// 	position: ['center','center']	
 		
-	});
+	// });
 	$('#btn-dashboard-layout-info-text').click(function(){ 
 	    if($('#show-dashboard-layout-info-text').is(':checked')){
 			var postString = 'action=hideDashboardSettingsInfo';

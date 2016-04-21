@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Modules\\Reservation\\Database\\Seeders\\ReservationDatabaseSeeder' => $baseDir . '/Database/Seeders/ReservationDatabaseSeeder.php',
+    'Modules\\Reservation\\Entities\\Reservation' => $baseDir . '/Entities/Reservation.php',
     'Modules\\Reservation\\Http\\Controllers\\ReservationController' => $baseDir . '/Http/Controllers/ReservationController.php',
     'Modules\\Reservation\\Providers\\ReservationServiceProvider' => $baseDir . '/Providers/ReservationServiceProvider.php',
 );

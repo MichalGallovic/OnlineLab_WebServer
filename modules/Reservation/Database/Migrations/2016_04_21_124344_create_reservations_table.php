@@ -15,14 +15,21 @@ class CreateReservationsTable extends Migration {
         Schema::create('reservations', function(Blueprint $table)
         {
             $table->increments('id');
-            $table->integer('user_id')->unsigned()->nullable();
+            $table->integer('user_id')->unsigned();
             $table->integer('experiment_server_id')->unsigned();
+            $table->dateTime("start");
+            $table->dateTime("end");
 
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users')
                 ->onUpdate('cascade');
-                
+
+            $table->foreign("experiment_server_id")
+                ->references('id')
+                ->on("experiment_server")
+                ->onUpdate('cascade');
+
             $table->timestamps();
         });
     }
