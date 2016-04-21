@@ -6,7 +6,9 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Modules\\Report\\Database\\Seeders\\ReportDatabaseSeeder' => $baseDir . '/Database/Seeders/ReportDatabaseSeeder.php',
+    'Modules\\Report\\Database\\Seeders\\ReportTableSeeder' => $baseDir . '/Database/Seeders/ReportTableSeeder.php',
+    'Modules\\Report\\Entities\\Report' => $baseDir . '/Entities/Report.php',
+    'Modules\\Report\\Http\\Controllers\\ApiController' => $baseDir . '/Http/Controllers/ApiController.php',
     'Modules\\Report\\Http\\Controllers\\ReportController' => $baseDir . '/Http/Controllers/ReportController.php',
     'Modules\\Report\\Providers\\ReportServiceProvider' => $baseDir . '/Providers/ReportServiceProvider.php',
 );
