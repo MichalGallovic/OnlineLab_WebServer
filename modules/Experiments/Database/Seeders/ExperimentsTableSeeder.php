@@ -7,6 +7,7 @@ use Modules\Experiments\Entities\Device;
 use Modules\Experiments\Entities\Server;
 use Modules\Experiments\Entities\Software;
 use Modules\Experiments\Entities\Experiment;
+use Modules\Experiments\Entities\ServerExperiment;
 
 class ExperimentsTableSeeder extends Seeder {
 
@@ -70,6 +71,22 @@ class ExperimentsTableSeeder extends Seeder {
 				$experiment->software()->associate($software)->save();
 			}
 		}
+
+		$servers = Server::all();
+		$experiments = Experiment::all();
+
+		foreach ($servers as $server) {
+			foreach ($experiments as $experiment) {
+				$instance = ServerExperiment::create([
+					"server_id" 	=>	$server->id,
+					"experiment_id"	=>	$experiment->id,
+					"device_name"	=>	str_random(3),
+					"status"		=>	"offline"
+				]);
+				
+			}
+		}
+
 
 	}
 

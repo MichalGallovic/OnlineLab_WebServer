@@ -20,6 +20,11 @@ class OlmMigrateRefresh extends Command
      */
     protected $description = 'Refresh all migrations';
 
+    protected $modulesToSeed = [
+        "Experiments",
+        "Report"
+    ];
+
     /**
      * Create a new command instance.
      *
@@ -40,6 +45,9 @@ class OlmMigrateRefresh extends Command
         $this->call("module:migrate-reset");
         $this->call("migrate:refresh");
         $this->call("module:migrate");
-        $this->call("module:seed",["module" => "Experiments"]);
+
+        foreach ($this->modulesToSeed as $module) {
+            $this->call("module:seed",["module" => $module]);   
+        }
     }
 }
