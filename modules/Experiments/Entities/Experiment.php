@@ -19,15 +19,12 @@ class Experiment extends Model {
     }
 
     public function servers() {
-    	return $this->belongsToMany(Server::class);
+    	return $this->belongsToMany(Server::class)->withPivot('status');
     }
 
     public function scopeAvailable($query)
     {
-        return $query->join('experiment_server','experiments.id','=','experiment_server.experiment_id')
-        ->where('available', true)->whereHas('servers', function($query) {
-            $query->available();
-        })->where('status','!=','offline');
+        return $query->where('available', true);
     }
 
     public function scopeOfDevice($query, $device)

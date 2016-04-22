@@ -34,13 +34,25 @@ class ExperimentsTableSeeder extends Seeder {
 		Server::create([
 			"name"	=>	"s1",
 			"ip"	=>	"192.168.100.100",
-			"port"	=>	"80"
+			"port"	=>	"80",
+			"production"	=>	1,
+			"available"		=>	1,
+			"database"		=>	1,
+			"reachable"		=>	1,
+			"queue"		=>	1,
+			"redis"		=>	1
 		]);
 
 		Server::create([
 			"name"	=>	"s2",
 			"ip"	=>	"192.168.100.200",
-			"port"	=>	"80"
+			"port"	=>	"80",
+			"production"	=>	1,
+			"available"		=>	1,
+			"database"		=>	1,
+			"reachable"		=>	1,
+			"queue"		=>	1,
+			"redis"		=>	1
 		]);
 
 		Device::create([
@@ -68,7 +80,9 @@ class ExperimentsTableSeeder extends Seeder {
 			foreach ($softwares as $software) {
 				$experiment = new Experiment;
 				$experiment->device()->associate($device);
-				$experiment->software()->associate($software)->save();
+				$experiment->software()->associate($software);
+				$experiment->available = true;
+				$experiment->save();
 			}
 		}
 
@@ -81,7 +95,7 @@ class ExperimentsTableSeeder extends Seeder {
 					"server_id" 	=>	$server->id,
 					"experiment_id"	=>	$experiment->id,
 					"device_name"	=>	str_random(3),
-					"status"		=>	"offline"
+					"status"		=>	"online"
 				]);
 				
 			}

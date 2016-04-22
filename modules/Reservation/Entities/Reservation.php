@@ -6,7 +6,8 @@ use Modules\Experiments\Entities\ServerExperiment;
 
 class Reservation extends Model {
 
-    protected $fillable = [];
+    protected $fillable = ['user_id','experiment_server_id','start','end'];
+    protected $with = ["experimentInstance"];
 
     public function user()
     {
@@ -15,7 +16,7 @@ class Reservation extends Model {
 
     public function experimentInstance()
     {
-    	return $this->belongsTo(ServerExperiment::class);
+    	return $this->belongsTo(ServerExperiment::class,'experiment_server_id');
     }
 
 }

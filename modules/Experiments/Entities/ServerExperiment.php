@@ -12,6 +12,7 @@ class ServerExperiment extends Model {
     	"experiment_commands" => "array",
     	"output_arguments" => "array"
     ];
+    protected $with = ["experiment","server"];
 
     public function experiment()
     {
@@ -31,6 +32,8 @@ class ServerExperiment extends Model {
     public function scopeAvailable($query)
     {
         return $query->where('status','!=',"offline")->whereHas('server', function($q) {
+            $q->available();
+        })->whereHas('experiment', function($q) {
             $q->available();
         });
     }
