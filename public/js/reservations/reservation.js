@@ -74,23 +74,16 @@ var timeToLaravelString = function(momentInstance) {
 			getReservationsData: function() {
 				var me = this;
 				this.getReservations().done(function(response) {
-					var events = [];
 					me.reservations = response.data;
-					response.data.forEach(function(reservation) {
-						var event = {
-							id : reservation.id,
-							title : reservation.device + " " + reservation.software + " " + reservation.instance,
-							start : reservation.start,
-							end : reservation.end,
-							device: reservation.device,
-							software: reservation.software,
-							instance: reservation.instance
-						};
-						events.push(event);
-					});
-
-					me.events = events;
-					me.initPlugin(me.events);
+					me.initPlugin(response.data);
+				});
+			},
+			refreshReservationsData: function() {
+				var me = this;
+				this.getReservations().done(function(response) {
+					me.reservations = response.data;
+					me.$calendar.fullCalendar('removeEvents');
+					me.$calendar.fullCalendar('addEventSource', response.data);
 				});
 			},
 			getExperiments: function() {
@@ -126,35 +119,28 @@ var timeToLaravelString = function(momentInstance) {
 						end : timeToLaravelString(me.selectedEvent.end),
 					}
 				}).done(function(response) {
-					me.$calendar.fullCalendar('removeEvents',me.selectedEvent.id);
-					me.selectedEvent.id = response.id;
-					me.$calendar.fullCalendar('renderEvent',{
-						id : response.id,
-						title: me.selectedEvent.title,
-						start: me.selectedEvent.start,
-						end: me.selectedEvent.end
-					});
+					me.refreshReservationsData();
 					me.$modal.modal('hide');
 				});
 			},
 			experimentsCopy : function() {
 				return JSON.parse(JSON.stringify(this.experiments.original))
 			},
-			isExperimentReserved : function(start, end, experiment, instance) {
+			isExperimentReserved : function(start, end, experiment, instance, reservations) {
 				var timesNotCollide = function(start, end, reservationStart, reservationEnd) {
 					return (start.isBefore(reservationStart) && end.isBefore(reservationStart)) ||
 					(start.isAfter(reservationEnd) && end.isAfter(reservationEnd));
 				}
 
 				var me = this;
-				return this.reservations.some(function(reservation) {
+				return reservations.some(function(reservation) {
 					return reservation.device == experiment.device &&
 					reservation.software == experiment.software &&
 					!timesNotCollide(start, end, reservation.start, reservation.end) &&
 					reservation.instance == instance;
 				});
 			},
-			filterDataForSelection : function(start, end) {
+			filterDataForSelection : function(start, end, reservations) {
 				var me = this;
 				this.selectedEvent = {
 					start : start,
@@ -166,7 +152,7 @@ var timeToLaravelString = function(momentInstance) {
 
 				this.experiments.filtered = this.experiments.filtered.map(function(experiment) {
 					experiment.instances = experiment.instances.filter(function(instance) {
-						return !me.isExperimentReserved(start,end,experiment,instance);
+						return !me.isExperimentReserved(start,end,experiment,instance,reservations);
 					});
 					return experiment;
 				});
@@ -213,21 +199,47 @@ var timeToLaravelString = function(momentInstance) {
 						center: 'title',
 						right: 'month,agendaWeek,agendaDay'
 					},
+					allDaySlot: false,
 					slotDuration: '00:10:00',
 					editable: true,
 					eventLimit: true, // allow "more" link when too many events
 					selectable: true,
-					selectHelper: true,
+					// selectHelper: true,
 					select: function(start, end) {
-						me.filterDataForSelection(start, end);
+						me.filterDataForSelection(start, end, me.reservations);
 						me.$calendar.fullCalendar('renderEvent',me.selectedEvent);
-						me.refreshCalendar();
 						me.$modal.modal('show');
 					},
 					eventClick: function(event, element) {
-						console.log(event);
+						var reservations = JSON.parse(JSON.stringify(me.reservations));
+						
+						reservations = reservations.filter(function(reservation) {
+							return reservation.id != event.id;
+						});
+
+						me.filterDataForSelection(event.start, event.end, reservations);
+
+						me.$modal.modal('show');
+						return false;
 					},
 					eventDrop: function(event, delta, revertFunc) {
+						$.ajax({
+							type: "PUT",
+							url: "/api/reservations/" + event.id,
+							data: {
+								device: event.device,
+								software: event.software,
+								instance: event.instance,
+								start: timeToLaravelString(event.start),
+								end: timeToLaravelString(event.end)
+							}
+						}).done(function(response) {
+
+						}).fail(function(response) {
+							revertFunc();
+						});
+					},
+					eventResize: function(event, delta, revertFunc) {
 						$.ajax({
 							type: "PUT",
 							url: "/api/reservations/" + event.id,

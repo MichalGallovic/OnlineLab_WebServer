@@ -22,21 +22,14 @@ class Reservation extends Model {
 
     public function scopeCollidingWith($query, Carbon $start, Carbon $end)
     {
-    	return $query->where('start','>=', $start)
+    	return $query->where('start','>=', $start) // vnutri hranice
     	->where('end','<=',$end)->orWhere(function($query) use ($start, $end) {
-    		$query->where('start','<=',$start)->where('end','>=',$end);
+    		$query->where('start','<',$start)->where('end','>',$start); // zlava prekryva
     	})->orWhere(function($query) use ($start, $end) {
-    		$query->where('start','<=',$end)->where('end','>=',$end);
+    		$query->where('start','<',$end)->where('end','>',$end); //sprava prekryva
     	})->orWhere(function($query) use ($start, $end) {
-    		$query->where('start','<=',$start)->where('end','>=',$start);
-    	})->orWhere(function($query) use ($start, $end) {
-    		$query->where('start','<=',$start)->where('end','>=',$end);
+    		$query->where('start','<',$start)->where('end','>',$end); // hranica je vnutri
     	});
-
-    	// return $query->whereBetween('start',[$start, $end])
-    	// ->orWhere(function($query) use ($start, $end) {
-    	// 	$query->whereBetween('end', [$start, $end]);
-    	// });
     }
 
     public function scopeNotCollidingWith($query, Carbon $start, Carbon $end)
