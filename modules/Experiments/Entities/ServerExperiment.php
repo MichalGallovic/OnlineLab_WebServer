@@ -45,6 +45,24 @@ class ServerExperiment extends Model {
         });
     }
 
+    public function scopeOfDevice($query, $deviceName)
+    {
+        $query->whereHas('experiment', function($query) use ($deviceName) {
+            $query->whereHas('device', function($query) use ($deviceName) {
+                $query->where('name',$deviceName);
+            });
+        });
+    }
+
+    public function scopeOfSoftware($query, $softwareName)
+    {
+        $query->whereHas('experiment', function($query) use ($softwareName) {
+            $query->whereHas('software', function($query) use ($softwareName) {
+                $query->where('name',$softwareName);
+            });
+        });
+    }
+
     public function scopeOfInstance($query, $instanceName)
     {
         return $query->where('device_name', $instanceName);

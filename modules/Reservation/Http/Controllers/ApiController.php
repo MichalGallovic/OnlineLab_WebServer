@@ -1,12 +1,15 @@
 <?php namespace Modules\Reservation\Http\Controllers;
 
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Pingpong\Modules\Routing\Controller;
 use App\Http\Controllers\ApiBaseController;
 use Modules\Reservation\Entities\Reservation;
 use Modules\Experiments\Entities\ServerExperiment;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Modules\Reservation\Http\Requests\NewReservationRequest;
 use Modules\Reservation\Transformers\ReservationTransformer;
+use Modules\Reservation\Http\Requests\UpdateReservationRequest;
 
 class ApiController extends ApiBaseController {
 
@@ -19,16 +22,8 @@ class ApiController extends ApiBaseController {
 
 	public function createReservation(NewReservationRequest $request)
 	{
-		$deviceName = $request->input('device');
-		$softwareName = $request->input('software');
-		$instance = ServerExperiment::whereHas('experiment', function($query) use($deviceName, $softwareName) {
-			$query->whereHas('device', function($q) use($deviceName, $softwareName) {
-				$q->where('name',$deviceName);
-			});
-			$query->whereHas('software', function($q) use($deviceName, $softwareName) {
-				$q->where('name',$softwareName);
-			});
-		})->where('device_name',$request->input('instance'))->first();
+		$instance = ServerExperiment::ofDevice($request->input('device'))
+		->ofSoftware($request->input('software'))->ofInstance($request->input('instance'))->first();
 
 		$reservation = Reservation::create([
 				'user_id' => 1,
@@ -37,7 +32,44 @@ class ApiController extends ApiBaseController {
 				'end'	=>	$request->input('end')
 			]);
 
-		return ["Ok"];
+		return [
+			"id"	=>	$reservation->id
+		];
+	}
+
+	public function updateReservation(UpdateReservationRequest $request, $id)
+	{
+		try {
+			$reservation = Reservation::findOrFail($id);
+		} catch(ModelNotFoundException $e) {
+			return $this->errorNotFound("Reservation not found!");
+		}
+
+
+		$instance = ServerExperiment::ofDevice($request->input('device'))
+		->ofSoftware($request->input('software'))->ofInstance($request->input('instance'))->first();
+
+
+		$start = new Carbon($request->input('start'));
+		$end = new Carbon($request->input('end'));
+
+		$collides = Reservation::where('experiment_server_id',$instance->id)
+				->collidingWith($start, $end)->get();
+
+		$collides = $collides->filter(function($item) use($reservation) {
+			return $item->id != $reservation->id;
+		});
+
+		if($collides->count() == 0) {
+			$reservation->update([
+					"experiment_server_id" => $instance->id,
+					"start"	=>	$start,
+					"end"	=>	$end
+				]);
+			return $this->respondWithSuccess("Reservation updated");
+		}
+
+		return $this->errorForbidden("Reservations collide");
 	}
 
 }
