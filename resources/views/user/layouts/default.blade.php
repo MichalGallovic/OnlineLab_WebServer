@@ -59,7 +59,7 @@
 <script type="text/javascript">
    // var ROOT_PATH = '{ROOT_PATH}';
     var ROOT_PATH = 'http://iolab.sk:8013/';
-    var socket = io.connect('{{env('SOCKETIO_ADDRESS')}}');
+    // var socket = io.connect('{{env('SOCKETIO_ADDRESS')}}');
 
     $(function () {
         $('[data-toggle="popover"]').popover();
@@ -100,10 +100,10 @@
         $('#notifications').popover('show');
     }
 
-    socket.on('notification-channel:App\\Events\\MemberAdded{{Auth::user()->user->id}}', myNotify);
+    // socket.on('notification-channel:App\\Events\\MemberAdded{{Auth::user()->user->id}}', myNotify);
 
     @foreach(Auth::user()->user->threads as $thread)
-        socket.on('notification-channel:App\\Events\\CommentAdded{{$thread->id}}', myNotify);
+        // socket.on('notification-channel:App\\Events\\CommentAdded{{$thread->id}}', myNotify);
     @endforeach
 </script>
 @yield('page_js')

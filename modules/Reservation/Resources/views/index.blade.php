@@ -48,7 +48,7 @@
 							<div class="col-lg-12">
 								<div class="form-group">
 									<label>Device instance</label>
-									<span v-for="instance in instancesForExperiment">
+									<span v-for="instance in selectedExperiment.instances">
 										<label class="radio-inline">
 										  <input v-model="selectedInstance" type="radio" value="@{{ instance }}"> @{{ instance }}
 										</label>
@@ -59,7 +59,7 @@
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						<button type="button" class="btn btn-success">Reserve</button>
+						<button type="button" class="btn btn-success" v-on:click="saveReservation">Reserve</button>
 					</div>
 				</div><!-- /.modal-content -->
 			</div><!-- /.modal-dialog -->
