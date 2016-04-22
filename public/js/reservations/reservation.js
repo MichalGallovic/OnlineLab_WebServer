@@ -15,6 +15,10 @@ Array.prototype.unique = function() {
     return arr; 
 }
 
+var timeToLaravelString = function(momentInstance) {
+		return momentInstance.format('YYYY-MM-DD hh:mm:ss')
+};
+
 !(function($) {
 	Vue.config.devtools = true;
 	Vue.component('olm-calendar', {
@@ -23,20 +27,20 @@ Array.prototype.unique = function() {
 			return {
 				$calendar : null,
 				$modal : null,
-				reservations : null,
 				selectedEvent: {
 					start : null,
 					end : null,
 					saving : false
 				},
+				reservations : null,
 				experiments : {
 					original: null,
 					filtered: null
 				},
-				filteredDevices: null,
 				devices : null,
 				reservations : null,
 				events : null,
+				filteredDevices: null,
 				selectedDevice : null,
 				selectedSoftware : null,
 				selectedExperiment: null,
@@ -46,51 +50,68 @@ Array.prototype.unique = function() {
 			};
 		},
 		ready : function() {
-			var me = this;
 			this.$calendar = $(this.$els.calendar);
 			this.$modal = $(this.$els.modal);
-			
-			// this.$modal.modal('show');
-
-			this.selectedEvent.start = moment();
-			this.selectedEvent.end = moment().add(10,'minutes');
-
-			this.getExperiments().done(function(response) {
-				var devices = [];
-
-				response.data.forEach(function(experiment) {
-					devices.push(experiment.device);
-				});
-
-				me.devices = devices.unique();
-				me.experiments.original = response.data;
-				me.experiments.filtered = JSON.parse(JSON.stringify(me.experiments.original)); // copy in VUE :/
-			});
-
-			this.getReservations().done(function(response) {
-				var events = [];
-				me.reservations = response.data;
-				response.data.forEach(function(reservation) {
-					var event = {
-						id : reservation.id,
-						title : reservation.device + " " + reservation.software + " " + reservation.instance,
-						start : reservation.start,
-						end : reservation.end
-					};
-					events.push(event);
-				});
-
-				me.events = events;
-				me.initPlugin(me.events);
-			});
-
-			this.$modal.on('hide.bs.modal', function(e) {
-				if(!me.selectedEvent.saving) {
-					me.$calendar.fullCalendar('removeEvents',me.selectedEvent.id);
-				}
-			});
+			this.getExperimentsData();
+			this.getReservationsData();
+			this.setEventHandlers();
 		},
 		methods : {
+			getExperimentsData: function() {
+				var me = this;
+				this.getExperiments().done(function(response) {
+					var devices = [];
+
+					response.data.forEach(function(experiment) {
+						devices.push(experiment.device);
+					});
+
+					me.devices = devices.unique();
+					me.experiments.original = response.data;
+					me.experiments.filtered = JSON.parse(JSON.stringify(me.experiments.original)); // copy in VUE :/
+				});
+			},
+			getReservationsData: function() {
+				var me = this;
+				this.getReservations().done(function(response) {
+					var events = [];
+					me.reservations = response.data;
+					response.data.forEach(function(reservation) {
+						var event = {
+							id : reservation.id,
+							title : reservation.device + " " + reservation.software + " " + reservation.instance,
+							start : reservation.start,
+							end : reservation.end,
+							device: reservation.device,
+							software: reservation.software,
+							instance: reservation.instance
+						};
+						events.push(event);
+					});
+
+					me.events = events;
+					me.initPlugin(me.events);
+				});
+			},
+			getExperiments: function() {
+				return $.getJSON("/api/experiments");
+			},
+			getReservations: function() {
+				return $.getJSON('/api/reservations');
+			},
+			setEventHandlers: function() {
+				var me = this;
+				this.$modal.on('hide.bs.modal', function(e) {
+					if(!me.selectedEvent.saving) {
+						me.$calendar.fullCalendar('removeEvents',me.selectedEvent.id);
+						me.selectedEvent = null;
+					} else {
+						me.refreshCalendar();
+					}
+				});
+
+
+			},
 			saveReservation: function() {
 				var me = this;
 				this.selectedEvent.saving = true;
@@ -101,12 +122,23 @@ Array.prototype.unique = function() {
 						device : me.selectedExperiment.device,
 						software : me.selectedExperiment.software,
 						instance : me.selectedInstance,
-						start : me.selectedEvent.start.format('YYYY-MM-DD hh:mm:ss'),
-						end : me.selectedEvent.end.format('YYYY-MM-DD hh:mm:ss')
+						start : timeToLaravelString(me.selectedEvent.start),
+						end : timeToLaravelString(me.selectedEvent.end),
 					}
 				}).done(function(response) {
+					me.$calendar.fullCalendar('removeEvents',me.selectedEvent.id);
+					me.selectedEvent.id = response.id;
+					me.$calendar.fullCalendar('renderEvent',{
+						id : response.id,
+						title: me.selectedEvent.title,
+						start: me.selectedEvent.start,
+						end: me.selectedEvent.end
+					});
 					me.$modal.modal('hide');
 				});
+			},
+			experimentsCopy : function() {
+				return JSON.parse(JSON.stringify(this.experiments.original))
 			},
 			isExperimentReserved : function(start, end, experiment, instance) {
 				var timesNotCollide = function(start, end, reservationStart, reservationEnd) {
@@ -122,6 +154,57 @@ Array.prototype.unique = function() {
 					reservation.instance == instance;
 				});
 			},
+			filterDataForSelection : function(start, end) {
+				var me = this;
+				this.selectedEvent = {
+					start : start,
+					end : end,
+					saving : false 
+				}
+				
+				this.experiments.filtered = this.experimentsCopy();
+
+				this.experiments.filtered = this.experiments.filtered.map(function(experiment) {
+					experiment.instances = experiment.instances.filter(function(instance) {
+						return !me.isExperimentReserved(start,end,experiment,instance);
+					});
+					return experiment;
+				});
+
+				this.experiments.filtered = this.experiments.filtered.filter(function(experiment) {
+					return experiment.instances.length > 0;
+				});
+
+				var devices = [];
+
+				this.experiments.filtered.forEach(function(experiment) {
+					devices.push(experiment.device);
+				});
+
+				this.filteredDevices = devices.unique();
+
+				this.selectedDevice = this.filteredDevices[0];
+				this.filterSoftwares();
+				this.filterInstances();
+
+				var maxId = 0;
+
+				this.reservations.forEach(function(reservation) {
+					if(reservation.id > maxId) {
+						maxId = reservation.id;
+					}
+				});
+
+				this.selectedEvent.id = ++maxId;
+				this.selectedEvent.title = this.selectedDevice + " " + this.selectedSoftware + " " + this.selectedInstance;
+			},
+			refreshCalendar: function() {
+				if(this.selectedEvent) {
+					this.$calendar.fullCalendar('removeEvents',this.selectedEvent.id);
+					this.$calendar.fullCalendar('renderEvent',this.selectedEvent);
+				}
+				this.$calendar.fullCalendar('rerenderEvents');
+			},
 			initPlugin: function(events) {
 				var me = this;
 				this.$calendar.fullCalendar({
@@ -136,56 +219,33 @@ Array.prototype.unique = function() {
 					selectable: true,
 					selectHelper: true,
 					select: function(start, end) {
-						me.selectedEvent.start = start;
-						me.selectedEvent.end = end;
-						me.selectedEvent.saving = false;
-						me.experiments.filtered = JSON.parse(JSON.stringify(me.experiments.original));
-
-						me.experiments.filtered = me.experiments.filtered.map(function(experiment) {
-							experiment.instances = experiment.instances.filter(function(instance) {
-								return !me.isExperimentReserved(start,end,experiment,instance);
-							});
-							return experiment;
-						});
-
-						me.experiments.filtered = me.experiments.filtered.filter(function(experiment) {
-							return experiment.instances.length > 0;
-						});
-
-						var devices = [];
-
-						me.experiments.filtered.forEach(function(experiment) {
-							devices.push(experiment.device);
-						});
-
-						me.filteredDevices = devices.unique();
-
-						me.selectedDevice = me.filteredDevices[0];
-						me.filterSoftwares();
-						me.filterInstances();
-
-						var maxId = 0;
-
-						me.reservations.forEach(function(reservation) {
-							if(reservation.id > maxId) {
-								maxId = reservation.id;
-							}
-						});
-
-						me.selectedEvent.id = ++maxId;
-						me.selectedEvent.title = me.selectedDevice + " " + me.selectedSoftware + " " + me.selectedInstance;
-
-						me.$calendar.fullCalendar('renderEvent',me.selectedEvent, true);
+						me.filterDataForSelection(start, end);
+						me.$calendar.fullCalendar('renderEvent',me.selectedEvent);
+						me.refreshCalendar();
 						me.$modal.modal('show');
+					},
+					eventClick: function(event, element) {
+						console.log(event);
+					},
+					eventDrop: function(event, delta, revertFunc) {
+						$.ajax({
+							type: "PUT",
+							url: "/api/reservations/" + event.id,
+							data: {
+								device: event.device,
+								software: event.software,
+								instance: event.instance,
+								start: timeToLaravelString(event.start),
+								end: timeToLaravelString(event.end)
+							}
+						}).done(function(response) {
+
+						}).fail(function(response) {
+							revertFunc();
+						});
 					},
 					events : events
 				});
-			},
-			getExperiments: function() {
-				return $.getJSON("/api/experiments");
-			},
-			getReservations: function() {
-				return $.getJSON('/api/reservations');
 			},
 			filterSoftwares: function() {
 				var me = this;
@@ -210,7 +270,6 @@ Array.prototype.unique = function() {
 					}
 				});
 			}
-
 		},
 		watch : {
 			selectedDevice : function(newVal, oldVal) {
@@ -221,6 +280,7 @@ Array.prototype.unique = function() {
 			},
 			selectedInstance : function(newVal, oldVal) {
 				this.selectedEvent.title = this.selectedDevice + " " + this.selectedSoftware + " " + newVal;
+				this.refreshCalendar();
 			}
 		}
 	});

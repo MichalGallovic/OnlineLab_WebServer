@@ -21,7 +21,7 @@ class ReservationTableSeeder extends Seeder {
 		$users = User::all();
 		$experimentInstances = ServerExperiment::all();
 
-		foreach (range(0,100) as $i) {
+		foreach (range(0,10000) as $i) {
 			$user = $users->random();
 			$instance = $experimentInstances->random();
 			$start = Carbon::now()->addWeeks(rand(0,10))->addMinutes(rand(1,20)*20);
@@ -32,9 +32,8 @@ class ReservationTableSeeder extends Seeder {
 			$start = $start->toDateTimeString();
 			$end = $end->addMinutes(rand(1,20)*10);
 
-
 			$reservation = Reservation::where('experiment_server_id',$instance->id)
-			->where('start','>=',$start)->where('end','<=',$end)->firstOrCreate([
+				->collidingWith(new Carbon($start), new Carbon($end))->firstOrCreate([
 					"experiment_server_id" => $instance->id,
 					"user_id" => $user->id,
 					'start' => $start,
