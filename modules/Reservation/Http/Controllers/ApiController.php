@@ -50,11 +50,11 @@ class ApiController extends ApiBaseController {
 		->ofSoftware($request->input('software'))->ofInstance($request->input('instance'))->first();
 
 
+
 		$start = new Carbon($request->input('start'));
 		$end = new Carbon($request->input('end'));
 
-		$collides = Reservation::where('experiment_server_id',$instance->id)
-				->collidingWith($start, $end)->get();
+		$collides = Reservation::collidingWith($start, $end)->get()->where('experiment_server_id',$instance->id);
 
 		$collides = $collides->filter(function($item) use($reservation) {
 			return $item->id != $reservation->id;
