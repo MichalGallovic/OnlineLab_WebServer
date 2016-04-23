@@ -12,10 +12,14 @@
 |
 */
 
+use App\Services\SystemService;
 use Intervention\Image\Facades\Image;
-use App\Classes\ApplicationServer\Server;
+use Modules\Experiments\Entities\Device;
+use Modules\Experiments\Entities\Server;
 use Modules\Experiments\Entities\Experiment;
+use Modules\Experiments\Entities\PhysicalDevice;
 use Modules\Experiments\Entities\ServerExperiment;
+use Modules\Experiments\Entities\PhysicalExperiment;
 
 Route::get('/', function() {
     return Redirect::to('auth/login');
@@ -95,6 +99,9 @@ Route::get('test/data', function() {
     //         ]
     //     ]);
     // dd($res);
-    $experiments = Experiment::join('experiment_server','experiments.id','=','experiment_server.experiment_id')->available()->where('status','!=','offline')->get();
-    dd($experiments->toArray());
+    // $experiments = Experiment::join('experiment_server','experiments.id','=','experiment_server.experiment_id')->available()->where('status','!=','offline')->get();
+    // dd($experiments->toArray());
+    $system = new SystemService();
+    dd($system->syncWithServers());
+    dd(Server::first()->experiments);
 });

@@ -3,6 +3,7 @@
 use Illuminate\Database\Eloquent\Model;
 use Modules\Experiments\Entities\Experiment;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Modules\Experiments\Entities\PhysicalDevice;
 
 class Server extends Model {
     
@@ -13,15 +14,19 @@ class Server extends Model {
 
     public function experiments()
     {
-    	return $this->belongsToMany(Experiment::class);
+    	return $this->belongsToMany(Experiment::class,'physical_experiment');
+    }
+
+    public function physicalDevices()
+    {
+        return $this->hasMany(PhysicalDevice::class);
     }
 
     public function scopeAvailable($query)
     {
         return $query->where('production', true)
-        ->where('available', true)->where('disabled', false)
-        ->where('database', true)->where('reachable', true)
-        ->where('queue', true);
+        ->where('disabled', false)->where('database', true)
+        ->where('reachable', true);
     }
 
     public function scopeHasExperiments($query)

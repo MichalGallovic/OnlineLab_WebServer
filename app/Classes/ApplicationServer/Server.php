@@ -50,6 +50,12 @@ class Server
 	protected $deviceTypes;
 
 	/**
+	 * Physical devices connected to server
+	 * @var array
+	 */
+	protected $devices;
+
+	/**
 	 * Is server reachable ?
 	 * @var boolean
 	 */
@@ -122,8 +128,6 @@ class Server
     	$response = $this->get("server/status");
 
     	$this->databaseAvailable = isset($response["database"]) ? $response["database"] : false;
-    	$this->queueAvailable = isset($response["queue"]) ? $response["queue"] : false;
-    	$this->redisAvailable = isset($response["redis"]) ? $response["redis"] : false;
     	$this->available = $this->serverAvailable();
     }
 
@@ -131,8 +135,6 @@ class Server
     {
     	return ($this->lastResponseCode / 100) != 5 && 
     	$this->databaseAvailable && 
-    	$this->queueAvailable &&
-    	$this->redisAvailable &&
     	$this->reachable;
     }
 
@@ -141,6 +143,13 @@ class Server
 		$this->deviceTypes = $this->getDeviceTypes();
 
 		return $this->deviceTypes;
+	}
+
+	public function devices()
+	{
+		$this->devices = $this->getDevices();
+
+		return $this->devices;
 	}
 
 	public function softwares()
@@ -174,6 +183,18 @@ class Server
 		return $experiments->unique('device')->values()->lists("device");
 	}
 
+	protected function getDevices()
+	{
+		$body = $this->get("server/devices");
+		$devices = isset($body["data"]) ? $body["data"] : [];		
+
+		foreach ($devices as $key => $device) {
+			$devices[$key]["ip"] = $this->ip;
+		}
+
+		return $devices;
+	}
+
 	protected function getSoftwares()
 	{
 		$experiments = $this->getExperimentsCollection();
@@ -188,6 +209,8 @@ class Server
 
 		return new Collection($this->experiments);
 	}
+
+
 
 	protected function getExperiments()
 	{
@@ -280,25 +303,5 @@ class Server
     public function getDatabaseAvailable()
     {
         return $this->databaseAvailable;
-    }
-
-    /**
-     * Gets the Is queue available.
-     *
-     * @return boolean
-     */
-    public function getQueueAvailable()
-    {
-        return $this->queueAvailable;
-    }
-
-    /**
-     * Gets the Is redis available.
-     *
-     * @return boolean
-     */
-    public function getRedisAvailable()
-    {
-        return $this->redisAvailable;
     }
 }

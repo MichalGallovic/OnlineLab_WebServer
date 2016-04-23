@@ -7,7 +7,9 @@ use Modules\Experiments\Entities\Device;
 use Modules\Experiments\Entities\Server;
 use Modules\Experiments\Entities\Software;
 use Modules\Experiments\Entities\Experiment;
+use Modules\Experiments\Entities\PhysicalDevice;
 use Modules\Experiments\Entities\ServerExperiment;
+use Modules\Experiments\Entities\PhysicalExperiment;
 
 class ExperimentsTableSeeder extends Seeder {
 
@@ -22,7 +24,8 @@ class ExperimentsTableSeeder extends Seeder {
 		'softwares',
 		'experiments',
 		'servers',
-		'experiment_server'
+		'physical_devices',
+		'physical_experiment'
 	];
 
 	public function run()
@@ -31,75 +34,82 @@ class ExperimentsTableSeeder extends Seeder {
 
 		$this->cleanDatabase();
 		
-		Server::create([
+		$server100 = Server::create([
 			"name"	=>	"s1",
 			"ip"	=>	"192.168.100.100",
 			"port"	=>	"80",
 			"production"	=>	1,
-			"available"		=>	1,
 			"database"		=>	1,
-			"reachable"		=>	1,
-			"queue"		=>	1,
-			"redis"		=>	1
+			"reachable"		=>	1
 		]);
 
-		Server::create([
+		$server200 = Server::create([
 			"name"	=>	"s2",
 			"ip"	=>	"192.168.100.200",
 			"port"	=>	"80",
 			"production"	=>	1,
-			"available"		=>	1,
 			"database"		=>	1,
-			"reachable"		=>	1,
-			"queue"		=>	1,
-			"redis"		=>	1
+			"reachable"		=>	1
 		]);
 
-		Device::create([
-			"name"	=>	"tos1a"
-		]);
+		// $device = Device::create([
+		// 	"name"	=>	"tos1a"
+		// ]);
 
-		Software::create([
-			"name" => "openloop"
-		]);
-		Software::create([
-			"name" => "matlab"
-		]);
-		Software::create([
-			"name" => "scilab"
-		]);
-		Software::create([
-			"name" => "openmodelica"
-		]);
+		// PhysicalDevice::create([
+		// 	'server_id' => $server100->id,
+		// 	'device_id' => $device->id,
+		// 	'name' => str_random(3),
+		// 	'status' => 'ready'
+		// ]);
+
+		// PhysicalDevice::create([
+		// 	'server_id' => $server200->id,
+		// 	'device_id' => $device->id,
+		// 	'name' => str_random(3),
+		// 	'status' => 'ready'
+		// ]);
+
+		// Software::create([
+		// 	"name" => "openloop"
+		// ]);
+		// Software::create([
+		// 	"name" => "matlab"
+		// ]);
+		// Software::create([
+		// 	"name" => "scilab"
+		// ]);
+		// Software::create([
+		// 	"name" => "openmodelica"
+		// ]);
 
 
-		$devices = Device::all();
-		$softwares = Software::all();
+		// $devices = Device::all();
+		// $softwares = Software::all();
 
-		foreach ($devices as $device) {
-			foreach ($softwares as $software) {
-				$experiment = new Experiment;
-				$experiment->device()->associate($device);
-				$experiment->software()->associate($software);
-				$experiment->available = true;
-				$experiment->save();
-			}
-		}
+		// foreach ($devices as $device) {
+		// 	foreach ($softwares as $software) {
+		// 		$experiment = new Experiment;
+		// 		$experiment->device()->associate($device);
+		// 		$experiment->software()->associate($software);
+		// 		$experiment->save();
+		// 	}
+		// }
 
-		$servers = Server::all();
-		$experiments = Experiment::all();
+		// $servers = Server::all();
+		// $experiments = Experiment::all();
+		// $physicalDevices = PhysicalDevice::all();
 
-		foreach ($servers as $server) {
-			foreach ($experiments as $experiment) {
-				$instance = ServerExperiment::create([
-					"server_id" 	=>	$server->id,
-					"experiment_id"	=>	$experiment->id,
-					"device_name"	=>	str_random(3),
-					"status"		=>	"online"
-				]);
+		// foreach ($servers as $server) {
+		// 	foreach ($experiments as $experiment) {
+		// 		$instance = PhysicalExperiment::create([
+		// 			"server_id" 	=>	$server->id,
+		// 			"experiment_id"	=>	$experiment->id,
+		// 			'physical_device_id'	=>	$physicalDevices->random()->id
+		// 		]);
 				
-			}
-		}
+		// 	}
+		// }
 
 
 	}

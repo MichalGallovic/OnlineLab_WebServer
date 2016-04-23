@@ -17,7 +17,6 @@ class CreateExperimentsTable extends Migration {
             $table->increments('id');
             $table->integer('device_id')->unsigned();
             $table->integer('software_id')->unsigned();
-            $table->boolean('available')->default(false);
 
             $table->foreign('device_id')
             ->references('id')
