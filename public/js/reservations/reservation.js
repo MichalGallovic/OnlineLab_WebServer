@@ -13,20 +13,78 @@ Array.prototype.unique = function() {
         }
     }
     return arr; 
-}
+};
+
+
 
 var timeToLaravelString = function(momentInstance) {
 		return momentInstance.format('YYYY-MM-DD hh:mm:ss')
 };
 
+
+function ColorLuminance(hex, lum) {
+
+	// validate hex string
+	hex = String(hex).replace(/[^0-9a-f]/gi, '');
+	if (hex.length < 6) {
+		hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+	}
+	lum = lum || 0;
+
+	// convert to decimal and change luminosity
+	var rgb = "#", c, i;
+	for (i = 0; i < 3; i++) {
+		c = parseInt(hex.substr(i*2,2), 16);
+		c = Math.round(Math.min(Math.max(0, c + (c * lum)), 255)).toString(16);
+		rgb += ("00"+c).substr(c.length);
+	}
+
+	return rgb;
+}
+
 !(function($) {
 	Vue.config.devtools = true;
+	Vue.component('olm-reservation-edit', {
+		template: '#olm-reservation-edit',
+		props: ['devices','softwares','instances','user','selection'],
+		data: function() {
+			return {
+				$modal: null
+			};
+		},
+		ready: function() {
+			var me = this;
+			this.$modal = $(this.$els.modal);
+			this.$modal.modal('show');
+			this.$modal.on('hidden.bs.modal',function() {
+				me.$dispatch('edit-reservation','hidden');
+			});
+		}
+	});
+	Vue.component('olm-reservation-show', {
+		template: "#olm-reservation-show",
+		props: ['start','end','device','software','instance', 'user'],
+		data: function() {
+			return {
+				$modal: null
+			};
+		},
+		ready: function() {
+			var me = this;
+			this.$modal = $(this.$els.modal);
+			this.$modal.modal('show');
+			this.$modal.on('hidden.bs.modal',function() {
+				me.$dispatch('show-reservation','hidden');
+			});
+		}
+	});
 	Vue.component('olm-calendar', {
 		template: '#olm-calendar',
 		data : function() {
 			return {
 				$calendar : null,
 				$modal : null,
+				$editModal: null,
 				selectedEvent: {
 					start : null,
 					end : null,
@@ -47,14 +105,27 @@ var timeToLaravelString = function(momentInstance) {
 				selectedInstance : null,
 				softwaresForDevice : null,
 				instancesForExperiment: null,
+				showingReservation: false,
+				editingReservation: false,
+				overlappingEvents: []
 			};
 		},
 		ready : function() {
 			this.$calendar = $(this.$els.calendar);
 			this.$modal = $(this.$els.modal);
+			// this.$editModal = $(this.$els.modalEdit);
+			
 			this.getExperimentsData();
 			this.getReservationsData();
 			this.setEventHandlers();
+		},
+		events: {
+			'show-reservation': function(msg) {
+				if(msg == 'hidden') this.showingReservation = false;
+			},
+			'edit-reservation': function(msg) {
+				if(msg == 'hidden') this.editingReservation = false;	
+			}
 		},
 		methods : {
 			getExperimentsData: function() {
@@ -172,7 +243,6 @@ var timeToLaravelString = function(momentInstance) {
 				this.selectedDevice = this.filteredDevices[0];
 				this.filterSoftwares();
 				this.filterInstances();
-
 				var maxId = 0;
 
 				this.reservations.forEach(function(reservation) {
@@ -193,6 +263,7 @@ var timeToLaravelString = function(momentInstance) {
 			},
 			initPlugin: function(events) {
 				var me = this;
+				var height = $(window).height() - $("#dashboard_header").height() - 40;
 				this.$calendar.fullCalendar({
 					header: {
 						left: 'prev,next today',
@@ -204,23 +275,48 @@ var timeToLaravelString = function(momentInstance) {
 					editable: true,
 					eventLimit: true, // allow "more" link when too many events
 					selectable: true,
+					backgroundColor : "#5cb85c",
+					height: height,
 					// selectHelper: true,
 					select: function(start, end) {
 						me.filterDataForSelection(start, end, me.reservations);
 						me.$calendar.fullCalendar('renderEvent',me.selectedEvent);
 						me.$modal.modal('show');
 					},
+					selectOverlap: function(event) {
+						me.overlappingEvents.push(event);
+						me.overlappingEvents = me.overlappingEvents.unique();
+						return event;
+					},
+					unselect: function() {
+						me.overlappingEvents = [];
+					},
 					eventClick: function(event, element) {
-						var reservations = JSON.parse(JSON.stringify(me.reservations));
-						
-						reservations = reservations.filter(function(reservation) {
-							return reservation.id != event.id;
-						});
+						me.selectedEvent = event;
+						console.log(event);
+						if(event.editable) {
+							var reservations = JSON.parse(JSON.stringify(me.reservations));
+							reservations = reservations.filter(function(reservation) {
+								return reservation.id != event.id;
+							});
+							me.filterDataForSelection(event.start, event.end, reservations);
+							me.editingReservation = true;
+						} else {
+							me.showingReservation = true;
+						}
 
-						me.filterDataForSelection(event.start, event.end, reservations);
-
-						me.$modal.modal('show');
 						return false;
+					},
+					eventMouseover: function(event, jsEvent, view) {
+						var darkerColor = ColorLuminance(event.backgroundColor, -0.1);
+						$(this).css({
+							'background': darkerColor
+						});
+					},
+					eventMouseout: function(event) {
+						$(this).css({
+							'background' : event.backgroundColor
+						});
 					},
 					eventDrop: function(event, delta, revertFunc) {
 						$.ajax({
@@ -268,8 +364,6 @@ var timeToLaravelString = function(momentInstance) {
 				this.softwaresForDevice = experiments.map(function(experiment) {
 					return experiment.software;
 				});
-
-				this.selectedSoftware = this.softwaresForDevice[0];
 			},
 			filterInstances: function() {
 				var me = this;
@@ -278,17 +372,18 @@ var timeToLaravelString = function(momentInstance) {
 					if(experiment.device == me.selectedDevice &&
 					   experiment.software == me.selectedSoftware) {
 						me.selectedExperiment = experiment;
-						me.selectedInstance = me.selectedExperiment.instances[0];
 					}
-				});
+				});				
 			}
 		},
 		watch : {
 			selectedDevice : function(newVal, oldVal) {
 				this.filterSoftwares();
+				this.selectedSoftware = this.softwaresForDevice[0];
 			},
 			selectedSoftware: function(newVal, oldVal) {
 				this.filterInstances();
+				this.selectedInstance = this.selectedExperiment.instances[0];
 			},
 			selectedInstance : function(newVal, oldVal) {
 				this.selectedEvent.title = this.selectedDevice + " " + this.selectedSoftware + " " + newVal;
