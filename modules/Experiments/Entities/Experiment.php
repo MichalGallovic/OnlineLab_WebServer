@@ -19,12 +19,12 @@ class Experiment extends Model {
     }
 
     public function servers() {
-    	return $this->belongsToMany(Server::class,'physical_experiment');
+    	return $this->belongsToMany(Server::class,'physical_experiment')->whereNull('physical_experiment.deleted_at');
     }
 
     public function physicalDevices()
     {
-        return $this->belongsToMany(PhysicalDevice::class,'physical_experiment');
+        return $this->belongsToMany(PhysicalDevice::class,'physical_experiment')->whereNull('physical_experiment.deleted_at');
     }
 
     public function scopeOfDevice($query, $device)

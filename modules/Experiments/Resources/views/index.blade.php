@@ -5,8 +5,7 @@
 		<div class="panel-heading">
 			<div class="clearfix">
 				<h3 class="panel-title pull-left">Servers</h3>
-				<a href="{{ route('servers.sync') }}" class="btn btn-default btn-xs pull-right marginl20"><i class="glyphicon glyphicon-sort"></i> Sync experiments</a>
-				<a href="{{ route('servers.refreshStatus') }}" class="btn btn-info btn-xs pull-right marginl20"><i class="glyphicon glyphicon-refresh"></i> Refresh status</a>
+				<a href="{{ route('servers.sync') }}" class="btn btn-info btn-xs pull-right marginl20"><i class="glyphicon glyphicon-sort"></i> Sync servers</a>
 				<a href="{{ route('servers.create') }}" class="btn btn-success btn-xs pull-right"><i class="glyphicon glyphicon-plus"></i> Add server</a>
 			</div>
 		</div>
@@ -19,7 +18,7 @@
 				<h3 class="panel-title pull-left">Admin experiments</h3>
 			</div>
 		</div>
-		@include("experiments::experiments.partials.admin_index",['experiments' => $experiments, 'experimentInstances' => $adminExperimentInstances])
+		@include("experiments::experiments.partials.admin_index",['experiments' => $adminExperiments])
 	</div>
 
 	<div class="panel panel-primary">
@@ -28,7 +27,7 @@
 				<h3 class="panel-title pull-left">User experiments</h3>
 			</div>
 		</div>
-		@include("experiments::experiments.partials.user_index",['experiments' => $experiments, 'experimentInstances' => $experimentInstances])
+		@include("experiments::experiments.partials.user_index",['experiments' => $userExperiments])
 	</div>
 
 	<h3>Dávkové experimenty</h3>

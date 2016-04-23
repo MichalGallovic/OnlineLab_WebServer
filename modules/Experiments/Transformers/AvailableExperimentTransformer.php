@@ -4,7 +4,7 @@ namespace Modules\Experiments\Transformers;
 
 use League\Fractal\TransformerAbstract;
 use Modules\Experiments\Entities\Experiment;
-use Modules\Experiments\Entities\ServerExperiment;
+use Modules\Experiments\Entities\PhysicalExperiment;
 
 
 
@@ -21,15 +21,15 @@ class AvailableExperimentTransformer extends TransformerAbstract
 
 	public function transform(Experiment $experiment)
 	{
-		$experimentInstances = ServerExperiment::where('experiment_id', $experiment->id)->available()->get();
+		$this->experimentInstance = PhysicalExperiment::where('experiment_id', $experiment->id)->get()->unique('commands');
 
-		$this->experimentInstance = $experimentInstances->first();
+		dd($this->experimentInstance);
 		
 		return [
 			"id"	=>	$experiment->id,
 			"device" 		=>	$experiment->device->name,
 			"software"	=>	$experiment->software->name,
-			"instances"	=>	$experimentInstances->lists('device_name')->toArray()
+			"instances"	=>	$experiment->physicalDevices->lists('name')->toArray()
 		];
 	}
 

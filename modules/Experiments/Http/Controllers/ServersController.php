@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use App\Services\SystemService;
 use Modules\Experiments\Entities\Server;
 use Pingpong\Modules\Routing\Controller;
+use Modules\Experiments\Entities\PhysicalExperiment;
 use Modules\Experiments\Http\Requests\ServerRequest;
 use Modules\Experiments\Http\Requests\ServerUpdateRequest;
 
@@ -55,9 +56,13 @@ class ServersController extends Controller {
 
 	public function destroy(Request $request, $id)
 	{
-		Server::destroy($id);
-		$system = new SystemService();
-		$system->syncWithServers();
+		$server = Server::findOrFail($id);
+		$physicalExperiments = PhysicalExperiment::where('server_id',$server->id)->delete();
+		$server->physicalDevices()->delete();
+		$server->delete();
+
+		// $system = new SystemService();
+		// $system->syncWithServers();
 
 		return redirect()->back();
 	}

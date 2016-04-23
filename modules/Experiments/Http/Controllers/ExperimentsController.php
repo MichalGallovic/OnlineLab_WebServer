@@ -9,6 +9,7 @@ use Modules\Experiments\Entities\Server;
 use Pingpong\Modules\Routing\Controller;
 use Modules\Experiments\Entities\Software;
 use Modules\Experiments\Entities\Experiment;
+use Modules\Experiments\Entities\PhysicalDevice;
 use Modules\Experiments\Entities\ServerExperiment;
 use Modules\Experiments\Http\Requests\ServerRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -19,10 +20,12 @@ class ExperimentsController extends Controller {
 	public function index()
 	{
 		$servers = Server::all();
-		$experiments = Experiment::available()->get();
-		$experimentInstances = ServerExperiment::available()->get();
-		$adminExperimentInstances = ServerExperiment::all();
 
-		return view('experiments::index', compact('servers', 'experiments','experimentInstances','adminExperimentInstances'));
+		$adminExperiments = Experiment::has('physicalDevices')->get();
+		$userExperiments = Experiment::has('physicalDevices')->whereHas('servers', function($q) {
+			$q->available();
+		})->get();
+
+		return view('experiments::index', compact('servers', 'adminExperiments','userExperiments'));
 	}
 }

@@ -12,8 +12,10 @@
                     <td>{{ $experiment->device->name }}</td>
                     <td>{{ $experiment->software->name }}</td>
                     <td>
-                        @foreach($experimentInstances->where('experiment_id',$experiment->id) as $instance)
-                            <span class="label" style="background-color: {{ $instance->server->color }}">{{ $instance->server->name }}</span>
+                        @foreach($experiment->servers()->available()->get() as $server)
+                            @if($server->isAvailable())
+                                <span class="label" style="background-color: {{ $server->color }}">{{ $server->name }}</span>
+                            @endif
                         @endforeach
                     </td>
                 </tr>

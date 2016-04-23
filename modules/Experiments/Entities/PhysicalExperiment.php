@@ -22,6 +22,7 @@ class PhysicalExperiment extends Model {
     	"output_arguments" => "array"
     ];
     protected $with = ["experiment","server","physicalDevice"];
+
     protected $dates = ["deleted_at"];
 
     public function experiment()

@@ -24,7 +24,7 @@ class PhysicalDevice extends Model {
 
     public function experiments()
     {
-    	return $this->belongsToMany(Experiment::class,'physical_experiment');
+    	return $this->belongsToMany(Experiment::class,'physical_experiment')->whereNull('physical_experiment.deleted_at');
     }
 
 }
