@@ -39,6 +39,7 @@ class CreatePhysicalExperimentTable extends Migration {
             ->on('physical_devices')
             ->onUpdate('cascade');
 
+            $table->softDeletes();
             $table->timestamps();
         });
     }

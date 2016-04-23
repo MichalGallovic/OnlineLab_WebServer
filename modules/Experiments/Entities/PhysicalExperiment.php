@@ -3,9 +3,12 @@
 use Illuminate\Database\Eloquent\Model;
 use Modules\Experiments\Entities\Server;
 use Modules\Experiments\Entities\Experiment;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Experiments\Entities\PhysicalDevice;
 
 class PhysicalExperiment extends Model {
+
+    use SoftDeletes;
 
 	protected $table = "physical_experiment";
     protected $fillable = [
@@ -19,6 +22,7 @@ class PhysicalExperiment extends Model {
     	"output_arguments" => "array"
     ];
     protected $with = ["experiment","server","physicalDevice"];
+    protected $dates = ["deleted_at"];
 
     public function experiment()
     {

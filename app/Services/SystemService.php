@@ -71,7 +71,7 @@ class SystemService
 
 		$availablePhysicalDevices = new Collection();
 		foreach($rtPhysicalDevices as $rtDevice) {
-			$physicalDevice = PhysicalDevice::whereHas('device', function($q) use ($rtDevice) {
+			$physicalDevice = PhysicalDevice::withTrashed()->whereHas('device', function($q) use ($rtDevice) {
 				$q->where('name',$rtDevice['name']);
 			})->where('name',$rtDevice['device_name'])->firstOrCreate([
 				"device_id"	=>	Device::where('name',$rtDevice['name'])->first()->id,
@@ -79,19 +79,22 @@ class SystemService
 				"name"		=>	$rtDevice['device_name']
 			]);
 
+			if($physicalDevice->trashed()) {
+				$physicalDevice->restore();
+			}
+
 			$physicalDevice->status = $rtDevice['status'];
 			$physicalDevice->save();
 			$availablePhysicalDevices->push($physicalDevice);
 		}
 		PhysicalDevice::whereNotIn('id',$availablePhysicalDevices->lists('id')->toArray())->get()->each(function($physicalDevice) {
-			$physicalDevice->status = "offline";
-			$physicalDevice->save();
+			$physicalDevice->delete();
 		});
 
 
 		// Syncing physical experiments
 		$rtPhysicalExperiments = $this->system->physicalExperiments();
-
+		$availablePhysicalExperiments = new Collection();
 		foreach ($rtPhysicalExperiments as $rtPhysicalExperiment) {
 			$experiment = Experiment::whereHas('device', function($q) use ($rtPhysicalExperiment) {
 				$q->where('name',$rtPhysicalExperiment['device']);
@@ -104,18 +107,28 @@ class SystemService
 			$physicalDevice = PhysicalDevice::where('name', $rtPhysicalExperiment['device_name'])
 			->where('server_id', $server->id)->first();
 
-			$physicalExperiment = PhysicalExperiment::where('experiment_id',$experiment->id)
+			$physicalExperiment = PhysicalExperiment::withTrashed()->where('experiment_id',$experiment->id)
 			->where('server_id',$server->id)->where('physical_device_id', $physicalDevice->id)->firstOrCreate([
 					"server_id"	=>	$server->id,
 					"experiment_id"	=>	$experiment->id,
 					"physical_device_id"	=>	$physicalDevice->id
 				]);
 
+			if($physicalExperiment->trashed()) {
+				$physicalExperiment->restore();
+			}
+
 			$physicalExperiment->commands = Arr::get($rtPhysicalExperiment,"input_arguments.data");
 			$physicalExperiment->output_arguments = Arr::get($rtPhysicalExperiment,"output_arguments.data");
 			$physicalExperiment->experiment_commands = Arr::get($rtPhysicalExperiment,"experiment_commands.data");
 			$physicalExperiment->save();
-		}	
+
+			$availablePhysicalExperiments->push($physicalExperiment);
+		}
+
+		PhysicalExperiment::whereNotIn('id',$availablePhysicalExperiments->lists('id')->toArray())->get()->each(function($physicalExperiment) {
+			$physicalExperiment->delete();
+		});
 
 		$this->updateAvailability();
 	}
