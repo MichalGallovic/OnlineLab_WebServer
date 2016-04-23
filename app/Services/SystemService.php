@@ -12,7 +12,9 @@ use App\Classes\ApplicationServer\System;
 use Modules\Experiments\Entities\Software;
 use App\Repositories\ExperimentsRepository;
 use Modules\Experiments\Entities\Experiment;
+use Modules\Experiments\Entities\PhysicalDevice;
 use Modules\Experiments\Entities\ServerExperiment;
+use Modules\Experiments\Entities\PhysicalExperiment;
 
 /**
 * System service
@@ -33,107 +35,87 @@ class SystemService
 		$servers = $this->system->getServers();
 		foreach ($servers as $server) {
 			$serverModel = Server::where('ip',$server->getIp())->first();
-			$serverModel->available = $server->getAvailability();
 			$serverModel->reachable = $server->getReachable();
 			$serverModel->database = $server->getDatabaseAvailable();
-			$serverModel->queue = $server->getQueueAvailable();
-			$serverModel->redis = $server->getRedisAvailable();
 			$serverModel->save();
 		}
 	}
 
 	public function syncWithServers()
 	{
-		$appServerExperiments = $this->system->uniqueExperiments();
+		// Syncing devics, softwares and experiments
+		$rtExperiments = $this->system->experiments();
 
-		$webServerExperiments = Experiment::all();
 
-		$newExperiments = new Collection();
-		$webServerToActivate = new Collection();
-
-		foreach ($appServerExperiments as $appServerExperiment) {
-			$isNew = true;
-
-			foreach ($webServerExperiments as $webServerExperiment) {
-				if($webServerExperiment->device->name == $appServerExperiment["device"] &&
-					$webServerExperiment->software->name == $appServerExperiment["software"]) {
-					$webServerToActivate->push($webServerExperiment);
-					$isNew = false;
-					break;
-				}
-			}
-			if($isNew) {
-				$newExperiments->push($appServerExperiment);
-			}
-		}
-
-		$webServerToDeactivate = $webServerExperiments->diff($webServerToActivate);
-
-		foreach ($webServerToDeactivate as $experiment) {
-			$experiment->available = false;
-			$experiment->save();
-		}
-
-		foreach ($webServerToActivate as $experiment) {
-			$experiment->available = true;
-			$experiment->save();
-		}
-
-		foreach ($newExperiments as $experiment) {
+		foreach($rtExperiments as $rtExperiment) {
 			$device = Device::firstOrCreate([
-					"name"	=>	$experiment["device"]
+					"name"	=>	$rtExperiment["device"]
 				]);
 			$software = Software::firstOrCreate([
-					"name"	=>	$experiment["software"]
+					"name"	=>	$rtExperiment["software"]
 				]);
-			$experiment = new Experiment;
-			$experiment->device()->associate($device);
-			$experiment->software()->associate($software);
-			$experiment->available = true;
-			$experiment->save();
+
+			$experiment = Experiment::whereHas('device', function($q) use ($rtExperiment) {
+				$q->where('name',$rtExperiment['device']);
+			})->whereHas('software', function($q) use ($rtExperiment) {
+				$q->where('name',$rtExperiment['software']);
+			})->firstOrCreate([
+				"device_id"	=>	$device->id,
+				"software_id"	=>	$software->id,
+			]);
 		}
 
 
+		// Syncing physical devices
+		$rtPhysicalDevices = $this->system->devices();
 
-		$experiments = Experiment::all();
-		$experimentInstances = $this->system->experiments()->groupBy('ip');
+		$availablePhysicalDevices = new Collection();
+		foreach($rtPhysicalDevices as $rtDevice) {
+			$physicalDevice = PhysicalDevice::whereHas('device', function($q) use ($rtDevice) {
+				$q->where('name',$rtDevice['name']);
+			})->where('name',$rtDevice['device_name'])->firstOrCreate([
+				"device_id"	=>	Device::where('name',$rtDevice['name'])->first()->id,
+				"server_id"	=>	Server::where('ip',$rtDevice['ip'])->first()->id,
+				"name"		=>	$rtDevice['device_name']
+			]);
 
-		$availableExperimentInstances = new Collection();
-				
-		foreach ($experimentInstances as $ip => $serverExperiments) {
-			foreach ($serverExperiments as $experiment) {
-
-				$serverIp = str_replace("/", "", $ip);
-				$server = $this->servers->where('ip',$serverIp)->first();
-				
-				$webServerExperiment = Experiment::whereHas("device", function($q) use ($experiment) {
-					$q->where('name',$experiment["device"]);
-				})->whereHas("software", function($q) use ($experiment) {
-					$q->where('name',$experiment["software"]);
-				})->first();
-				
-
-				$device_name = Arr::get($experiment,"device_name",str_random(5));
-				$server_experiment = ServerExperiment::where("experiment_id",$webServerExperiment->id)
-				->where("server_id",$server->id)->where("device_name",$device_name)->firstOrCreate([
-						"server_id"	=>	$server->id,
-						"experiment_id"	=>	$webServerExperiment->id,
-						"device_name"	=>	$device_name
-					]);
-
-				$server_experiment->commands = Arr::get($experiment,"input_arguments.data");
-				$server_experiment->output_arguments = Arr::get($experiment,"output_arguments.data");
-				$server_experiment->experiment_commands = Arr::get($experiment,"experiment_commands.data");
-				$server_experiment->status = Arr::get($experiment,"status");
-				$server_experiment->save();
-
-				$availableExperimentInstances->push($server_experiment);
-			}
+			$physicalDevice->status = $rtDevice['status'];
+			$physicalDevice->save();
+			$availablePhysicalDevices->push($physicalDevice);
 		}
-	
-		ServerExperiment::all()->diff($availableExperimentInstances)->each(function($server_experiment) {
-			$server_experiment->status = "offline";
-		});		
+		PhysicalDevice::whereNotIn('id',$availablePhysicalDevices->lists('id')->toArray())->get()->each(function($physicalDevice) {
+			$physicalDevice->status = "offline";
+			$physicalDevice->save();
+		});
+
+
+		// Syncing physical experiments
+		$rtPhysicalExperiments = $this->system->physicalExperiments();
+
+		foreach ($rtPhysicalExperiments as $rtPhysicalExperiment) {
+			$experiment = Experiment::whereHas('device', function($q) use ($rtPhysicalExperiment) {
+				$q->where('name',$rtPhysicalExperiment['device']);
+			})->whereHas('software', function($q) use ($rtPhysicalExperiment) {
+				$q->where('name',$rtPhysicalExperiment['software']);
+			})->first();
+
+			$server = Server::where('ip', $rtPhysicalExperiment['ip'])->first();
+
+			$physicalDevice = PhysicalDevice::where('name', $rtPhysicalExperiment['device_name'])
+			->where('server_id', $server->id)->first();
+
+			$physicalExperiment = PhysicalExperiment::where('experiment_id',$experiment->id)
+			->where('server_id',$server->id)->where('physical_device_id', $physicalDevice->id)->firstOrCreate([
+					"server_id"	=>	$server->id,
+					"experiment_id"	=>	$experiment->id,
+					"physical_device_id"	=>	$physicalDevice->id
+				]);
+
+			$physicalExperiment->commands = Arr::get($rtPhysicalExperiment,"input_arguments.data");
+			$physicalExperiment->output_arguments = Arr::get($rtPhysicalExperiment,"output_arguments.data");
+			$physicalExperiment->experiment_commands = Arr::get($rtPhysicalExperiment,"experiment_commands.data");
+			$physicalExperiment->save();
+		}	
 
 		$this->updateAvailability();
 	}

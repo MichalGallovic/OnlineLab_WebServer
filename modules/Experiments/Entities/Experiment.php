@@ -19,12 +19,12 @@ class Experiment extends Model {
     }
 
     public function servers() {
-    	return $this->belongsToMany(Server::class)->withPivot('status');
+    	return $this->belongsToMany(Server::class,'physical_experiment');
     }
 
-    public function scopeAvailable($query)
+    public function physicalDevices()
     {
-        return $query->where('available', true);
+        return $this->belongsToMany(PhysicalDevice::class,'physical_experiment');
     }
 
     public function scopeOfDevice($query, $device)

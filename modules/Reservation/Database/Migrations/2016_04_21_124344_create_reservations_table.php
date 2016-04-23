@@ -16,7 +16,7 @@ class CreateReservationsTable extends Migration {
         {
             $table->increments('id');
             $table->integer('user_id')->unsigned();
-            $table->integer('experiment_server_id')->unsigned();
+            $table->integer('physical_device_id')->unsigned();
             $table->dateTime("start");
             $table->dateTime("end");
 
@@ -25,9 +25,9 @@ class CreateReservationsTable extends Migration {
                 ->on('users')
                 ->onUpdate('cascade');
 
-            $table->foreign("experiment_server_id")
+            $table->foreign("physical_device_id")
                 ->references('id')
-                ->on("experiment_server")
+                ->on("physical_devices")
                 ->onUpdate('cascade');
 
             $table->timestamps();

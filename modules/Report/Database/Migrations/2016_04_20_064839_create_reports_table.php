@@ -15,7 +15,7 @@ class CreateReportsTable extends Migration {
         Schema::create('reports', function(Blueprint $table)
         {
             $table->increments('id');
-            $table->integer('experiment_server_id')->unsigned();
+            $table->integer('physical_experiment_id')->unsigned();
             $table->integer('user_id')->unsigned();
 
             $table->text('input')->nullable();
@@ -25,9 +25,9 @@ class CreateReportsTable extends Migration {
             $table->integer("sampling_rate")->nullable();
             $table->boolean("filled")->default(false);
 
-            $table->foreign("experiment_server_id")
+            $table->foreign("physical_experiment_id")
             ->references('id')
-            ->on("experiment_server")
+            ->on("physical_experiment")
             ->onUpdate('cascade');
 
             $table->foreign('user_id')

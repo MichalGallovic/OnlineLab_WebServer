@@ -29,14 +29,19 @@ class System
 		$this->ips = $ips;
 	}
 
-	public function experiments()
+	public function physicalExperiments()
 	{
 		return $this->getExperiments();
 	}
 
-	public function uniqueExperiments()
+	public function devices()
 	{
-		$experiments = $this->experiments()->unique(function($item) {
+		return $this->getDevices();
+	}
+
+	public function experiments()
+	{
+		$experiments = $this->physicalExperiments()->unique(function($item) {
 			return $item["device"].$item["software"];
 		});
 
@@ -68,6 +73,17 @@ class System
 		}
 
 		return $experiments;
+	}
+
+	protected function getDevices()
+	{
+		$devices = new Collection();
+
+		foreach($this->servers as $server) {
+			$devices = $devices->merge($server->devices());
+		}
+
+		return $devices;
 	}
 
 	protected function initServers(array $ips)

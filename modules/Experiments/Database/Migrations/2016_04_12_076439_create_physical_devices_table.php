@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateExperimentServerTable extends Migration {
+class CreatePhysicalDevicesTable extends Migration {
 
     /**
      * Run the migrations.
@@ -12,28 +12,24 @@ class CreateExperimentServerTable extends Migration {
      */
     public function up()
     {
-        Schema::create('experiment_server', function(Blueprint $table)
+        Schema::create('physical_devices', function(Blueprint $table)
         {
             $table->increments('id');
-            
             $table->integer('server_id')->unsigned();
-            $table->integer('experiment_id')->unsigned();
-            $table->string("device_name");
-            $table->enum('status', ['offline','ready','experimenting']);
+            $table->integer('device_id')->unsigned();
 
-            $table->text("commands")->nullable();
-            $table->text("experiment_commands")->nullable();
-            $table->text("output_arguments")->nullable();
+            $table->string('name');
+            $table->enum('status', ['offline','ready','experimenting'])->default('offline');
 
             $table->foreign('server_id')
             ->references('id')
             ->on('servers')
             ->onUpdate('cascade');
 
-            $table->foreign('experiment_id')
+            $table->foreign('device_id')
             ->references('id')
-            ->on('experiments')
-            ->onUpdate('cascade');
+            ->on('devices')
+            ->onUpdate('cascade');            
 
             $table->timestamps();
         });
@@ -46,7 +42,7 @@ class CreateExperimentServerTable extends Migration {
      */
     public function down()
     {
-        Schema::drop('experiment_server');
+        Schema::drop('physical_devices');
     }
 
 }
