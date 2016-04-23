@@ -14,7 +14,7 @@ class Server extends Model {
 
     public function experiments()
     {
-    	return $this->belongsToMany(Experiment::class,'physical_experiment');
+    	return $this->belongsToMany(Experiment::class,'physical_experiment')->whereNull('physical_experiment.deleted_at');
     }
 
     public function physicalDevices()
@@ -27,6 +27,11 @@ class Server extends Model {
         return $query->where('production', true)
         ->where('disabled', false)->where('database', true)
         ->where('reachable', true);
+    }
+
+    public function isAvailable()
+    {
+        return !$this->disabled && $this->database && $this->reachable;
     }
 
     public function scopeHasExperiments($query)

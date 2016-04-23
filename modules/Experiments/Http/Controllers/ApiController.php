@@ -17,8 +17,8 @@ class ApiController extends ApiBaseController {
 	
 	public function experiments()
 	{
-		$experiment_ids = ServerExperiment::available()->get()->unique('experiment_id')->lists('experiment_id')->toArray();
-		$experiments = Experiment::find($experiment_ids);
+		// $experiment_ids = ServerExperiment::available()->get()->unique('experiment_id')->lists('experiment_id')->toArray();
+		$experiments = Experiment::has('physicalDevices')->get();
 
 		return $this->respondWithCollection($experiments, new AvailableExperimentTransformer);
 	}

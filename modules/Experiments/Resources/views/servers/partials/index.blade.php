@@ -11,7 +11,7 @@
                 <tr>
                     <td>{{ $server->id }}</td>
                     <td>
-                    @if($server->available && !$server->disabled)
+                    @if($server->isAvailable())
                         <span class="label" style="background-color: {{ $server->color }}">{{ $server->name }}</span>
                     @else
                         <span class="label label-danger">{{ $server->name }}</span>
@@ -20,12 +20,6 @@
                         @else
                             @if(! $server->database)
                                 <span class="label label-warning">database</span>
-                            @endif
-                            @if(! $server->redis)
-                                <span class="label label-warning">redis</span>
-                            @endif
-                            @if(! $server->queue)
-                                <span class="label label-warning">queue</span>
                             @endif
                             @if($server->disabled)
                                 <span class="label label-warning">disabled</span>
@@ -43,8 +37,10 @@
                         @endif
                     </td>
                     <td>
-                        @foreach($server->experiments as $experiment)
-                            {{ $experiment->device->name }} - {{ $experiment->software->name }}
+                        @foreach($server->experiments->sortBy('device') as $experiment)
+                            <span class="label label-primary">
+                                {{ $experiment->device->name }} - {{ $experiment->software->name }}
+                            </span><br>
                         @endforeach
                     </td>
                     <td class="col-md-1">

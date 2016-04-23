@@ -30,18 +30,32 @@ class SystemService
 		$this->system = new System($this->servers->lists('ip')->toArray());
 	}
 
+	public function syncWithServers()
+	{
+		$this->updateAvailability();
+		$this->syncExperiments();
+		$this->syncPhysicalDevices();
+		$this->syncPhysicalExperiments();
+	}
+
 	public function updateAvailability()
 	{
+		$this->servers = Server::withTrashed()->get();
+		$this->system = new System($this->servers->lists('ip')->toArray());
+
 		$servers = $this->system->getServers();
 		foreach ($servers as $server) {
-			$serverModel = Server::where('ip',$server->getIp())->first();
+			$serverModel = Server::withTrashed()->where('ip',$server->getIp())->first();
+			if($serverModel->trashed() && $server->getReachable() && $server->getDatabaseAvailable()) {
+				$serverModel->restore();
+			}
 			$serverModel->reachable = $server->getReachable();
 			$serverModel->database = $server->getDatabaseAvailable();
 			$serverModel->save();
 		}
 	}
 
-	public function syncWithServers()
+	public function syncExperiments()
 	{
 		// Syncing devics, softwares and experiments
 		$rtExperiments = $this->system->experiments();
@@ -64,8 +78,10 @@ class SystemService
 				"software_id"	=>	$software->id,
 			]);
 		}
+	}
 
-
+	public function syncPhysicalDevices()
+	{
 		// Syncing physical devices
 		$rtPhysicalDevices = $this->system->devices();
 
@@ -90,8 +106,10 @@ class SystemService
 		PhysicalDevice::whereNotIn('id',$availablePhysicalDevices->lists('id')->toArray())->get()->each(function($physicalDevice) {
 			$physicalDevice->delete();
 		});
+	}
 
-
+	public function syncPhysicalExperiments()
+	{
 		// Syncing physical experiments
 		$rtPhysicalExperiments = $this->system->physicalExperiments();
 		$availablePhysicalExperiments = new Collection();
@@ -129,7 +147,5 @@ class SystemService
 		PhysicalExperiment::whereNotIn('id',$availablePhysicalExperiments->lists('id')->toArray())->get()->each(function($physicalExperiment) {
 			$physicalExperiment->delete();
 		});
-
-		$this->updateAvailability();
 	}
 }
