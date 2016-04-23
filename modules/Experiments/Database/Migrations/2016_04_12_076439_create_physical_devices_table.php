@@ -31,6 +31,7 @@ class CreatePhysicalDevicesTable extends Migration {
             ->on('devices')
             ->onUpdate('cascade');            
 
+            $table->softDeletes();
             $table->timestamps();
         });
     }

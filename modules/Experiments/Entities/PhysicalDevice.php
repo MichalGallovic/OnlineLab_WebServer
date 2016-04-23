@@ -3,10 +3,14 @@
 use Illuminate\Database\Eloquent\Model;
 use Modules\Experiments\Entities\Device;
 use Modules\Experiments\Entities\Server;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PhysicalDevice extends Model {
 
+    use SoftDeletes;
+
     protected $fillable = ["server_id","device_id","status","name"];
+    protected $dates = ["deleted_at"];
 
     public function server()
     {
@@ -20,7 +24,7 @@ class PhysicalDevice extends Model {
 
     public function experiments()
     {
-    	return $this->belongsToMany(Experiment::class,'experiment_server');
+    	return $this->belongsToMany(Experiment::class,'physical_experiment');
     }
 
 }
