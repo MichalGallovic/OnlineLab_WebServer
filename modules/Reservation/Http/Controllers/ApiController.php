@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Pingpong\Modules\Routing\Controller;
 use App\Http\Controllers\ApiBaseController;
 use Modules\Reservation\Entities\Reservation;
