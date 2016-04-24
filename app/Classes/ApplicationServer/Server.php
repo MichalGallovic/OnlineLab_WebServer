@@ -131,6 +131,11 @@ class Server
     	$this->available = $this->serverAvailable();
     }
 
+    public function success()
+    {
+    	return $this->serverAvailable();
+    }
+
     protected function serverAvailable()
     {
     	return ($this->lastResponseCode / 100) != 5 && 

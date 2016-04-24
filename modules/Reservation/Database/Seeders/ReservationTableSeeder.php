@@ -5,6 +5,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Reservation\Entities\Reservation;
+use Modules\Experiments\Entities\PhysicalDevice;
 use Modules\Experiments\Entities\ServerExperiment;
 
 class ReservationTableSeeder extends Seeder {
@@ -19,11 +20,11 @@ class ReservationTableSeeder extends Seeder {
 		Model::unguard();
 			
 		$users = User::all();
-		$experimentInstances = ServerExperiment::all();
+		$physicalDevices = PhysicalDevice::all();
 
-		foreach (range(0,10000) as $i) {
+		foreach (range(0,1000) as $i) {
 			$user = $users->random();
-			$instance = $experimentInstances->random();
+			$physicalDevice = $physicalDevices->random();
 			$start = Carbon::now()->addWeeks(rand(0,10))->addMinutes(rand(1,20)*20);
 			$seconds = $start->second;
 			$minutes = $start->minute;
@@ -32,9 +33,9 @@ class ReservationTableSeeder extends Seeder {
 			$start = $start->toDateTimeString();
 			$end = $end->addMinutes(rand(1,20)*10);
 
-			$reservation = Reservation::where('experiment_server_id',$instance->id)
+			$reservation = Reservation::where('physical_device_id',$physicalDevice->id)
 				->collidingWith(new Carbon($start), new Carbon($end))->firstOrCreate([
-					"experiment_server_id" => $instance->id,
+					"physical_device_id" => $physicalDevice->id,
 					"user_id" => $user->id,
 					'start' => $start,
 					'end' => $end

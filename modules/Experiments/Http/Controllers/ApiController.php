@@ -9,8 +9,10 @@ use Pingpong\Modules\Routing\Controller;
 use App\Http\Controllers\ApiBaseController;
 use App\Services\ExperimentInstanceService;
 use Modules\Experiments\Entities\Experiment;
+use Modules\Experiments\Entities\PhysicalDevice;
 use Modules\Experiments\Entities\ServerExperiment;
 use Modules\Experiments\Entities\PhysicalExperiment;
+use Modules\Experiments\Transformers\DeviceTransformer;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Modules\Experiments\Http\Requests\QueueExperimentRequest;
 use Modules\Experiments\Http\Requests\ServerExperimentStatusRequest;
@@ -33,6 +35,15 @@ class ApiController extends ApiBaseController {
 		}
 
 		return $this->respondWithCollection($physicalExperiments, new AvailableExperimentTransformer);
+	}
+
+	public function devices()
+	{
+		$physicalDevices = PhysicalDevice::whereHas('server', function($q) {
+			$q->available();
+		})->get();
+
+		return $this->respondWithCollection($physicalDevices, new DeviceTransformer);
 	}
 
 	public function queue(QueueExperimentRequest $request, $id)

@@ -23,8 +23,7 @@ class NewReservationRequest extends FormRequest {
 	{
 		return [
 			"device" 	=>	"required|string",
-			"software"	=>	'required|string',
-			'instance'	=>	'required|string',
+			"physical_device"	=>	'required|string',
 			'start'		=>	'required|date',
 			'end'		=>	'required|date'
 		];
