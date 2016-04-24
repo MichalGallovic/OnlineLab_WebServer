@@ -105,6 +105,12 @@
     @foreach(Auth::user()->user->threads as $thread)
         // socket.on('notification-channel:App\\Events\\CommentAdded{{$thread->id}}', myNotify);
     @endforeach
+    var Laravel = {
+        user: {
+            id: {{ Auth::user()->user->id }},
+            role: '{{ Auth::user()->user->role }}'
+        }
+    };
 </script>
 @yield('page_js')
 </body>

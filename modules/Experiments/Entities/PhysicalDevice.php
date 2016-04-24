@@ -27,4 +27,21 @@ class PhysicalDevice extends Model {
     	return $this->belongsToMany(Experiment::class,'physical_experiment')->whereNull('physical_experiment.deleted_at');
     }
 
+    public function scopeReady($query)
+    {
+        return $query->where('status','ready');
+    }
+
+    public function scopeOfDevice($query, $deviceName)
+    {
+        return $query->whereHas('device', function($q) use ($deviceName) {
+            $q->where('name', $deviceName);
+        });
+    }
+
+    public function scopeOfName($query, $name)
+    {
+        return $query->where('name', $name);
+    }
+
 }

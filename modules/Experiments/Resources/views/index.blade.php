@@ -42,14 +42,21 @@
 					</select>
 				</div>
 				<div class="form-group" v-show="experiments && selectedExperiment">
-					<olm-input
-					label="Run on instance"
-					name="instance"
-					type="radio"
-					default="none"
-					:values="selectedExperiment.instances"
-					>
-					</olm-input>
+					<div class="row" style="margin-top:10px">
+						<div v-el:input class="form-group">
+							<label 
+							class="control-label col-xs-12"
+							>Run on instance</label>
+							<div class="col-xs-12">
+								<span v-for="(index, instance) in selectedExperiment.instances" >
+									<label class="radio-inline">
+									  <input v-model="selected.instance" type="radio" name="@{{ instance.name }}[]" value="@{{ instance.name }}"> @{{ instance.name }}
+									  <span class="label label-warning" v-show="!instance.production">testing</span>
+									</label>
+								</span>
+							</div>
+						</div>
+					</div>
 				</div>
 				<div class="form-group" v-for="commandName in selectedExperiment.experiment_commands">
 					<span 
@@ -122,5 +129,6 @@
 	@parent
 	<script type="text/javascript" src="{{ asset('js/animations.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('js/experiments/js/vue.min.js') }}"></script>
+	<script src="{{ asset('js/underscore-min.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('js/experiments/js/queue.js') }}"></script>
 @stop

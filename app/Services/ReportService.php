@@ -4,7 +4,8 @@ namespace App\Services;
 
 use App\User;
 use Modules\Report\Entities\Report;
-use Modules\Experiments\Entities\ServerExperiment;
+use Modules\Experiments\Entities\PhysicalDevice;
+use Modules\Experiments\Entities\PhysicalExperiment;
 /**
 * Report Service
 */
@@ -17,14 +18,14 @@ class ReportService
 		$this->report = $report;
 	}
 
-	public function create(User $user, ServerExperiment $instance, array $input)
+	public function create(User $user, PhysicalExperiment $physicalExperiment, array $input)
 	{
 		$this->report = new Report;
-		$this->report->experimentInstance()->associate($instance);
+		$this->report->physicalExperiment()->associate($physicalExperiment);
 		$this->report->user()->associate($user);
 		$this->report->input = $input;
 		$this->report->save();
-
+		
 		return $this->report->id;
 	}
 

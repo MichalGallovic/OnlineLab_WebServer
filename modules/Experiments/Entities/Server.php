@@ -29,6 +29,12 @@ class Server extends Model {
         ->where('reachable', true);
     }
 
+    public function scopeAvailableForAdmin($query)
+    {
+        return $query->where('disabled', false)->where('database', true)
+        ->where('reachable', true);
+    }
+
     public function isAvailable()
     {
         return !$this->disabled && $this->database && $this->reachable;

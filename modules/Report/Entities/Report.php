@@ -3,6 +3,7 @@
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Experiments\Entities\ServerExperiment;
+use Modules\Experiments\Entities\PhysicalExperiment;
 
 class Report extends Model {
 
@@ -12,9 +13,9 @@ class Report extends Model {
 	    "output" => "array"
     ];
 
-    public function experimentInstance()
+    public function physicalExperiment()
     {
-    	return $this->belongsTo(ServerExperiment::class,"experiment_server_id");
+    	return $this->belongsTo(PhysicalExperiment::class);
     }
 
     public function user()

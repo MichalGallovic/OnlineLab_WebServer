@@ -91,20 +91,65 @@ Vue.config.devtools = true;
 		"el" : "#queueApp",
 		data: {
 			"selectedExperiment" : null,
-			"experiments" : null
+			"experiments" : null,
+            "physicalExperiments": null,
+            selected : {
+                instance : null
+            }
 		},
 		ready: function() {
 			var me = this;
 			this.getExperiments().done(function(response) {
+                me.physicalExperiments = _.chain(response.data).map(function(experiment) {
+                    experiment.commands = experiment.commands.data;
+                    experiment.experiment_commands = experiment.experiment_commands.data;
+                    return experiment;
+                }).value();
 
-				me.experiments = response.data.map(function(experiment) {
-					experiment.commands = experiment.commands.data;
-					experiment.experiment_commands = experiment.experiment_commands.data;
-					return experiment;
-				});
-				me.selectedExperiment = me.experiments[0]
+                var experiments = JSON.parse(JSON.stringify(me.physicalExperiments));
+                me.experiments = _.chain(experiments).groupBy('experiment_id').map(function(experiments) {
+                    var experiment = _.first(experiments);
+                    experiment.instances = _.map(experiments, function(experiment) {
+                        return {
+                            name: experiment.physical_device,
+                            production: experiment.production
+                        }
+                    });
+                    return experiment;
+                }).value();
+
+    			me.selectedExperiment = me.experiments[0]
 			});
 		},
+        watch: {
+            selectedExperiment: function(newSelection, oldVal) {
+                if(Laravel.user.role == 'admin') {
+                    this.selected.instance = this.selectedExperiment.instances[0].name;
+                } else {
+                    if(this.selectedExperiment.instances.length == 1) {
+                        this.selected.instance = this.selectedExperiment.instances[0].name;
+                    } else {
+                        this.selected = {
+                            instance: null
+                        }
+                    }
+                }
+            },
+            selected : {
+                handler: function(val, oldVal) {
+                    var me = this;
+                    if(Laravel.user.role == 'admin') {
+                        var selectedExperiment = _.find(this.physicalExperiments, function(experiment) {
+                            return experiment.physical_device == me.selected.instance;
+                        });
+
+                        this.selectedExperiment.commands = selectedExperiment.commands;
+                        this.selectedExperiment.experiment_commands = selectedExperiment.experiment_commands;
+                    }
+                },
+                deep: true
+            }
+        },
 		methods : {
 			runExperiment: function() {
 				var me = this;
@@ -118,6 +163,7 @@ Vue.config.devtools = true;
 
 				$.when.apply($, promises).then(function() {
 					var data = me.makeRequestData(arguments);
+                    console.log(data);
 					me.postQueueExperiment(data)
 					.done(function(response) {
 						console.log(response);
@@ -135,15 +181,12 @@ Vue.config.devtools = true;
 					request.input[command] = {};
 				});
 				$.each(inputs, function(index, input) {
-
                     if(input.command) {
                         request.input[input.command][input.name] = input.value;
-                    } else {
-                        if(input.name == "instance") {
-                            request.instance = input.value;
-                        }
-                    }
+                    } 
 				});
+
+                request.instance = this.selected.instance;
 
 				return request;
 			},
@@ -154,7 +197,7 @@ Vue.config.devtools = true;
 				var me = this;
 				return $.ajax({
 					"type" : "POST",
-					"url" : "/api/experiments/" + me.selectedExperiment.id +"/queue",
+					"url" : "/api/experiments/" + me.selectedExperiment.experiment_id +"/queue",
 					"data" : data
 				});
 			}
