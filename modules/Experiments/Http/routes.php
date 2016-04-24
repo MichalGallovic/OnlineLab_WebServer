@@ -20,4 +20,5 @@ Route::group(["prefix" => "api", "namespace" => 'Modules\Experiments\Http\Contro
 	Route::get("experiments", ['uses' => 'ApiController@experiments']);
 	Route::post("experiments/{id}/queue", ['uses' => 'ApiController@queue']);
 	Route::post("experiments/status",['uses' => 'ApiController@updateStatus']);
+	Route::get('devices', ['uses' => 'ApiController@devices']);
 });

@@ -52,64 +52,64 @@ class ExperimentsTableSeeder extends Seeder {
 			"reachable"		=>	1
 		]);
 
-		// $device = Device::create([
-		// 	"name"	=>	"tos1a"
-		// ]);
+		$device = Device::create([
+			"name"	=>	"tos1a"
+		]);
 
-		// PhysicalDevice::create([
-		// 	'server_id' => $server100->id,
-		// 	'device_id' => $device->id,
-		// 	'name' => str_random(3),
-		// 	'status' => 'ready'
-		// ]);
+		PhysicalDevice::create([
+			'server_id' => $server100->id,
+			'device_id' => $device->id,
+			'name' => str_random(3),
+			'status' => 'ready'
+		]);
 
-		// PhysicalDevice::create([
-		// 	'server_id' => $server200->id,
-		// 	'device_id' => $device->id,
-		// 	'name' => str_random(3),
-		// 	'status' => 'ready'
-		// ]);
+		PhysicalDevice::create([
+			'server_id' => $server200->id,
+			'device_id' => $device->id,
+			'name' => str_random(3),
+			'status' => 'ready'
+		]);
 
-		// Software::create([
-		// 	"name" => "openloop"
-		// ]);
-		// Software::create([
-		// 	"name" => "matlab"
-		// ]);
-		// Software::create([
-		// 	"name" => "scilab"
-		// ]);
-		// Software::create([
-		// 	"name" => "openmodelica"
-		// ]);
+		Software::create([
+			"name" => "openloop"
+		]);
+		Software::create([
+			"name" => "matlab"
+		]);
+		Software::create([
+			"name" => "scilab"
+		]);
+		Software::create([
+			"name" => "openmodelica"
+		]);
 
 
-		// $devices = Device::all();
-		// $softwares = Software::all();
+		$devices = Device::all();
+		$softwares = Software::all();
 
-		// foreach ($devices as $device) {
-		// 	foreach ($softwares as $software) {
-		// 		$experiment = new Experiment;
-		// 		$experiment->device()->associate($device);
-		// 		$experiment->software()->associate($software);
-		// 		$experiment->save();
-		// 	}
-		// }
+		foreach ($devices as $device) {
+			foreach ($softwares as $software) {
+				$experiment = new Experiment;
+				$experiment->device()->associate($device);
+				$experiment->software()->associate($software);
+				$experiment->save();
+			}
+		}
 
-		// $servers = Server::all();
-		// $experiments = Experiment::all();
-		// $physicalDevices = PhysicalDevice::all();
+		$servers = Server::all();
+		$experiments = Experiment::all();
+		$physicalDevices = PhysicalDevice::all();
 
-		// foreach ($servers as $server) {
-		// 	foreach ($experiments as $experiment) {
-		// 		$instance = PhysicalExperiment::create([
-		// 			"server_id" 	=>	$server->id,
-		// 			"experiment_id"	=>	$experiment->id,
-		// 			'physical_device_id'	=>	$physicalDevices->random()->id
-		// 		]);
+		foreach ($servers as $server) {
+			foreach ($experiments as $experiment) {
+				$instance = PhysicalExperiment::create([
+					"server_id" 	=>	$server->id,
+					"experiment_id"	=>	$experiment->id,
+					'physical_device_id'	=>	$physicalDevices->random()->id
+				]);
 				
-		// 	}
-		// }
+			}
+		}
 
 
 	}

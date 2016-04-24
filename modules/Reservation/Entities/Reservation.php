@@ -3,21 +3,22 @@
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Experiments\Entities\PhysicalDevice;
 use Modules\Experiments\Entities\ServerExperiment;
 
 class Reservation extends Model {
 
-    protected $fillable = ['user_id','experiment_server_id','start','end'];
-    protected $with = ["experimentInstance"];
+    protected $fillable = ['user_id','physical_device_id','start','end'];
+    protected $with = ["physicalDevice"];
 
     public function user()
     {
     	return $this->belongsTo(User::class);
     }
 
-    public function experimentInstance()
+    public function physicalDevice()
     {
-    	return $this->belongsTo(ServerExperiment::class,'experiment_server_id');
+    	return $this->belongsTo(PhysicalDevice::class)->withTrashed();
     }
 
     public function scopeCollidingWith($query, Carbon $start, Carbon $end)

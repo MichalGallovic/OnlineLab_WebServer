@@ -67,9 +67,10 @@ class RunExperimentJob extends Job implements SelfHandling, ShouldQueue
 
             $server = new Server($physicalDevice->server->ip);
             $server->queueExperiment($this->input);
-
-            $physicalDevice->status = "experimenting";
-            $physicalDevice->save();
+            if($server->success()) {
+                $physicalDevice->status = "experimenting";
+                $physicalDevice->save();
+            }
         } else {
             $job = (new RunExperimentJob($this->user, $this->experiment, $this->input))->delay(5);
             $this->dispatch($job);
