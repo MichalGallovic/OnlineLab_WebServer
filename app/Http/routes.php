@@ -101,7 +101,5 @@ Route::get('test/data', function() {
     // dd($res);
     // $experiments = Experiment::join('experiment_server','experiments.id','=','experiment_server.experiment_id')->available()->where('status','!=','offline')->get();
     // dd($experiments->toArray());
-    $system = new SystemService();
-    dd($system->syncWithServers());
-    dd(Server::first()->experiments);
+    dd(PhysicalDevice::ready()->ofName('r2')->get());
 });

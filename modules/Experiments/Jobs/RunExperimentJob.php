@@ -14,7 +14,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Modules\Experiments\Entities\Experiment;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Modules\Experiments\Jobs\RunExperimentJob;
+use Modules\Experiments\Entities\PhysicalDevice;
 use Modules\Experiments\Entities\ServerExperiment;
+use Modules\Experiments\Entities\PhysicalExperiment;
 /**
 * Run experiment job
 */
@@ -49,25 +51,27 @@ class RunExperimentJob extends Job implements SelfHandling, ShouldQueue
         $instanceName = Arr::get($this->input,"instance");
 
         if($instanceName) {
-            $instance = ServerExperiment::availableForExperiment()->ofInstance($instanceName)->first();
+            $physicalDevice = PhysicalDevice::ready()->ofDevice($this->input['device'])->ofName($this->input['instance'])->first();
         } else {
-            $instance = ServerExperiment::availableForExperiment()->first();
+            $physicalDevice = PhysicalDevice::ready()->ofDevice($this->input['device'])->first();
         }
 
-        if($instance) {
+        if($physicalDevice) {
+            $physicalExperiment = PhysicalExperiment::where('experiment_id', $this->experiment->id)->where('physical_device_id', $physicalDevice->id)->first();
             $report = new ReportService();
-            $reportId = $report->create($this->user, $instance, $this->input);
+            $reportId = $report->create($this->user, $physicalExperiment, $this->input);
             $this->input = array_merge($this->input, [
                     "report_id" => $reportId
                 ]);
 
-            $server = new Server($instance->server->ip);
+
+            $server = new Server($physicalDevice->server->ip);
             $server->queueExperiment($this->input);
 
-            $instance->status = "experimenting";
-            $instance->save();
+            $physicalDevice->status = "experimenting";
+            $physicalDevice->save();
         } else {
-            $job = (new RunExperimentJob($this->experiment, $this->input))->delay(5);
+            $job = (new RunExperimentJob($this->user, $this->experiment, $this->input))->delay(5);
             $this->dispatch($job);
         }
     }

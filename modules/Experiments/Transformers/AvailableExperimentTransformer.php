@@ -19,32 +19,31 @@ class AvailableExperimentTransformer extends TransformerAbstract
 
 	protected $experimentInstance;
 
-	public function transform(Experiment $experiment)
+	public function transform(PhysicalExperiment $physicalExperiment)
 	{
-		$this->experimentInstance = PhysicalExperiment::where('experiment_id', $experiment->id)->get()->unique('commands');
+		$experiment = $physicalExperiment->experiment;
 
-		dd($this->experimentInstance);
-		
 		return [
-			"id"	=>	$experiment->id,
+			"experiment_id"	=>	$experiment->id,
 			"device" 		=>	$experiment->device->name,
 			"software"	=>	$experiment->software->name,
-			"instances"	=>	$experiment->physicalDevices->lists('name')->toArray()
+			"physical_device"	=>	$physicalExperiment->physicalDevice->name,
+			"production"	=>	(boolean) $physicalExperiment->server->production
 		];
 	}
 
-	public function includeCommands(Experiment $experiment)
+	public function includeCommands(PhysicalExperiment $physicalExperiment)
 	{
-		return $this->item($this->experimentInstance->commands, new GeneralArrayTransformer);
+		return $this->item($physicalExperiment->commands, new GeneralArrayTransformer);
 	}
 
-	public function includeOutputArguments(Experiment $experiment)
+	public function includeOutputArguments(PhysicalExperiment $physicalExperiment)
 	{
-		return $this->item($this->experimentInstance->output_arguments, new GeneralArrayTransformer);
+		return $this->item($physicalExperiment->output_arguments, new GeneralArrayTransformer);
 	}
 
-	public function includeExperimentCommands(Experiment $experiment)
+	public function includeExperimentCommands(PhysicalExperiment $physicalExperiment)
 	{
-	return $this->item($this->experimentInstance->experiment_commands, new GeneralArrayTransformer);
+	return $this->item($physicalExperiment->experiment_commands, new GeneralArrayTransformer);
 	}
 }

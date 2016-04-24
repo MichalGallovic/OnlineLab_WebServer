@@ -1,13 +1,16 @@
 <?php namespace Modules\Experiments\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use App\Services\ExperimentService;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Pingpong\Modules\Routing\Controller;
 use App\Http\Controllers\ApiBaseController;
 use App\Services\ExperimentInstanceService;
 use Modules\Experiments\Entities\Experiment;
 use Modules\Experiments\Entities\ServerExperiment;
+use Modules\Experiments\Entities\PhysicalExperiment;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Modules\Experiments\Http\Requests\QueueExperimentRequest;
 use Modules\Experiments\Http\Requests\ServerExperimentStatusRequest;
@@ -17,10 +20,19 @@ class ApiController extends ApiBaseController {
 	
 	public function experiments()
 	{
-		// $experiment_ids = ServerExperiment::available()->get()->unique('experiment_id')->lists('experiment_id')->toArray();
-		$experiments = Experiment::has('physicalDevices')->get();
+		$user = Auth::user()->user;
 
-		return $this->respondWithCollection($experiments, new AvailableExperimentTransformer);
+		if($user->role == 'user') {
+			$physicalExperiments = PhysicalExperiment::whereHas('server', function($q) {
+				$q->available();
+			})->get();
+		} else {
+			$physicalExperiments = PhysicalExperiment::whereHas('server', function($q) {
+				$q->availableForAdmin();
+			})->get();
+		}
+
+		return $this->respondWithCollection($physicalExperiments, new AvailableExperimentTransformer);
 	}
 
 	public function queue(QueueExperimentRequest $request, $id)
@@ -32,27 +44,24 @@ class ApiController extends ApiBaseController {
 		return $this->respondWithSuccess("Experiment queued!");
 	}
 
-	public function updateStatus(ServerExperimentStatusRequest $request)
+	public function updateStatus(Request $request)
 	{
-		$instanceName = $request->input("device_name");
+		$physicalDeviceName = $request->input("device_name");
 		$device = $request->input("device");
 		$software = $request->input("software");
 
 		try {
-			$instance = ServerExperiment::ofInstance($instanceName)->whereHas("experiment", function ($query) use ($device, $software){
-				$query->whereHas('device', function($q) use ($device){
-					$q->where("name", $device);
-				})->whereHas("software", function($q) use ($software){
-					$q->where("name", $software);
-				});
-			})->firstOrFail();
+			$physicalDevice = Experiment::ofDevice($device)->ofSoftware($software)->first()->physicalDevices->where('name', $physicalDeviceName)->first();
 
 		} catch(ModelNotFoundException $e) {
 			return $this->errorNotFound("Instance not found :/");
 		}
 
-		$instanceService = new ExperimentInstanceService($instance);
-		$instanceService->updateStatus($request->input("status"));
+		$physicalDevice->status = $request->input('status');
+		$physicalDevice->save();
+
+		// $instanceService = new ExperimentInstanceService($instance);
+		// $instanceService->updateStatus($request->input("status"));
 
 		return $this->respondWithSuccess("Instance status updated");
 	}
