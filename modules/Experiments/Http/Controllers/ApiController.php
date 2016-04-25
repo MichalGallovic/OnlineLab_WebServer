@@ -27,11 +27,11 @@ class ApiController extends ApiBaseController {
 		if($user->role == 'user') {
 			$physicalExperiments = PhysicalExperiment::whereHas('server', function($q) {
 				$q->available();
-			})->get();
+			})->runnable()->get();
 		} else {
 			$physicalExperiments = PhysicalExperiment::whereHas('server', function($q) {
 				$q->availableForAdmin();
-			})->get();
+			})->runnable()->get();
 		}
 
 		return $this->respondWithCollection($physicalExperiments, new AvailableExperimentTransformer);

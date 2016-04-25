@@ -136,9 +136,11 @@ class SystemService
 				$physicalExperiment->restore();
 			}
 
+			$experimentCommands = Arr::get($rtPhysicalExperiment,"experiment_commands.data");
+
 			$physicalExperiment->commands = Arr::get($rtPhysicalExperiment,"input_arguments.data");
 			$physicalExperiment->output_arguments = Arr::get($rtPhysicalExperiment,"output_arguments.data");
-			$physicalExperiment->experiment_commands = Arr::get($rtPhysicalExperiment,"experiment_commands.data");
+			$physicalExperiment->experiment_commands = empty($experimentCommands) ? null : $experimentCommands;
 			$physicalExperiment->save();
 
 			$availablePhysicalExperiments->push($physicalExperiment);

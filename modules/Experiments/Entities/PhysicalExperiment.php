@@ -39,4 +39,9 @@ class PhysicalExperiment extends Model {
     {
     	return $this->belongsTo(PhysicalDevice::class);
     }
+
+    public function scopeRunnable($query)
+    {
+        return $query->whereNotNull('experiment_commands');
+    }
 }
