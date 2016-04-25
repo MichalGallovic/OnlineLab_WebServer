@@ -1,11 +1,12 @@
 @extends('user.layouts.default')
 
 @section('content')
-	
-	<h1>Hello World</h1>
-	
-	<p>
-		This view is loaded from module: {!! config('report.name') !!}
-	</p>
-
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<div class="clearfix">
+				<h3 class="panel-title pull-left">Reports</h3>
+			</div>
+		</div>
+		@include("report::reports.partials.index")
+	</div>
 @stop

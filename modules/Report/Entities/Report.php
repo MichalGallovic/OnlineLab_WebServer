@@ -15,12 +15,26 @@ class Report extends Model {
 
     public function physicalExperiment()
     {
-    	return $this->belongsTo(PhysicalExperiment::class);
+    	return $this->belongsTo(PhysicalExperiment::class)->withTrashed();
+    }
+
+    public function physicalDevice()
+    {
+        $physicalExperiment = $this->physicalExperiment;
+
+        return $physicalExperiment->physicalDevice()->withTrashed();
     }
 
     public function user()
     {
     	return $this->belongsTo(User::class);
+    }
+
+    public function scopeOfUser($query, $user)
+    {
+        if($user->role == 'admin') return $query;
+
+        return $query->where('user_id', $user->id);
     }
 
 }
