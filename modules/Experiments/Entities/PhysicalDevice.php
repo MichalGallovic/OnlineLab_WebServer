@@ -32,6 +32,11 @@ class PhysicalDevice extends Model {
         return $query->where('status','ready');
     }
 
+    public function scopeOnline($query)
+    {
+        return $query->where('status','!=','offline');
+    }
+
     public function scopeOfDevice($query, $deviceName)
     {
         return $query->whereHas('device', function($q) use ($deviceName) {

@@ -7,16 +7,20 @@
             </tr>
             </thead>
             <tbody>
-            @foreach ($experiments as $experiment)
+            @foreach ($experiments as $physicalExperiments)
                 <tr>
-                    <td>{{ $experiment->device->name }}</td>
-                    <td>{{ $experiment->software->name }}</td>
+                    <td>{{ $physicalExperiments->first()->experiment->device->name }}</td>
+                    <td>{{ $physicalExperiments->first()->experiment->software->name }}</td>
                     <td>
-                        @foreach($experiment->servers as $server)
-                            @if($server->isAvailable())
-                                <span class="label" style="background-color: {{ $server->color }}">{{ $server->name }}</span>
+                        @foreach($physicalExperiments as $physicalExperiment)
+                            @if($physicalExperiment->server->isAvailable())
+                                @if($physicalExperiment->physicalDevice->status != "offline")
+                                    <span class="label" style="background-color: {{ $physicalExperiment->server->color }}">{{ $physicalExperiment->server->name }}</span>
+                                @else
+                                    <span class="label label-warning">{{ $physicalExperiment->server->name }} - {{ $physicalExperiment->physicalDevice->name }} - device offline</span>
+                                @endif
                             @else
-                                <span class="label label-danger">{{ $server->name }}</span>
+                                <span class="label label-danger">{{ $physicalExperiment->server->name }}</span>
                             @endif
                         @endforeach
                     </td>
