@@ -11,7 +11,12 @@
                 <tr>
                     <td>
                         @if($report->filled)
-                            <i class="glyphicon glyphicon-ok" style="color: #5cb85c"></i>
+                            @if(empty($report->output))
+                                <i class="glyphicon glyphicon-remove" style="color: #d9534f"></i>
+                            @else
+                                <i class="glyphicon glyphicon-ok" style="color: #5cb85c"></i>
+                            @endif
+
                         @else
                             <i class="glyphicon glyphicon-minus"></i>
                         @endif

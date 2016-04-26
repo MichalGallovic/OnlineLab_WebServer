@@ -151,6 +151,15 @@ Vue.config.devtools = true;
             }
         },
 		methods : {
+            flashSuccess: function(text) {
+                noty ({
+                    text : text,
+                    theme: "relax",
+                    layout: "topRight",
+                    timeout : 5000,
+                    type: 'success'
+                });
+            },
 			runExperiment: function() {
 				var me = this;
 				var promises = [];
@@ -166,7 +175,7 @@ Vue.config.devtools = true;
                     console.log(data);
 					me.postQueueExperiment(data)
 					.done(function(response) {
-						console.log(response);
+						me.flashSuccess(response.success.message);
 					});
 				});
 			},

@@ -27,10 +27,14 @@ class ApiController extends ApiBaseController {
 		if($user->role == 'user') {
 			$physicalExperiments = PhysicalExperiment::whereHas('server', function($q) {
 				$q->available();
+			})->whereHas('physicalDevice', function($q) {
+				$q->online();
 			})->runnable()->get();
 		} else {
 			$physicalExperiments = PhysicalExperiment::whereHas('server', function($q) {
 				$q->availableForAdmin();
+			})->whereHas('physicalDevice', function($q) {
+				$q->online();
 			})->runnable()->get();
 		}
 
@@ -41,7 +45,7 @@ class ApiController extends ApiBaseController {
 	{
 		$physicalDevices = PhysicalDevice::whereHas('server', function($q) {
 			$q->available();
-		})->get();
+		})->online()->get();
 
 		return $this->respondWithCollection($physicalDevices, new DeviceTransformer);
 	}
@@ -52,7 +56,7 @@ class ApiController extends ApiBaseController {
 		$experimentService = new ExperimentService($experiment, $request->input());
 		$experimentService->queue();
 
-		return $this->respondWithSuccess("Experiment queued!");
+		return $this->respondWithSuccess("Experiment queued successfully!");
 	}
 
 	public function updateStatus(Request $request)

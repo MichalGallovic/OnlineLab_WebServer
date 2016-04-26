@@ -11,6 +11,7 @@ use Modules\Experiments\Entities\Software;
 use Modules\Experiments\Entities\Experiment;
 use Modules\Experiments\Entities\PhysicalDevice;
 use Modules\Experiments\Entities\ServerExperiment;
+use Modules\Experiments\Entities\PhysicalExperiment;
 use Modules\Experiments\Http\Requests\ServerRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -21,10 +22,25 @@ class ExperimentsController extends Controller {
 	{
 		$servers = Server::all();
 
-		$adminExperiments = Experiment::has('physicalDevices')->get();
-		$userExperiments = Experiment::has('physicalDevices')->whereHas('servers', function($q) {
+		// $adminExperiments = Experiment::has('physicalDevices')->get();
+
+		$physicalExperiments = PhysicalExperiment::all();
+
+		$adminExperiments = $physicalExperiments->groupBy('experiment_id');
+		
+		// $physicalExperiments->groupBy('experiment_id'));
+
+		$userExperiments = PhysicalExperiment::whereHas('server', function($q) {
 			$q->available();
+		})->whereHas('physicalDevice', function($q) {
+			$q->where('status','!=','offline');
 		})->get();
+
+		$userExperiments = $userExperiments->groupBy('experiment_id');
+
+		// $userExperiments = Experiment::has('physicalDevices')->whereHas('servers', function($q) {
+		// 	$q->available();
+		// })->get();
 
 		return view('experiments::index', compact('servers', 'adminExperiments','userExperiments'));
 	}

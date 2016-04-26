@@ -7,6 +7,7 @@
 			:description="description"
 			:series="series"
 		></olm-graph>
+
 		<div class="row">
 			<div class="col-lg-6">
 				<form v-on:submit.prevent="update">
@@ -39,6 +40,12 @@
 			
 		</div>
 		<div class="olm-graph-placeholder" v-show="series.length <= 1">
+			@if(!$report->filled)
+				<h4>Experiment did not run yet!</h4>
+			@else
+				<span class="label label-danger">Error</span>
+				<h4 style="margin-top:10px">There was an error during the run! No data!</h4>
+			@endif
 		</div>
 	</template>
 @stop
