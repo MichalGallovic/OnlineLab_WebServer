@@ -21,9 +21,9 @@ class OlmMigrateRefresh extends Command
     protected $description = 'Refresh all migrations';
 
     protected $modulesToSeed = [
-        "Experiments",
-        "Report",
-        'Reservation'
+        // "Experiments",
+        // "Report",
+        // 'Reservation'
     ];
 
     /**
