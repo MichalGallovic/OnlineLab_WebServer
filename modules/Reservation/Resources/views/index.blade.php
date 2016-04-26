@@ -20,6 +20,12 @@
 					</div>
 					<div class="modal-body" v-if="creating || editing">
 						<div class="row">
+							<div class="col-lg-12" v-if="user.role == 'admin'">
+								<h4>User</h4>
+								<p class="label label-default" style="font-size: 12px">@{{ selectedEvent.user }}</p>
+							</div>
+						</div>
+						<div class="row" style="margin-top: 10px">
 							<div class="col-lg-12">
 								<h4>Time</h4>
 								<p style="margin-top: 10px">
@@ -90,6 +96,11 @@
 @section("page_css")
 	@parent
 	<link rel="stylesheet" type="text/css" href="{{ asset('css/reservations/fullcalendar.min.css') }}">
+	<style type="text/css">
+		.fc-button-active {
+			border: 1px solid black;
+		}
+	</style>
 @stop
 
 @section("page_js")
