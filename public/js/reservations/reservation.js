@@ -44,40 +44,6 @@ function ColorLuminance(hex, lum) {
 
 !(function($) {
 	Vue.config.devtools = true;
-	// Vue.component('olm-reservation-edit', {
-	// 	template: '#olm-reservation-edit',
-	// 	props: ['devices','softwares','instances','user','selection'],
-	// 	data: function() {
-	// 		return {
-	// 			$modal: null
-	// 		};
-	// 	},
-	// 	ready: function() {
-	// 		var me = this;
-	// 		this.$modal = $(this.$els.modal);
-	// 		this.$modal.modal('show');
-	// 		this.$modal.on('hidden.bs.modal',function() {
-	// 			me.$dispatch('edit-reservation','hidden');
-	// 		});
-	// 	}
-	// });
-	// Vue.component('olm-reservation-show', {
-	// 	template: "#olm-reservation-show",
-	// 	props: ['start','end','device','software','instance', 'user'],
-	// 	data: function() {
-	// 		return {
-	// 			$modal: null
-	// 		};
-	// 	},
-	// 	ready: function() {
-	// 		var me = this;
-	// 		this.$modal = $(this.$els.modal);
-	// 		this.$modal.modal('show');
-	// 		this.$modal.on('hidden.bs.modal',function() {
-	// 			me.$dispatch('show-reservation','hidden');
-	// 		});
-	// 	}
-	// });
 	Vue.component('olm-calendar', {
 		template: '#olm-calendar',
 		data : function() {
@@ -99,7 +65,9 @@ function ColorLuminance(hex, lum) {
 				filteredDevices: null,
 				showing: false,
 				editing: false,
-				creating: false
+				creating: false,
+				user: null,
+				reservationsFor: null
 			};
 		},
 		ready : function() {
@@ -108,9 +76,11 @@ function ColorLuminance(hex, lum) {
 			// this.$editModal = $(this.$els.modalEdit);
 			
 			// this.getExperimentsData();
-			this.getReservationsData();
-			this.getDevicesData();
+			this.init();
+			// this.getReservationsData();
+			// this.getDevicesData();
 			this.setEventHandlers();
+			this.user = Laravel.user;
 		},
 		events: {
 			'show-reservation': function(msg) {
@@ -121,7 +91,7 @@ function ColorLuminance(hex, lum) {
 			}
 		},
 		methods : {
-			getDevicesData: function() {
+			init: function() {
 				var me = this;
 				this.getDevices().done(function(response) {
 					me.devices = _.chain(response.data).groupBy('name').map(function(devices) {
@@ -129,6 +99,10 @@ function ColorLuminance(hex, lum) {
 						device.instances = _.pluck(devices,'physical_device');
 						return device;
 					}).value();
+
+				}).then(this.getReservations).done(function(response) {
+					me.reservations = response.data;
+					me.initPlugin(response.data, _.pluck(me.devices,'name'));
 				});
 			},
 			getExperimentsData: function() {
@@ -143,13 +117,6 @@ function ColorLuminance(hex, lum) {
 					me.devices = devices.unique();
 					me.experiments.original = response.data;
 					me.experiments.filtered = JSON.parse(JSON.stringify(me.experiments.original)); // copy in VUE :/
-				});
-			},
-			getReservationsData: function() {
-				var me = this;
-				this.getReservations().done(function(response) {
-					me.reservations = response.data;
-					me.initPlugin(response.data);
 				});
 			},
 			refreshReservationsData: function() {
@@ -276,6 +243,9 @@ function ColorLuminance(hex, lum) {
 					me.$modal.modal('hide');
 				});
 			},
+			removeEvent: function(event) {
+				this.$calendar.fullCalendar('removeEvents',event.id);
+			},
 			saveReservation: function() {
 				var me = this;
 				this.selectedEvent.saving = true;
@@ -299,6 +269,11 @@ function ColorLuminance(hex, lum) {
 					text += "<br>";
 					text += "<strong>" + start.format('lll') + "</strong>" + " - <strong>" + end.format('lll') + "</strong>";
 					me.flashSuccess(response.success.message);
+				}).fail(function(response) {
+					response = JSON.parse(response.responseText);
+					me.flashWarning(response.error.message);
+					me.removeEvent(me.selectedEvent);
+					me.$modal.modal('hide');
 				});
 			},
 			devicesCopy : function() {
@@ -324,12 +299,33 @@ function ColorLuminance(hex, lum) {
 					!timesNotCollide(start, end, reservation.start, reservation.end);
 				});
 			},
-			initPlugin: function(events) {
+			initPlugin: function(events, devices) {
 				var me = this;
 				var height = $(window).height() - $("#dashboard_header").height() - 40;
+
+				var customButtons = {};
+
+				devices.forEach(function(device) {
+					customButtons[device] = {
+						text: device,
+						click: function() {
+							me.reservationsFor = (me.reservationsFor != device) ? device : null;
+							me.$calendar.fullCalendar('rerenderEvents');
+							console.log(device);
+							if(me.reservationsFor) {
+								$('.fc-button').removeClass('fc-button-active');
+								$(this).addClass('fc-button-active');
+							} else {
+								$(this).removeClass('fc-button-active');
+							}
+						}
+					};
+				});
+
 				this.$calendar.fullCalendar({
+					customButtons: customButtons,
 					header: {
-						left: 'prev,next today',
+						left: 'prev,next today ,' + devices.join(", "),
 						center: 'title',
 						right: 'month,agendaWeek,agendaDay'
 					},
@@ -341,6 +337,11 @@ function ColorLuminance(hex, lum) {
 					backgroundColor : "#5cb85c",
 					height: height,
 					select: function(start, end) {
+						if(start.isBefore(moment())) {
+							me.$calendar.fullCalendar('unselect');
+							return false;
+						}
+
 						me.creating = true;
 						me.selectedEvent = {
 							id: (_.max(me.reservations,function(reservation){return reservation.id})+1),
@@ -372,6 +373,11 @@ function ColorLuminance(hex, lum) {
 						} else {
 							me.flashWarning("All devices reserved for this time.");
 							me.$calendar.fullCalendar('unselect');
+						}
+					},
+					eventRender: function(event) {
+						if(me.reservationsFor) {
+							return event.device.name == me.reservationsFor;
 						}
 					},
 					eventClick: function(event, element) {
