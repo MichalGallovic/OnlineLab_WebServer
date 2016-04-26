@@ -35,6 +35,14 @@ class ApiController extends ApiBaseController {
 		$physicalDevice = PhysicalDevice::ofDevice($request->input('device'))
 		->ofName($request->input('physical_device'))->first();
 
+		$now = Carbon::now();
+		$start = new Carbon($request->input('start'));
+
+		if($now->gt($start)) {
+			return $this->errorForbidden("Reservation cannot start before current time.");
+		}
+
+
 		$reservation = Reservation::firstOrCreate([
 				'user_id' => Auth::user()->user->id,
 				'physical_device_id' => $physicalDevice->id,
@@ -77,10 +85,13 @@ class ApiController extends ApiBaseController {
 		$physicalDevice = PhysicalDevice::ofDevice($request->input('device'))
 		->ofName($request->input('physical_device'))->first();
 
-
-
+		$now = Carbon::now();
 		$start = new Carbon($request->input('start'));
 		$end = new Carbon($request->input('end'));
+		
+		if($now->gt($start)) {
+			return $this->errorForbidden("Reservation cannot start before current time.");
+		}
 
 		$collides = Reservation::collidingWith($start, $end)->get()->where('physical_device_id',$physicalDevice->id);
 
