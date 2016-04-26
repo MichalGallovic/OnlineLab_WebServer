@@ -56,6 +56,10 @@ class ExperimentsTableSeeder extends Seeder {
 			"name"	=>	"tos1a"
 		]);
 
+		$ledDevice = Device::create([
+			"name"	=>	"led_cube"
+		]);
+
 		PhysicalDevice::create([
 			'server_id' => $server100->id,
 			'device_id' => $device->id,
@@ -65,7 +69,7 @@ class ExperimentsTableSeeder extends Seeder {
 
 		PhysicalDevice::create([
 			'server_id' => $server200->id,
-			'device_id' => $device->id,
+			'device_id' => $ledDevice->id,
 			'name' => str_random(3),
 			'status' => 'ready'
 		]);
