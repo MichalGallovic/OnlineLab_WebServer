@@ -80,12 +80,15 @@
 		},
 		ready: function() {
 			this.report = this.formatReport(Laravel.Report);
+
 			this.description = this.report.device + " " + this.report.software + " on " + this.report.physical_device;
+
 			this.series = this.formatGraphInput(
 				this.report.output,
 				this.report.measuring_rate,
 				this.report.output_arguments
 			);
+
 			$('#editor').summernote({
 				height: 100
 			});
@@ -129,6 +132,7 @@
 				var me = this;
 				var series = [];
 				var indexCounter = 0;
+				data = data || [];
 				$.each(data, function(index, measurement) {
 					var measurementWithTime = [];
 					$.each(measurement, function(indexCounter, value) {

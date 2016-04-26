@@ -7,14 +7,14 @@
             </tr>
             </thead>
             <tbody>
-            @foreach ($experiments as $experiment)
+            @foreach ($experiments as $physicalExperiments)
                 <tr>
-                    <td>{{ $experiment->device->name }}</td>
-                    <td>{{ $experiment->software->name }}</td>
+                    <td>{{ $physicalExperiments->first()->experiment->device->name }}</td>
+                    <td>{{ $physicalExperiments->first()->experiment->software->name }}</td>
                     <td>
-                        @foreach($experiment->servers()->available()->get() as $server)
-                            @if($server->isAvailable())
-                                <span class="label" style="background-color: {{ $server->color }}">{{ $server->name }}</span>
+                        @foreach($physicalExperiments as $physicalExperiment)
+                            @if($physicalExperiment->server->isAvailable())
+                                <span class="label" style="background-color: {{ $physicalExperiment->server->color }}">{{ $physicalExperiment->server->name }}</span>
                             @endif
                         @endforeach
                     </td>
