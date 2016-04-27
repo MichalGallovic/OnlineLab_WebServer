@@ -14,6 +14,7 @@ use Modules\Experiments\Entities\ServerExperiment;
 use Modules\Experiments\Entities\PhysicalExperiment;
 use Modules\Experiments\Transformers\DeviceTransformer;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Modules\Experiments\Http\Requests\RunExperimentRequest;
 use Modules\Experiments\Http\Requests\QueueExperimentRequest;
 use Modules\Experiments\Http\Requests\ServerExperimentStatusRequest;
 use Modules\Experiments\Transformers\AvailableExperimentTransformer;
@@ -44,6 +45,13 @@ class ApiController extends ApiBaseController {
 			$physicalExperiments->runnable();
 		}
 
+		if($request->has('physical_device')) {
+			$physicalExperiments->whereHas('physicalDevice', function($q) use ($request) {
+				$ids = explode(',',$request->input('physical_device'));
+				$q->whereIn('id', $ids);
+			});
+		}
+
 		$physicalExperiments = $physicalExperiments->get();
 
 		return $this->respondWithCollection($physicalExperiments, new AvailableExperimentTransformer);
@@ -52,7 +60,7 @@ class ApiController extends ApiBaseController {
 	public function devices()
 	{
 		$user = Auth::user()->user;
-		
+
 		if($user->role == 'user') {
 			$physicalDevices = PhysicalDevice::whereHas('server', function($q) {
 				$q->available();
@@ -66,6 +74,15 @@ class ApiController extends ApiBaseController {
 		
 
 		return $this->respondWithCollection($physicalDevices, new DeviceTransformer);
+	}
+
+	public function run(RunExperimentRequest $request, $id)
+	{
+		$experiment = Experiment::findOrFail($id);
+		$experimentService = new ExperimentService($experiment, $request->input());
+		$experimentService->run();
+
+		return $this->respondWithSuccess("Experiment requested!");
 	}
 
 	public function queue(QueueExperimentRequest $request, $id)

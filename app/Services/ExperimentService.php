@@ -25,7 +25,10 @@ class ExperimentService
 
 	public function run()
 	{
-
+		$defaultDriver = app('queue')->getDefaultDriver();
+		app('queue')->setDefaultDriver('sync');
+		\Queue::push(new RunExperimentJob($this->user, $this->experiment, $this->experimentInput));
+		app('queue')->setDefaultDriver($defaultDriver);
 	}
 
 	public function queue()

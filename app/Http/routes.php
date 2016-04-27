@@ -58,7 +58,7 @@ Route::get('auth/provider/{provider}/callback', 'Auth\AuthController@handleProvi
 
 // If logged in
 Route::group(['as'  =>  'user::', 'middleware'  =>  'auth'], function() {
-    Route::get('dashboard', ['as' => 'dashboard', 'uses' => 'DashboardController@getDashboard']);
+    Route::get('dashboard', ['as' => 'dashboard', 'uses' => 'DashboardController@dashboard']);
     Route::get('dashboard/settings', ['as' => 'dashboard.settings', 'uses' => 'DashboardController@getDashboardSettings']);
     Route::get('linkAccounts', ['as' => 'linkAccounts', 'uses' => 'AccountsController@getAccountManager']);
 
