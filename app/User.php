@@ -2,14 +2,15 @@
 
 namespace App;
 
+use Modules\Chat\Entities\Chatroom;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Reservation\Entities\Reservation;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
-use Modules\Chat\Entities\Chatroom;
 
 class User extends Model implements AuthenticatableContract,
                                     AuthorizableContract,
@@ -141,5 +142,9 @@ class User extends Model implements AuthenticatableContract,
 
     public function regulators() {
         return $this->hasMany('Modules\Controller\Entities\Regulator', 'user_id');
+    }
+
+    public function reservations() {
+        return $this->hasMany(Reservation::class);
     }
 }

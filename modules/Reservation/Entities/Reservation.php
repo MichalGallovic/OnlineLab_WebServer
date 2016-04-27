@@ -41,4 +41,10 @@ class Reservation extends Model {
     	});
     }
 
+    public function scopeCurrent($query)
+    {
+        $now = Carbon::now();
+        return $query->where('start','<=', $now)->where('end','>=',$now);
+    }
+
 }
