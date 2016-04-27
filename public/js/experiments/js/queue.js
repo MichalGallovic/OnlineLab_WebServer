@@ -94,7 +94,9 @@ Vue.config.devtools = true;
 			"experiments" : null,
             "physicalExperiments": null,
             selected : {
-                instance : null
+                instance : null,
+                software: null,
+                device: null
             }
 		},
 		ready: function() {
@@ -125,9 +127,13 @@ Vue.config.devtools = true;
             selectedExperiment: function(newSelection, oldVal) {
                 if(Laravel.user.role == 'admin') {
                     this.selected.instance = this.selectedExperiment.instances[0].name;
+                    this.selected.device = this.selectedExperiment.device;
+                    this.selected.software = this.selectedExperiment.software;
                 } else {
                     if(this.selectedExperiment.instances.length == 1) {
                         this.selected.instance = this.selectedExperiment.instances[0].name;
+                        this.selected.software = this.selectedExperiment.software;
+                        this.selected.device = this.selectedExperiment.device;
                     } else {
                         this.selected = {
                             instance: null
@@ -140,7 +146,9 @@ Vue.config.devtools = true;
                     var me = this;
                     if(Laravel.user.role == 'admin') {
                         var selectedExperiment = _.find(this.physicalExperiments, function(experiment) {
-                            return experiment.physical_device == me.selected.instance;
+                            return experiment.physical_device == me.selected.instance &&
+                            experiment.software == me.selected.software &&
+                            experiment.device == me.selected.device;
                         });
 
                         this.selectedExperiment.commands = selectedExperiment.commands;
