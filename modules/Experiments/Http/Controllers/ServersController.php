@@ -6,6 +6,7 @@ use Modules\Experiments\Entities\Server;
 use Pingpong\Modules\Routing\Controller;
 use Modules\Experiments\Entities\PhysicalExperiment;
 use Modules\Experiments\Http\Requests\ServerRequest;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Modules\Experiments\Http\Requests\ServerUpdateRequest;
 
 class ServersController extends Controller {
@@ -35,7 +36,12 @@ class ServersController extends Controller {
 
 	public function store(ServerRequest $request)
 	{
-		Server::create($request->all());
+		try {
+			$server = Server::withTrashed()->where('ip',$request->input('ip'))->firstOrFail();
+			$server->restore();
+		} catch(ModelNotFoundException $e) {
+			Server::create($request->all());
+		}
 
 		return redirect()->route('experiments.index');
 	}
