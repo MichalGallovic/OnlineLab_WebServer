@@ -17,7 +17,7 @@
 						<h4 class="modal-title" v-if="creating">Create reservation</h4>
 						<h4 class="modal-title" v-if="editing">Edit reservation</h4>
 						<h4 class="modal-title" v-if="showing">Reservation info</h4>
-						<small v-if='!selectedEvent.available'>This reservation can no longer be reproduced in the system. <br>Device @{{ selectedEvent.device.physical_device }} no longer exists in OLM.</small>
+						<small v-if='!selectedEvent.available && !creating'>This reservation can no longer be reproduced in the system. <br>Device @{{ selectedEvent.device.physical_device }} no longer exists in OLM.</small>
 					</div>
 					<div class="modal-body" v-if="creating || editing">
 						<div class="row">

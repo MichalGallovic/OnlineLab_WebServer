@@ -1,9 +1,8 @@
 <?php namespace Modules\Experiments\Http\Requests;
 
-use Modules\Experiments\Entities\Server;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ServerUpdateRequest extends FormRequest {
+class RunExperimentRequest extends FormRequest {
 
 	/**
 	 * Determine if the user is authorized to make this request.
@@ -23,9 +22,9 @@ class ServerUpdateRequest extends FormRequest {
 	public function rules()
 	{
 		return [
-			"name"	=>	"required",
-			"ip"	=>	"required|ip|unique:servers,ip," . $this->route()->parameters()["id"],
-			"node_port" => "required"
+			"device" 	=>	"required|string",
+			"software"	=>	"required|string",
+			"input"		=>	"required|array"
 		];
 	}
 
