@@ -6,7 +6,7 @@
 
 
 
-	<div class="col-md-6">
+	<div class="col-md-4">
 		<div class="panel panel-primary">
 			<div class="panel-heading">My Chatrooms
 				<a href="#"  class="btn btn-success btn-xs pull-right new-chatroom" data-toggle="modal" data-target="#chatroom_modal">New chatroom</a>
@@ -21,7 +21,7 @@
 		</div>
 	</div>
 
-	<div class="col-md-6">
+	<div class="col-md-4">
 		<div class="panel panel-primary">
 			<div class="panel-heading">Public Chatrooms</div>
 			<div class="panel-body">
@@ -29,6 +29,54 @@
 					@foreach ($publicChatrooms as $chatroom)
 						<a href="{{route('chat.chatroom',$chatroom->id)}}" class="list-group-item">{{$chatroom->title}}<span class="label {{$chatroom->canPost($user_id) ? 'label-primary' : 'label-warning'}} label-as-badge pull-right">   </span></a>
 					@endforeach
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-4">
+		<div class="panel panel-primary">
+			<div class="panel-heading">Video Chatrooms
+				<a href="#"  class="btn btn-success btn-xs pull-right new-chatroom" data-toggle="modal" data-target="#video_modal">Create video chatroom</a></div>
+			<div class="panel-body">
+				<div id="video-chat-list" class="list-group"></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="video_modal" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true"&times;></span>
+						<span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title">New video chatroom</h4>
+				</div>
+				<div class="modal-body">
+					{!! Form::open(array('id' => 'target_form', 'method' => 'post', 'route' => 'chat.new.video')) !!}
+					<div class="form-group {!! ($errors->has('title')) ? 'has-error' : '' !!}">
+						{!! Form::label('title', 'Chatroom title') !!}
+						{!! Form::text('title', '', array('class' => 'form-control')) !!}
+						@if($errors->has('title'))
+							<p>{!! $errors->first('title') !!}</p>
+						@endif
+					</div>
+					<div class="form-group" {!! ($errors->has('invite')) ? 'has-error' : '' !!}>
+						<meta name="csrf-token" content="{{ csrf_token() }}">
+						<select name="invite" id="search-box" class="form-control"></select>
+						<div id="suggesstion-box">
+							<ul></ul>
+						</div>
+						@if($errors->has('invite'))
+							<p>{!! $errors->first('invite') !!}</p>
+						@endif
+					</div><!-- /input-group -->
+					{!! Form::close() !!}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					{!! Form::submit('Save', array('form' => 'target_form', 'class' => 'btn btn-primary')) !!}
 				</div>
 			</div>
 		</div>
@@ -57,8 +105,6 @@
 						{!! Form::label('type', 'Accesibility') !!}
 						{!! Form::select('type', array('private' => 'Private', 'public_open' => 'Public (open)', 'pulic_closed' => 'Public (closed)'), 'private', array('class' => 'form-control')) !!}
 					</div>
-
-					{!! Form::token() !!}
 					{!! Form::close() !!}
 				</div>
 				<div class="modal-footer">
@@ -72,9 +118,61 @@
 
 @section('page_js')
 	@parent
-	@if(Session::has('modal'))
-		<script type="text/javascript">
+	<script type="text/javascript">
+		@if(Session::has('modal'))
 			$("{!! Session::get('modal') !!}").modal('show');
-		</script>
-	@endif
+		@endif
+
+		$(document).ready(function(){
+
+			socket.on('connect', function(){
+				socket.emit('getVideoChatrooms', {user_id: {{$user_id}}});
+			});
+
+			socket.on('updateVideoRooms{{$user_id}}', function(data){
+				//data = JSON.parse(data);
+				console.log(data);
+				$("#video-chat-list").empty();
+
+				for (var key in data){
+					$("#video-chat-list").append($("<a>", {
+						href: 'chat/video/' + key,
+						class: "list-group-item",
+						text: data[key]
+					}));
+				}
+			});
+
+			$("#search-box").select2({
+				width: "100%",
+				ajax: {
+					type: "POST",
+					url: "chat/findUsers",
+					headers: {
+						'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+					},
+					dataType: "JSON",
+					delay: 250,
+					data: function (params) {
+						return {
+							q: params.term, // search term
+							page: params.page
+						};
+					},
+					processResults: function (data, params) {
+						params.page = params.page || 1;
+						return {
+							results: data.items,
+							pagination: {
+								more: (params.page * 30) < data.total_count
+							}
+						};
+					},
+					cache: true
+				},
+				escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+				minimumInputLength: 1
+			});
+		});
+	</script>
 @stop
