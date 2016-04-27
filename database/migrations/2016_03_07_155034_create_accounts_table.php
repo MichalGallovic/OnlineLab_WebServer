@@ -16,7 +16,7 @@ class CreateAccountsTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->string('login_id')->nullable();
-            $table->enum('type', ['local', 'google', 'facebook', 'ldap']);
+            $table->enum('type', ['local', 'google', 'facebook', 'ldap'])->default('local');
             $table->string('email');
             $table->boolean('notify')->value(false);
             $table->string('password')->nullable();

@@ -15,17 +15,24 @@ class CreateRegulatorsTable extends Migration {
         Schema::create('regulators', function(Blueprint $table)
         {
             $table->increments('id');
-			$table->integer('user_id')->unsigned();
-			$table->integer('system_id')->unsigned();
-			$table->string('title');
-			$table->text('body')->nullable();
-			$table->enum('type', ['private', 'public', 'public_pending'])->default('private');
+            $table->integer('user_id')->unsigned();
+            $table->integer('system_id')->unsigned();
+            $table->integer('schema_id')->unsigned();
+            $table->string('title');
+            $table->text('body')->nullable();
+            $table->enum('type', ['private', 'public', 'public_pending'])->default('private');
             $table->text('filename')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users')
+                ->onDelete('restrict')
+                ->onUpdate('cascade');
+
+            $table->foreign('schema_id')
+                ->references('id')
+                ->on('schemas')
                 ->onDelete('restrict')
                 ->onUpdate('cascade');
         });

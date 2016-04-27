@@ -55,7 +55,7 @@
 
 <script type="text/javascript" src="{{ asset('js/select2.full.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/bootstrap.min.js') }}"></script>
-<script type="text/javascript" src="{{ asset('js/default.js') }}"></script>
+
 <script type="text/javascript">
    // var ROOT_PATH = '{ROOT_PATH}';
     var ROOT_PATH = 'http://iolab.sk:8013/';

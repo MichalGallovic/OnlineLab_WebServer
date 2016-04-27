@@ -44,5 +44,12 @@ class UserTableSeeder extends Seeder
                 "password"  =>  Hash::make("123123")
             ]);
         }
+
+        for($i=0; $i<200; $i++){
+            \App\LoginData::create(array(
+                'account_id' => 1,
+                'created_at' => date("Y-m-d H:i:s",rand(1460246400,1461660186))
+            ));
+        }
     }
 }
