@@ -20,7 +20,7 @@ use Modules\Experiments\Transformers\AvailableExperimentTransformer;
 
 class ApiController extends ApiBaseController {
 	
-	public function experiments()
+	public function experiments(Request $request)
 	{
 		$user = Auth::user()->user;
 
@@ -29,23 +29,41 @@ class ApiController extends ApiBaseController {
 				$q->available();
 			})->whereHas('physicalDevice', function($q) {
 				$q->online();
-			})->runnable()->get();
+			});
 		} else {
 			$physicalExperiments = PhysicalExperiment::whereHas('server', function($q) {
 				$q->availableForAdmin();
 			})->whereHas('physicalDevice', function($q) {
 				$q->online();
-			})->runnable()->get();
+			});
 		}
+
+		if($request->input('type') == 'reservable') {
+			$physicalExperiments->reservable();
+		} else {
+			$physicalExperiments->runnable();
+		}
+
+		$physicalExperiments = $physicalExperiments->get();
 
 		return $this->respondWithCollection($physicalExperiments, new AvailableExperimentTransformer);
 	}
 
 	public function devices()
 	{
-		$physicalDevices = PhysicalDevice::whereHas('server', function($q) {
-			$q->available();
-		})->online()->get();
+		$user = Auth::user()->user;
+		
+		if($user->role == 'user') {
+			$physicalDevices = PhysicalDevice::whereHas('server', function($q) {
+				$q->available();
+			})->online()->get();
+		} else {
+			$physicalDevices = PhysicalDevice::whereHas('server', function($q) {
+				$q->availableForAdmin();
+			})->online()->get();
+		}
+
+		
 
 		return $this->respondWithCollection($physicalDevices, new DeviceTransformer);
 	}

@@ -62,7 +62,9 @@ function ColorLuminance(hex, lum) {
 				reservations : null,
 				devices : null,
 				events : null,
+				experiments: null,
 				filteredDevices: null,
+				filteredSoftwares: null,
 				showing: false,
 				editing: false,
 				creating: false,
@@ -103,6 +105,8 @@ function ColorLuminance(hex, lum) {
 				}).then(this.getReservations).done(function(response) {
 					me.reservations = response.data;
 					me.initPlugin(response.data, _.pluck(me.devices,'name'));
+				}).then(this.getExperiments).done(function(response) {
+					me.experiments = response.data;
 				});
 			},
 			getExperimentsData: function() {
@@ -128,7 +132,7 @@ function ColorLuminance(hex, lum) {
 				});
 			},
 			getExperiments: function() {
-				return $.getJSON("/api/experiments");
+				return $.getJSON("/api/experiments?type=reservable");
 			},
 			getReservations: function() {
 				return $.getJSON('/api/reservations');
@@ -376,7 +380,7 @@ function ColorLuminance(hex, lum) {
 						}
 					},
 					eventRender: function(event) {
-						if(me.reservationsFor) {
+						if(me.reservationsFor && event.device) {
 							return event.device.name == me.reservationsFor;
 						}
 					},
@@ -413,6 +417,7 @@ function ColorLuminance(hex, lum) {
 							me.selected.instance = event.device.physical_device;
 						} else {
 							me.showing = true;
+							me.filteredSoftwares = _.pluck(_.where(me.experiments, {physical_device: event.device.physical_device}), 'software');
 						}
 						me.$modal.modal('show');
 					},
@@ -446,9 +451,13 @@ function ColorLuminance(hex, lum) {
 						this.selectedEvent.title = this.selected.device.name + " " + this.selected.instance;
 						this.refreshCalendar();
 					}
+					if(val.instance) {
+						this.filteredSoftwares = _.pluck(_.where(this.experiments, {physical_device: val.instance}), 'software');
+					}
 				},
 				deep:true
-			}
+			},
+
 		}
 	
 	});

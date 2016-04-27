@@ -30,7 +30,8 @@ class ReservationTransformer extends TransformerAbstract
 			],
 			"editable"	=>	$this->isEditable($reservation, $currentUser),
 			"backgroundColor"	=>	$this->backgroundColor($reservation, $currentUser),
-			"borderColor" => $this->borderColor($reservation, $currentUser)
+			"borderColor" => $this->borderColor($reservation, $currentUser),
+			"available"	=>	(boolean ) !$reservation->physicalDevice->trashed()
 		];
 	}
 

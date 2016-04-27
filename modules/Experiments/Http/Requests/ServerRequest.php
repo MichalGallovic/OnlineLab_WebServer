@@ -1,5 +1,6 @@
 <?php namespace Modules\Experiments\Http\Requests;
 
+use Modules\Experiments\Entities\Server;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ServerRequest extends FormRequest {
@@ -21,9 +22,11 @@ class ServerRequest extends FormRequest {
 	 */
 	public function rules()
 	{
+		$server = Server::withTrashed()->where('ip',$this->input('ip'))->first();
+
 		return [
 			"name"	=>	"required",
-			"ip"	=>	"required|ip|unique:servers,ip"
+			"ip"	=>	"required|ip|unique:servers,ip," . $server->id
 		];
 	}
 
