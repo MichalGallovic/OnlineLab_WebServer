@@ -9,7 +9,7 @@ class Server extends Model {
     
     use SoftDeletes;
     
-    protected $fillable = ["name","ip","port","color", "production"];
+    protected $fillable = ["name","ip","port",'node_port',"color", "production"];
     protected $dates = ["deleted_at"];
 
     public function experiments()

@@ -24,9 +24,12 @@ class ServerRequest extends FormRequest {
 	{
 		$server = Server::withTrashed()->where('ip',$this->input('ip'))->first();
 
+		$excludeId = !is_null($server) ? $server->id : null;
+
 		return [
 			"name"	=>	"required",
-			"ip"	=>	"required|ip|unique:servers,ip," . $server->id
+			"ip"	=>	"required|ip|unique:servers,ip," . $excludeId,
+			"node_port"	=>	"required"
 		];
 	}
 

@@ -29,6 +29,13 @@
 					{!! $errors->first('port', '<p class="help-block">:message</p>') !!}
 				</div>
 			</div>
+			<div class="form-group {{ $errors->has('node_port') ? 'has-error' : ''}}" >
+				{!! Form::label("port", "NodeJS port", [ "class" => "control-label col-sm-3"]) !!}
+				<div class="col-sm-6">
+					{!! Form::text("node_port", "3000", [ "class" => "form-control"]) !!}
+					{!! $errors->first('node_port', '<p class="help-block">:message</p>') !!}
+				</div>
+			</div>
 			<div class="form-group {{ $errors->has('color') ? 'has-error' : ''}}" >
 				{!! Form::label("color", "Color", [ "class" => "control-label col-sm-3"]) !!}
 				<div class="col-sm-6">

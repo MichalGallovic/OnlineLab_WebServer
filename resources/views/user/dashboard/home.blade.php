@@ -3,11 +3,20 @@
 @include('user.dashboard.navigation')
 
 @section('content')
+	@if(!$reservations->isEmpty())
 	<div class="row">
+		<div class="col-lg-12">
+			<h4>Realtime experiment</h4>
+		</div>
+		@include('user.partials.realtimeExperiments')
+	</div>
+	@endif
+	<div class="row" style="margin-top:20px;">
 		<div class="col-lg-6">
 			@include('user.partials.queueExperiments')
 		</div>
 	</div>
+
 
 	<template id="input-template">
 		<div class="row" style="margin-top:10px">
@@ -53,6 +62,10 @@
 	</template>
 @endsection
 
+@section('page_css')
+	<link rel="stylesheet" type="text/css" href="{{ asset('css/dashboard/style.css') }}">
+@stop
+
 @section('page_js')
 	@parent
 	<script type="text/javascript" src="{{ asset('js/animations.js') }}"></script>
@@ -62,11 +75,10 @@
 	<script src="{{ asset('js/noty/relax.js') }}"></script>
 	<script src="{{ asset('js/noty/topRight.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('js/experiments/js/queue.js') }}"></script>
+	<script src="{{ asset('js/dashboard/highcharts.js') }}"></script>
 	<script src="{{ asset('js/dashboard/socket.io-1.4.5.js') }}"></script>
 	<script>
-		// var socket = io("192.168.100.100:3000");
-		// socket.on('experiment-data:1', function(data) {
-		// 	console.log(data);
-		// });
+		Laravel.Reservations = {!! $reservations->toJson() !!}
 	</script>
+	<script src="{{ asset('js/dashboard/realtime.js') }}"></script>
 @stop

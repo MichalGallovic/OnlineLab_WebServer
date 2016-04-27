@@ -11,6 +11,7 @@ class PhysicalDevice extends Model {
 
     protected $fillable = ["server_id","device_id","status","name"];
     protected $dates = ["deleted_at"];
+    protected $with = ['server'];
 
     public function server()
     {
