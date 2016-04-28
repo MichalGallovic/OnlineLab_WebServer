@@ -10,18 +10,21 @@ class MemberAdded extends Event implements ShouldBroadcast
 {
     use SerializesModels;
 
-    public $username, $addressId, $body;
+    public $username, $addressId, $body, $chatroomName, $chatroomId, $video;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($addedUserId, $addedUserName, $addedByName, $chatroomName, $chatroomId)
+    public function __construct($addedUserId, $addedUserName, $addedByName, $chatroomName, $chatroomId, $video = false)
     {
         $this->username = $addedUserName;
         $this->addressId = $addedUserId;
-        $this->body = $addedByName. ' invited you to chatroom: <a href="' .url('chat', [$chatroomId]).'">' .$chatroomName. '</a> ';
+        $this->chatroomName = $chatroomName;
+        $this->chatroomId = $chatroomId;
+        $this->video = $video;
+        $this->body = $addedByName. ' invited you to '.($video ? "video " : "").' chatroom: <a href="'.url(($video ? "chat/video" : "chat"), [$chatroomId]).'">' .$chatroomName. '</a> ';
     }
 
     /**

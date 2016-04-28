@@ -17,7 +17,7 @@ class CreateAccountAccessesTable extends Migration
             $table->integer('account_id')->unsigned();
             $table->string('ip');
             $table->string('os');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
 
 
         });

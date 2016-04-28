@@ -17,3 +17,21 @@
     </div>
     {!! Form::close() !!}
 @stop
+
+@section('page_js')
+    @parent
+
+    <script type="text/javascript">
+        $('#schema').on('change', function() {
+            $('#schema-image').attr('src', '{{route('controller.schema.image')}}'+'/'+this.value);
+            $.get('{{route('controller.schema.filecontent')}}', {id: this.value} ,function(data, status){
+                $('#schema-body').val(data)
+            });
+        });
+
+        $("#schema-image").on("click", function() {
+            $('#imagepreview').attr('src', $('#schema-image').attr('src')); // here asign the image to the modal when the user click the enlarge link
+            $('#imagemodal').modal('show'); // imagemodal is the id attribute assigned to the bootstrap modal, then i use the show function
+        });
+    </script>
+@endsection

@@ -1,6 +1,7 @@
 <?php namespace Modules\Controller\Http\Controllers;
 
 use Modules\Controller\Entities\Regulator;
+use Modules\Controller\Entities\Schema;
 use Pingpong\Modules\Routing\Controller;
 use Auth;
 use Input;
@@ -13,7 +14,8 @@ class ControllerController extends Controller {
 		$myRegulators = Auth::user()->user->regulators;
 		$publicRegulators = Regulator::where('type','public')->get();
 		$pendingRegulators = Regulator::where('type','public_pending')->get();
-		return view('controller::index', compact('myRegulators', 'publicRegulators', 'pendingRegulators'));
+		$schemas = Schema::all();
+		return view('controller::index', compact('myRegulators', 'publicRegulators', 'pendingRegulators', 'schemas'));
 	}
 
 	public function show($id) {
@@ -22,8 +24,10 @@ class ControllerController extends Controller {
 	}
 
 	public function edit($id) {
+		$schemas = Schema::lists('title', 'id');
 		$regulator=Regulator::find($id);
-		return view('controller::edit',compact('regulator'));
+		$schema = $regulator->schema;
+		return view('controller::edit',compact('regulator', 'schemas', 'schema'));
 	}
 
 	public function update($id, Request $request) {
@@ -52,7 +56,9 @@ class ControllerController extends Controller {
 	}
 
 	public function create($enviroment){
-		return view('controller::create', compact('enviroment'));
+		$schemas = Schema::lists('title', 'id');
+		$schema = Schema::first();
+		return view('controller::create', compact('enviroment', 'schemas', 'schema'));
 	}
 
 	public function store() {
@@ -73,6 +79,7 @@ class ControllerController extends Controller {
 			$regulator->title = Input::get('title');
 			$regulator->user_id = Auth::user()->user->id;
 			$regulator->system_id = Input::get('system_id');
+			$regulator->schema_id = Input::get('schema_id');
 			$regulator->body = Input::get('body');
 			$regulator->type = Input::get('type');
 			if($regulator->save()) {
@@ -106,6 +113,7 @@ class ControllerController extends Controller {
 			$regulator->title = $request->title;
 			$regulator->user_id = Auth::user()->user->id;
 			$regulator->system_id = 1;//$request->system_id;
+			$regulator->schema_id = $request->schema;;
 			$regulator->body = $request->body;
 			$regulator->type = $request->type;
 			$regulator->filename =  $request->file('filename')->getClientOriginalName();
