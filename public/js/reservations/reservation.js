@@ -327,6 +327,7 @@ function ColorLuminance(hex, lum) {
 				});
 
 				this.$calendar.fullCalendar({
+					nowIndicator: true,
 					customButtons: customButtons,
 					header: {
 						left: 'prev,next today ,' + devices.join(", "),

@@ -97,9 +97,11 @@
             selected : {
                 instance : null,
                 software: null,
-                device: null
+                device: null,
+                samplingRate: null
             },
-            series: null
+            series: null,
+            samplingRateField: null
 		},
 		ready: function() {
 			this.init();
@@ -111,7 +113,20 @@
 				this.parseServers();
 				this.getExperiments().done(function(response) {
 	                me.physicalExperiments = _.chain(response.data).map(function(experiment) {
-	                    experiment.commands = experiment.commands.data;
+	                	experiment.commands = experiment.commands.data;
+	                    _.object(_.map(experiment.commands,function(command) {
+	                    	return command.map(function(input) {
+	                    		if(input.type == "file" && input.meaning == 'parent_schema') {
+	                    			input.type = "select";
+	                    			input.values = ["Tak","To","urcite"];
+	                    		}
+	                    		if(input.type == "file" && input.meaning == 'child_schema') {
+	                    			input.type = "select";
+	                    			input.values = ["Tak","To","urcite","detska","schema"];
+	                    		}
+	                    		return input;
+	                    	});
+	                    }));
 	                    experiment.experiment_commands = experiment.experiment_commands.data;
 	                    experiment.output_arguments = experiment.output_arguments.data;
 	                    return experiment;
@@ -145,7 +160,7 @@
 
 						me.series = me.formatGraphInput(
 							message.data,
-							message.settings.sampling_rate,
+							me.selected.samplingRate,
 							me.selectedExperiment.output_arguments
 						);
 					});
@@ -176,11 +191,12 @@
 
 				$.when.apply($, promises).then(function() {
 					var data = me.makeRequestData(arguments);
+                    me.selected.samplingRate = parseInt(data.input.start[me.samplingRateField.name]);
                     console.log(data);
-					me.postRunExperiment(data)
-					.done(function(response) {
-						me.flashSuccess(response.success.message);
-					});
+					// me.postRunExperiment(data)
+					// .done(function(response) {
+					// 	me.flashSuccess(response.success.message);
+					// });
 				});
 			},
 			makeRequestData: function(inputs) {
@@ -239,6 +255,7 @@
 		        this.selected.instance = this.selectedExperiment.instances[0].name;
 		        this.selected.software = this.selectedExperiment.software;
 		        this.selected.device = this.selectedExperiment.device;
+		        this.samplingRateField = _.findWhere(this.selectedExperiment.commands.start,{meaning: "sampling_rate"});
 		    },
 		    selected : {
 		        handler: function(val, oldVal) {
