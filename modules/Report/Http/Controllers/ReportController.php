@@ -13,8 +13,7 @@ class ReportController extends Controller {
 	{
 		$user = Auth::user()->user;
 
-		$reports = Report::ofUser($user)->paginate();
-	
+		$reports = Report::ofUser($user)->orderBy('updated_at','desc')->paginate();
 
 		return view('report::index', compact('reports'));
 	}
