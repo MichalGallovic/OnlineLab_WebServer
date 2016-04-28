@@ -8,6 +8,7 @@ use Validator;
 use Illuminate\Http\Request;
 use Socialite;
 use App\User;
+use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller {
 	
@@ -50,15 +51,33 @@ class ProfileController extends Controller {
 
 
 		if ($validator->passes()) {
-			if ($request->file('avatar')->isValid()) {
-				/*$destinationPath = 'uploads'; // upload path
-				$extension = Input::file('image')->getClientOriginalExtension(); // getting image extension
-				$fileName = rand(11111,99999).'.'.$extension; // renameing image*/
+			if ($request->file('avatar') && $request->file('avatar')->isValid()) {
 				$request->file('avatar')->move(storage_path().'/user_uploads/'.$user->id.'/', $request->file('avatar')->getClientOriginalName()); // uploading file to given path
+				$userUpdate['avatar'] = $request->file('avatar')->getClientOriginalName();
 			}
 
 			$userUpdate=$request->all();
-			$userUpdate['avatar'] = $request->file('avatar')->getClientOriginalName();
+
+			if(!$user->hasAccount('local')){
+				$acc = new Account();
+				$acc->user()->associate($user);
+
+			}else{
+				$acc = $user->getAccount('local');
+			}
+
+			$acc->email = $request->email;
+			$acc->password = Hash::make($request->password);
+			$acc->save();
+
+			foreach ($user->accounts as $account) {
+				if($account->email == $request->email && $account->type != 'local'){
+					$account->password = Hash::make($request->password);
+					$account->save();
+				}
+			}
+
+
 			if($user->update($userUpdate)){
 				return redirect()->route('profile.settings', compact('user'))->with('success', 'Profile was succesfully changed.');
 			}else{
@@ -72,9 +91,18 @@ class ProfileController extends Controller {
 	}
 
 	public function destroyAccount($account_id){
-		if(Account::find($account_id)->delete()){
-			return redirect()->route('profile.settings', compact('user'))->with('success', 'Profile was succesfully changed.');
-		}else{
+		if(Auth::user()->id == $account_id){
+			if(Auth::user()->user->accounts->count() > 1){
+				foreach (Auth::user()->user->accounts as $account) {
+					if($account->id != $account_id){
+						Auth::login($account);
+						break;
+					}
+				}
+				if(Account::find($account_id)->delete()){
+					return redirect()->route('profile.settings', compact('user'))->with('success', 'Profile was succesfully changed.');
+				}
+			}
 			return redirect()->route('profile.settings', compact('user'))->with('fail', 'An error has occured during profile update.');
 		}
 	}

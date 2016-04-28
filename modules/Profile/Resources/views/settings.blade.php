@@ -24,7 +24,7 @@
         <div class="form-group">
             {!! Form::label('email', 'E-mail:', ['class' => 'col-sm-1 control-label']) !!}
             <div class="col-sm-11">
-                {!! Form::email('email',$user->getEmail('local'),['class'=>'form-control', 'readonly']) !!}
+                {!! Form::email('email',$user->getEmail('local'),['class'=>'form-control']) !!}
             </div>
         </div>
         <div class="form-group">
@@ -43,12 +43,6 @@
             {!! Form::label('language_code', 'Jazyk:', ['class' => 'col-sm-1 control-label']) !!}
             <div class="col-sm-11">
                 {!! Form::select('language_code', array('sk' => 'Slovenský', 'en' => 'English'), null,  ['class'=>'form-control']) !!}
-            </div>
-        </div>
-        <div class="form-group">
-            {!! Form::label('role', 'Rola:', ['class' => 'col-sm-1 control-label']) !!}
-            <div class="col-sm-11">
-                {!! Form::text('role',null,['class'=>'form-control']) !!}
             </div>
         </div>
 

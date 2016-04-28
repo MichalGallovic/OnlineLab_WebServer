@@ -52,9 +52,9 @@
                 </ul>
             </div>
             <div class="panel-footer">
-                <div class="input-group input-group select2-bootstrap-append">
+                <div class="input-group select2-bootstrap-append">
                     <meta name="csrf-token" content="{{ csrf_token() }}">
-                    <select id="search-box" class="form-control" multiple></select>
+                    <select id="search-box" class="form-control"></select>
                     <span class="input-group-btn">
                         <button id="addUser" class="btn btn-default" type="button"><span class="glyphicon glyphicon-plus" style="color:green"></span></button>
                     </span>
@@ -93,8 +93,6 @@
         $(document).ready(function(){
             var members = {!!json_encode($members)!!};
             var messages = {!!json_encode($messages->reverse()->slice(15))!!};
-
-            $( ".js-data-example-ajax" ).select2();
 
             $("#chat-panel-body").animate({
                 scrollTop:  $('#chat-panel-body').prop("scrollHeight")

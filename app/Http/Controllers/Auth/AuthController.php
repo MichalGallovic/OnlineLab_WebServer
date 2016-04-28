@@ -169,12 +169,12 @@ class AuthController extends Controller
 
     public function redirectToProvider($provider)
     {
-        return Socialite::with($provider)->redirect();
+        return Socialite::driver($provider)->redirect();
     }
 
     public function handleProviderCallback($provider)
     {
-        $user = Socialite::with($provider)->user();
+        $user = Socialite::driver($provider)->user();
 
         if(Auth::check()){
             $account = Account::create([
@@ -190,9 +190,8 @@ class AuthController extends Controller
             return redirect()->route('profile.settings', compact('user'));
         }else{
            $account = $this->findOrCreateUser($user, $provider);
+           Auth::login($account, true);
         }
-
-        Auth::login($account, true);
 
         $this->logLogin($account);
 
@@ -231,14 +230,26 @@ class AuthController extends Controller
 
     private function logLogin($account){
 
-        $ipAddress = $_SERVER['REMOTE_ADDR'];
+        $client  = @$_SERVER['HTTP_CLIENT_IP'];
+        $forward = @$_SERVER['HTTP_X_FORWARDED_FOR'];
+        $remote  = $_SERVER['REMOTE_ADDR'];
 
-        if (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER)) {
-            $ipAddress = array_pop(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']));
+        if(filter_var($client, FILTER_VALIDATE_IP))
+        {
+            $ip = $client;
         }
+        elseif(filter_var($forward, FILTER_VALIDATE_IP))
+        {
+            $ip = $forward;
+        }
+        else
+        {
+            $ip = $remote;
+        }
+
         LoginData::create([
             'user_account_id' =>  $account->id,
-            'ip' => $ipAddress
+            'ip' => $ip
         ]);
     }
 

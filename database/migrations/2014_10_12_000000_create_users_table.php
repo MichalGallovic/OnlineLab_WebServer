@@ -25,7 +25,8 @@ class CreateUsersTable extends Migration
             $table->string('avatar');
             $table->softDeletes();
             $table->rememberToken();
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at');
         });
     }
 

@@ -42,7 +42,8 @@ return [
     'facebook' => [
         'client_id' => '976155262445119',
         'client_secret' => 'f07157bb9cdac5ef85b50a701280be97',
-        'redirect' => 'http://147.175.105.140:8013/auth/provider/facebook/callback',
+        'redirect' => 'http://iolab.sk:8013/auth/provider/facebook/callback',
+
     ],
     //147.175.105.140
 

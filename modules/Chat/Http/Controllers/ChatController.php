@@ -113,8 +113,40 @@ class ChatController extends Controller {
 			}
 		}
 	}
-}
 
-//stanik 33
-//upload suboru mdl, x, mo
-//upload naparsovania
+	public function joinVideo($id){
+
+		return view('chat::video', compact('id'));
+	}
+
+	public function createVideo(Request $request){
+
+
+		$validator = Validator::make($request->all(), array(
+			'title' => 'required|min:3',
+			'invite' => 'required'
+		));
+
+		if ($validator->fails()) {
+			return redirect()->route('chat.index')
+				->withInput()
+				->withErrors($validator)
+				->with('modal', '#video_modal');
+		} else {
+
+			$chatroom = new Chatroom();
+			$chatroom->title = $request->title;
+			$chatroom->type = $request->type;
+
+		}
+			$room = $request->title;
+		$invite = $request->invite;
+
+		$addedUserName = User::find($invite)->getFullName();
+		$id = substr(\Hash::make('title' + Auth::user()->user->name),0,8);
+		event(new MemberAdded($invite, $addedUserName, Auth::user()->user->getFullName(), $room, $id, true));
+
+		return redirect()->route('chat.video', [$id])->with('caller', true);
+		//return view('chat::video', compact('isInit', 'room', 'invite'));
+	}
+}

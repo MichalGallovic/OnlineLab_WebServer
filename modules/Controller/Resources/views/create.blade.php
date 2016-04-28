@@ -12,7 +12,7 @@
     {!! Form::open(['method' => 'POST','route'=>'controller.store', 'class' => 'form-horizontal', 'id' => 'controllerForm']) !!}
     @include('controller::partials.form')
     @if($enviroment=='openmodelica')
-        <div class="form-group">
+        <div class="form-group text-div" {!! ($schema->type != trans("controller::default.CTRL_SCHEMA_TEXT")) ? 'style="display: none"' : ''!!}>
             {!! Form::label('openmodelica-final', 'Final regulator', ['class' => 'control-label col-md-2']) !!}
             <div class="col-sm-10">
                 {!! Form::textarea("openmodelica-final",
@@ -21,7 +21,7 @@
                 !!}
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group text-div" {!! ($schema->type != trans("controller::default.CTRL_SCHEMA_TEXT")) ? 'style="display: none"' : ''!!}>
             <div class="col-sm-offset-2 col-sm-1">
                 <button class="btn btn-default addParameterButton" type="button"><span class="glyphicon glyphicon-plus" style="color: green"></span> {{trans("controller::default.CTRL_ADD_PARAMETER")}}</button>
             </div>
@@ -30,19 +30,21 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row text-div" {!! ($schema->type != trans("controller::default.CTRL_SCHEMA_TEXT")) ? 'style="display: none"' : ''!!}>
             <div id="parameters" class="col-md-6">
             </div>
             <div id="variables" class="col-md-6">
             </div>
         </div>
     @endif
+
     <div class="form-group">
         <div class="col-sm-offset-1 col-sm-6">
             <a href="{{ url('controller')}}" class="btn btn-default">Back</a>
             {!! Form::submit('Save', ['class' => 'btn btn-primary']) !!}
         </div>
     </div>
+
     {!! Form::hidden('enviroment', $enviroment) !!}
     {!! Form::close() !!}
 
@@ -51,8 +53,38 @@
 
 @section('page_js')
     @parent
-    @if($enviroment == 'openmodelica')
+
     <script type="text/javascript">
+
+        $('#schema').on('change', function() {
+
+            $('#schema-image').attr('src', '{{route('controller.schema.image')}}'+'/'+this.value);
+            $.get('{{route('controller.schema.data')}}', {id: this.value} ,function(data, status){
+                $('#schema-body').val(data.fileContent);
+
+                switch (data.type){
+                    case "{{trans("controller::default.CTRL_SCHEMA_FILE")}}":
+                        $(".text-div").hide();
+                        $(".file-div").show();
+                        break;
+                    case "{{trans("controller::default.CTRL_SCHEMA_TEXT")}}":
+                        $(".file-div").hide();
+                        $(".text-div").show();
+                        break;
+                    case "{{trans("controller::default.CTRL_SCHEMA_NONE")}}":
+                        $(".text-div").hide();
+                        $(".file-div").hide();
+                        break;
+                }
+            });
+        });
+
+        $("#schema-image").on("click", function() {
+            $('#imagepreview').attr('src', $('#schema-image').attr('src')); // here asign the image to the modal when the user click the enlarge link
+            $('#imagemodal').modal('show'); // imagemodal is the id attribute assigned to the bootstrap modal, then i use the show function
+        });
+
+        @if($enviroment == 'openmodelica')
         function refreshController(){
 
             var text = "model "+$("#controllerForm input[name = title]").first().val() + "\n";
@@ -330,6 +362,7 @@
             );
             refreshController();
         });
+        @endif
     </script>
-    @endif
+
 @stop
