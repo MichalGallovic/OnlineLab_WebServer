@@ -14,7 +14,6 @@ class DashboardController extends Controller
 
     	$reservations = $user->reservations()->current()->get();
 
-
         return view('user.dashboard.home',compact('reservations'));
     }
 }

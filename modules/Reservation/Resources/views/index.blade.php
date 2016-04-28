@@ -21,7 +21,7 @@
 					</div>
 					<div class="modal-body" v-if="creating || editing">
 						<div class="row">
-							<div class="col-lg-12" v-if="user.role == 'admin'">
+							<div class="col-lg-12" v-if="user.role == 'admin' && !creating">
 								<h4>User</h4>
 								<p class="label label-default" style="font-size: 12px">@{{ selectedEvent.user }}</p>
 							</div>
