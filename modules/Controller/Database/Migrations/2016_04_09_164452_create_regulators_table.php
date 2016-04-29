@@ -16,7 +16,6 @@ class CreateRegulatorsTable extends Migration {
         {
             $table->increments('id');
             $table->integer('user_id')->unsigned();
-            $table->integer('system_id')->unsigned();
             $table->integer('schema_id')->unsigned();
             $table->string('title');
             $table->text('body')->nullable();
@@ -27,13 +26,11 @@ class CreateRegulatorsTable extends Migration {
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users')
-                ->onDelete('restrict')
                 ->onUpdate('cascade');
 
             $table->foreign('schema_id')
                 ->references('id')
                 ->on('schemas')
-                ->onDelete('restrict')
                 ->onUpdate('cascade');
         });
     }

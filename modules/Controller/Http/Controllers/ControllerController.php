@@ -2,6 +2,8 @@
 
 use Modules\Controller\Entities\Regulator;
 use Modules\Controller\Entities\Schema;
+use Modules\Experiments\Entities\Experiment;
+use Modules\Experiments\Entities\Software;
 use Pingpong\Modules\Routing\Controller;
 use Auth;
 use Input;
@@ -15,7 +17,13 @@ class ControllerController extends Controller {
 		$publicRegulators = Regulator::where('type','public')->get();
 		$pendingRegulators = Regulator::where('type','public_pending')->get();
 		$schemas = Schema::all();
-		return view('controller::index', compact('myRegulators', 'publicRegulators', 'pendingRegulators', 'schemas'));
+		$softwares = Software::lists('name', 'id');
+
+		$experiments = Experiment::with('device')->whereHas('software', function($q){
+			$q->where('name', 'matlab');
+		})->join('devices', 'devices.id', '=', 'experiments.device_id')->lists('name', 'experiments.id');
+
+		return view('controller::index', compact('myRegulators', 'publicRegulators', 'pendingRegulators', 'schemas', 'experiments', 'softwares'));
 	}
 
 	public function show($id) {
@@ -78,7 +86,6 @@ class ControllerController extends Controller {
 			$regulator = new Regulator();
 			$regulator->title = Input::get('title');
 			$regulator->user_id = Auth::user()->user->id;
-			$regulator->system_id = Input::get('system_id');
 			$regulator->schema_id = Input::get('schema_id');
 			$regulator->body = Input::get('body');
 			$regulator->type = Input::get('type');
@@ -112,7 +119,6 @@ class ControllerController extends Controller {
 			$regulator = new Regulator();
 			$regulator->title = $request->title;
 			$regulator->user_id = Auth::user()->user->id;
-			$regulator->system_id = 1;//$request->system_id;
 			$regulator->schema_id = $request->schema;;
 			$regulator->body = $request->body;
 			$regulator->type = $request->type;

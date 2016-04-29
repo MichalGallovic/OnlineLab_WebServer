@@ -51,7 +51,7 @@ class SchemaController extends Controller {
 			$schema->type = $request->type;
 			$schema->title = $request->title;
 			$schema->type = $request->type;
-			$schema->software = $request->software;
+			$schema->experiment_id = $request->experiment_id;
 			if ($request->file('filename') && $request->file('filename')->isValid()) {
 				File::cleanDirectory($directory.'file/');
 				$request->file('filename')->move($directory.'file/',$request->file('filename')->getClientOriginalName());
@@ -93,7 +93,7 @@ class SchemaController extends Controller {
 				$schema = new Schema();
 				$schema->title = $request->title;
 				$schema->type = $request->type;
-				$schema->software = $request->software;
+				$schema->experiment_id = $request->experiment_id;
 				$schema->filename = $request->file('filename')->getClientOriginalName();
 				if($request->image){
 					$schema->image = $request->file('image')->getClientOriginalName();
