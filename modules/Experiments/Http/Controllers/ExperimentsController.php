@@ -28,4 +28,8 @@ class ExperimentsController extends Controller {
 
 		return view('experiments::index', compact('servers', 'adminExperiments','userExperiments'));
 	}
+
+	public function getExperiments($softwareId){
+		return Experiment::where('software_id', $softwareId)->get();
+	}
 }

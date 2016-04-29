@@ -4,7 +4,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Regulator extends Model {
 
-    protected $fillable = ['user_id', 'type', 'body', 'system_id', 'title'];
+    protected $fillable = ['user_id', 'type', 'body', 'experiment_id', 'title'];
 
     public function getFilePath() {
         return storage_path() . '/user_uploads/'.$this->user->id.'/regulators/' . $this->filename;;
