@@ -5,6 +5,8 @@ Route::group(['prefix' => 'experiments', 'namespace' => 'Modules\Experiments\Htt
 	Route::get('/', ['as'	=>	"experiments.index", "uses"	=>	'ExperimentsController@index']);
 	Route::get('refresh', ['as' => 'experiments.refresh', 'uses' => 'ExperimentsController@refresh']);
 
+	Route::get('software/{softwareId}', 'ExperimentsController@getExperiments');
+
 	Route::delete('servers/destroy/{id}',['as' => 'servers.destroy', 'uses' => 'ServersController@destroy']);
 	Route::get('servers/add',['as' => 'servers.create', "uses" => 'ServersController@create']);
 	Route::post('servers/add',['as' => 'servers.store', "uses" => 'ServersController@store']);

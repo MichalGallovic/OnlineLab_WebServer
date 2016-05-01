@@ -164,7 +164,12 @@
 					</div>
 					<div class="form-group {!! ($errors->has('experiment_id')) ? 'has-error' : '' !!}">
 						{!! Form::label("software", trans("controller::default.CTRL_SCHEMA_SOFTWARE"), ['class' => 'control-label']) !!}
-						{!! Form::select("software", ['matlab' => 'Matlab', 'openmodelica' => 'Openmodelica', 'scilab' => 'Scilab'], null, ['class' => 'form-control']) !!}
+						{!! Form::select("software", $softwares, null, ['class' => 'form-control', 'id' => 'software']) !!}
+					</div>
+
+					<div class="form-group">
+						{!! Form::label("experiment_id", trans("controller::default.CTRL_SCHEMA_TYPE"), ['class' => 'control-label']) !!}
+						{!! Form::select("experiment_id", $experiments, null, ['class' => 'form-control', 'id' => 'experiment']) !!}
 					</div>
 
 					<div class="form-group">
@@ -201,10 +206,22 @@
 
 @section('page_js')
 	@parent
-	@if(Session::has('modal'))
 		<script type="text/javascript">
-			console.log('{!! Session::get('modal') !!}')
-			$("{!! Session::get('modal') !!}").modal('show');
+			@if(Session::has('modal'))
+				$("{!! Session::get('modal') !!}").modal('show');
+			@endif
+
+            $('#software').on('change', function() {
+
+				$.get('experiments/software/'+this.value, function(data, status){
+					$('#experiment').empty();
+					$.each(data , function(i, val) {
+						$('#experiment').append($('<option>', {
+							text: val.device.name,
+							value: val.id
+						}))
+					});
+				});
+			});
 		</script>
-	@endif
 @stop
