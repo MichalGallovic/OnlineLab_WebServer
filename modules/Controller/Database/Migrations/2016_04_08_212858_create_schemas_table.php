@@ -15,12 +15,17 @@ class CreateSchemasTable extends Migration {
         Schema::create('schemas', function(Blueprint $table)
         {
             $table->increments('id');
+            $table->integer('experiment_id')->unsigned();
             $table->string('title')->unique();
             $table->string('filename');
             $table->string('image')->nullable();
             $table->enum('type', ['file', 'text', 'none']);
-            $table->enum('software', ['matlab', 'openmodelica', 'scilab']);
             $table->timestamps();
+
+            $table->foreign('experiment_id')
+                ->references('id')
+                ->on('experiments')
+                ->onUpdate('cascade');
         });
     }
 

@@ -9,6 +9,10 @@ class Schema extends Model {
         return $this->hasMany('Modules\Controller\Entities\Regulator','schema_id');
     }
 
+    public function experiment() {
+        return $this->belongsTo('Modules\Experiments\Entities\Experiment','experiment_id');
+    }
+
     public function getFileContent(){
         return \File::get(storage_path('schemas/'.$this->id.'/file/'.$this->filename));
     }

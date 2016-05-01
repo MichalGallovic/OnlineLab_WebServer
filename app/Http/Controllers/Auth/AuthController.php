@@ -112,58 +112,58 @@ class AuthController extends Controller
         $ldaprdn  = 'uid='.$credentials->email.', ou=People, DC=stuba, DC=sk';
         $dn  = 'ou=People, DC=stuba, DC=sk';
 
+        $ldapconn = ldap_connect("ldap.stuba.sk");
         // connect to ldap server
-        $ldapconn = ldap_connect("ldap.stuba.sk") or die("Could not connect to LDAP server.");
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
 
-        if ($ldapconn) {
+        // binding to ldap server
+        @$ldapbind = ldap_bind($ldapconn, $ldaprdn, $credentials->password);
 
-            // binding to ldap server
-            $ldapbind = ldap_bind($ldapconn, $ldaprdn, $credentials->password);
+        // verify binding
+        if ($ldapbind) {
+            $filter="uid=".$credentials->email;
+            //$justthese = array("givenname","employeetype","surname","mail","faculty","cn");
+            $justthese = array("givenname","surname","mail");
 
-            // verify binding
-            if ($ldapbind) {
-                $filter="uid=".$credentials->email;
-                //$justthese = array("givenname","employeetype","surname","mail","faculty","cn");
-                $justthese = array("givenname","surname","mail");
+            $sr=ldap_search($ldapconn, $dn, $filter, $justthese);
 
-                $sr=ldap_search($ldapconn, $dn, $filter, $justthese);
+            $info = ldap_get_entries($ldapconn, $sr);
+            ldap_close($ldapconn);
+            //return var_dump($info);
+            $account =  Account::where('type', 'ldap')->whereIn('email', $info[0]['mail'])->first();
 
-                $info = ldap_get_entries($ldapconn, $sr);
+            if(!$account){
+                $user = new User;
+                $user->name = $info[0]['givenname'][0];
+                $user->surname = $info[0]['sn'][0];
+                $user->save();
 
-                //return var_dump($info);
-                $account =  Account::where('type', 'ldap')->whereIn('email', $info[0]['mail'])->first();
-
-                if(!$account){
-                    $user = new User;
-                    $user->name = $info[0]['givenname'][0];
-                    $user->surname = $info[0]['sn'][0];
-                    $user->save();
-
-                    $account = new Account;
-                    $account->type = 'ldap';
-                    $account->email = $info[0]['mail'][0];
-                    $account->confirmation_code = str_random(30);
-                    $account->user()->associate($user);
-                    $account->save();
-
-                    Auth::login($account, true);
-
-                    $this->logLogin($account);
-                    //$account->password = Hash::make($credentials['password']);
-
-                    return redirect()->route('user::linkAccounts');
-                }
+                $account = new Account;
+                $account->type = 'ldap';
+                $account->email = $info[0]['mail'][0];
+                $account->confirmation_code = str_random(30);
+                $account->user()->associate($user);
+                $account->save();
 
                 Auth::login($account, true);
 
                 $this->logLogin($account);
+                //$account->password = Hash::make($credentials['password']);
 
-                //return var_dump($info);
-                return redirect()->route('forum.index');
-            } else {
-                echo "LDAP bind failed...";
+
+                return redirect()->route('user::linkAccounts');
             }
+
+            Auth::login($account, true);
+
+            $this->logLogin($account);
+
+            //return var_dump($info);
+            return redirect()->route('forum.index');
+        } else if (ldap_get_option($ldapconn, 0x0032, $extended_error)) {
+            return redirect('auth/login')->with('fail', "Error Binding to LDAP: $extended_error")->withInput();
+        } else {
+            return redirect('auth/login')->with('fail', 'Incorrect LDAP credentials')->withInput();
         }
     }
 
