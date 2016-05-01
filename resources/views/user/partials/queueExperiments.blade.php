@@ -11,7 +11,7 @@
 			<div class="panel-body">
 				<div class="row" id="queueApp">
 					{{ csrf_field() }}
-					<div class="col-lg-6">
+					<div class="col-lg-12">
 						<form class="form" v-on:submit.prevent="runExperiment">
 							<div class="form-group">
 								<label>Experiment</label>
@@ -49,6 +49,7 @@
 										:values="input.values"
 										:placeholder="input.placeholder"
 										:command="commandName"
+										:meaning="input.meaning"
 										>
 								</olm-input>
 							</div>

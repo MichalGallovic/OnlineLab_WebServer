@@ -21,7 +21,9 @@ Vue.config.devtools = true;
     		values: [],
     		name : null,
     		command: null,
-            default: null
+            default: null,
+            meaning: null,
+            visible: true
     	},
     	data: function() {
     		return {
@@ -31,19 +33,52 @@ Vue.config.devtools = true;
     	ready: function() {
 
     	},
+        events: {
+            'schema:changed': function(msg) {
+                if(this.meaning == 'child_schema') {
+                    var values = [];
+                    values.push({
+                        name: 'Select regulator',
+                        data: null
+                    });
+
+                    var regulators = msg.map(function(regulator) {
+                        return {
+                            name: regulator.name,
+                            data: regulator.id
+                        };
+                    });
+
+                    this.values = values.concat(regulators);
+
+                    if(regulators.length == 0) {
+                        this.visible = false;
+                    } else {
+                        this.visible = true;
+                    }
+                }
+            }
+        }, 
         watch : {
             values : function(val, oldVal) {
                 if(this.default != "none" || this.values.length == 1) {
                     if(this.type == "checkbox") {
                         this.input = [];
                     }
-                    if(this.type == "select") {
+                    if(this.type == "select" && !this.meaning) {
                         this.input = this.values[0];
+                    } else {
+                        this.input = null;
                     }
 
                     if(this.type == "radio") {
                         this.input = this.values[0];
                     }
+                }
+            },
+            input: function(val, oldVal) {
+                if(this.meaning == 'parent_schema') {
+                    this.$dispatch('schema:changed', this.input);
                 }
             }
         },
@@ -60,7 +95,8 @@ Vue.config.devtools = true;
     					var promise = {
     						command: me.command,
     						name : me.name,
-    						value: response
+    						value: response,
+                            meaning: this.meaning
     					};
     					deferred.resolve(promise);
     				});
@@ -69,7 +105,8 @@ Vue.config.devtools = true;
     				var promise = {
     						command: this.command,
     						name : this.name,
-    						value : this.input
+    						value : this.input,
+                            meaning: this.meaning
 					};
     				deferred.resolve(promise);
     			}
@@ -104,6 +141,32 @@ Vue.config.devtools = true;
 			this.getExperiments().done(function(response) {
                 me.physicalExperiments = _.chain(response.data).map(function(experiment) {
                     experiment.commands = experiment.commands.data;
+                    experiment.schemas = experiment.schemas.data;
+                    _.object(_.map(experiment.commands,function(command) {
+                        return command.map(function(input) {
+                            if(input.type == "file" && input.meaning == 'parent_schema') {
+                                input.type = "select";
+                                var values = [];
+                                values.push({
+                                    name: 'Select schema',
+                                    data: null
+                                });
+                                experiment.schemas.forEach(function(schema) {
+                                    values.push({
+                                        name: schema.name,
+                                        data: schema.id
+                                    });
+                                });
+
+                                input.values = values;
+                            }
+                            if(input.type == "file" && input.meaning == 'child_schema') {
+                                input.type = "select";
+                                input.values = [];
+                            }
+                            return input;
+                        });
+                    }));
                     experiment.experiment_commands = experiment.experiment_commands.data;
                     return experiment;
                 }).value();
@@ -181,13 +244,17 @@ Vue.config.devtools = true;
 				$.when.apply($, promises).then(function() {
 					var data = me.makeRequestData(arguments);
                     console.log(data);
-					me.postQueueExperiment(data)
-					.done(function(response) {
-						me.flashSuccess(response.success.message);
-					});
+					// me.postQueueExperiment(data)
+					// .done(function(response) {
+					// 	me.flashSuccess(response.success.message);
+					// });
 				});
 			},
+            isSchemaInput: function(input) {
+                return input.meaning == 'parent_schema' || input.meaning == 'child_schema';
+            },
 			makeRequestData: function(inputs) {
+                var me = this;
 				var request = {
 					device: this.selectedExperiment.device,
 					software: this.selectedExperiment.software,
@@ -198,9 +265,36 @@ Vue.config.devtools = true;
 					request.input[command] = {};
 				});
 				$.each(inputs, function(index, input) {
+                    var value = input.value;
+
+                    if(me.isSchemaInput(input)) {
+                        switch(input.meaning) {
+                            case 'parent_schema': {
+                                var schema = _.first(_.where(me.selectedExperiment.schemas,{id: input.value}));
+                                if(schema) {
+                                    value = schema.url;
+                                }
+
+                                break;
+                            }
+                            case 'child_schema': {
+                                var regulator = _.first(_.chain(_.pluck(me.selectedExperiment.schemas,'regulators'))
+                                    .flatten().where({id: input.value}).value());                             
+
+                                if(regulator) {
+                                    value = regulator.url;
+                                }
+
+                                break;
+                            }
+                        }
+                    }
+
                     if(input.command) {
-                        request.input[input.command][input.name] = input.value;
-                    } 
+                        request.input[input.command][input.name] = value;
+                    }
+
+                    console.log(value);
 				});
 
                 request.instance = this.selected.instance;
@@ -208,7 +302,7 @@ Vue.config.devtools = true;
 				return request;
 			},
 			getExperiments: function() {
-				return $.getJSON("/api/experiments?include=commands,experiment_commands");
+				return $.getJSON("/api/experiments?include=commands,experiment_commands,schemas");
 			},
 			postQueueExperiment: function(data) {
 				var me = this;
@@ -218,6 +312,16 @@ Vue.config.devtools = true;
 					"data" : data
 				});
 			}
-		}
+		},
+        events: {
+            'schema:changed': function(msg) {
+                var child_schemas = _.findWhere(this.selectedExperiment.schemas, {id:msg});
+                if(child_schemas) {
+                    this.$broadcast('schema:changed', child_schemas.regulators);
+                } else {
+                    this.$broadcast('schema:changed', []);
+                }
+            }
+        }
 	});
 })();
