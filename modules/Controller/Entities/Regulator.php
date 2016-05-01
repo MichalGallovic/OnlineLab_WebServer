@@ -1,5 +1,6 @@
 <?php namespace Modules\Controller\Entities;
    
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 
 class Regulator extends Model {
@@ -18,4 +19,13 @@ class Regulator extends Model {
         return $this->belongsTo('Modules\Controller\Entities\Schema','schema_id');
     }
 
+    public function scopePublic($query)
+    {
+        return $query->where('type','public');
+    }
+
+    public function scopeOrOfUser($query, User $user)
+    {
+        return $query->orWhere('user_id', $user->id);
+    }
 }
