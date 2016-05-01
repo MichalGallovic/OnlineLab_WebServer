@@ -66,6 +66,7 @@ class ControllerController extends Controller {
 	public function create($enviroment){
 		$schemas = Schema::lists('title', 'id');
 		$schema = Schema::first();
+
 		return view('controller::create', compact('enviroment', 'schemas', 'schema'));
 	}
 
