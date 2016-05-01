@@ -82,23 +82,5 @@ Route::group(['as'  =>  'user::', 'middleware'  =>  'auth'], function() {
 });
 
 Route::get('test/data', function() {
-
-    // $server = new Server("192.168.100.110");
-    // $res = $server->queueExperiment([
-    //         "device" => "tos1a",
-    //         "software" => "openloop",
-    //         "input" => [
-    //             "start" => [
-    //                 "c_fan" => 30,
-    //                 "c_led" => 50,
-    //                 "c_lamp" => 50,
-    //                 "t_sim" => 5,
-    //                 "s_rate" => 50
-    //             ]
-    //         ]
-    //     ]);
-    // dd($res);
-    // $experiments = Experiment::join('experiment_server','experiments.id','=','experiment_server.experiment_id')->available()->where('status','!=','offline')->get();
-    // dd($experiments->toArray());
-    dd(PhysicalDevice::ready()->ofName('r2')->get());
+    dd(array_reverse(array_keys(Module::getOrdered())));
 });
