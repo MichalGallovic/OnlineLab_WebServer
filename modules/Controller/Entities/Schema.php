@@ -4,6 +4,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Schema extends Model {
     protected $fillable = ['title', 'type', 'filename', 'image' , 'software'];
+    protected $with = ['regulators'];
 
     public function regulators() {
         return $this->hasMany('Modules\Controller\Entities\Regulator','schema_id');

@@ -1,6 +1,7 @@
 <?php namespace Modules\Experiments\Entities;
    
 use Illuminate\Database\Eloquent\Model;
+use Modules\Controller\Entities\Schema;
 use Modules\Experiments\Entities\Device;
 use Modules\Experiments\Entities\Server;
 use Modules\Experiments\Entities\Software;
@@ -20,6 +21,11 @@ class Experiment extends Model {
 
     public function servers() {
     	return $this->belongsToMany(Server::class,'physical_experiment')->whereNull('physical_experiment.deleted_at');
+    }
+
+    public function schemas()
+    {
+        return $this->hasMany(Schema::class);
     }
 
     public function physicalDevices()

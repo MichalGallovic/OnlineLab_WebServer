@@ -22,3 +22,8 @@ Route::group(['namespace' => 'Modules\Controller\Http\Controllers', 'middleware'
 
 
 });
+
+Route::group(["prefix" => "api", "namespace" => 'Modules\Controller\Http\Controllers'], function() {
+	Route::get('schemas/{id}', ['uses' => 'ApiController@schema']);
+	Route::get('regulators/{id}', ['uses' => 'ApiController@regulator']);
+});
