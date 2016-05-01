@@ -21,13 +21,29 @@
 	<template id="input-template">
 		<div class="row" style="margin-top:10px">
 			<div v-el:input class="form-group">
-				<label 
+				<div
 				v-bind:class="{
 					'col-xs-6' : (type == 'text' || type == 'select'),
 					'col-xs-12' : (type != 'text')
-				}" 
-				class="control-label"
-				>@{{ label }}</label>
+				}" v-if="meaning != 'child_schema'">
+					<label class="control-label">@{{ label }}</label>
+				</div>
+				<div
+				v-bind:class="{
+					'col-xs-6' : (type == 'text' || type == 'select'),
+					'col-xs-12' : (type != 'text')
+				}" v-if="meaning == 'child_schema' && values.length > 1">
+					<label class="control-label">@{{ label }}</label>
+					<!-- <span class="badge">@{{ (values.length - 1) }}</span> -->
+					<!-- <div class="row">
+						<div class="btn-group col-xs-12" v-if="meaning == 'child_schema'">
+							<label class="btn btn-xs btn-primary" v-bind:class="{visible: 'active'}">
+								<input type="checkbox" v-model="visible" autocomplete="off"> Include child schema
+							</label>
+						</div>
+					</div> -->
+				</div>
+
 				<div class="col-xs-6" v-if="type == 'text'">
 					<input v-model="input" class="form-control" type="text" name="@{{ name }}" placeholder="@{{ placeholder }}" value="@{{ placeholder }}">
 				</div>
@@ -49,10 +65,17 @@
 					<textarea v-model="input" class="form-control" rows="3" placeholder="@{{ placeholder }}"></textarea>
 				</div>
 				<div class="col-xs-6" v-if="type == 'select'">
-					<select class="form-control" name="@{{ name }}" v-model="input">
-					  <option v-for="value in values">@{{ value }}</option>
+					<select class="form-control" name="@{{ name }}" v-model="input" v-if="!meaning">
+					  <option v-for="value in values" v-if="typeof value == 'string'">@{{ value }}</option>
+					</select>
+					<select class="form-control" name="@{{ name }}" v-if="meaning == 'parent_schema'" v-model="input">
+					  <option v-for="value in values" v-if="typeof value == 'object'" v-bind:value="value.data">@{{ value.name }}</option>
+					</select>
+					<select class="form-control" name="@{{ name }}" v-if="meaning == 'child_schema' && visible" v-model="input">
+					  <option v-for="value in values" v-if="typeof value == 'object'" v-bind:value="value.data">@{{ value.name }}</option>
 					</select>
 				</div>
+
 				<div class="col-xs-12" v-if="type == 'file'">
 					<input type="file" name="@{{ name }}" v-model="input">
 					<p class="help-block">@{{ placeholder }}</p>

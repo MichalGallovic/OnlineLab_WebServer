@@ -53,11 +53,11 @@ class ExperimentsTableSeeder extends Seeder {
 		]);
 
 		$device = Device::create([
-			"name"	=>	"tos1a"
+			"name"	=>	"helicopter"
 		]);
 
 		$ledDevice = Device::create([
-			"name"	=>	"led_cube"
+			"name"	=>	"submarine"
 		]);
 
 		PhysicalDevice::create([

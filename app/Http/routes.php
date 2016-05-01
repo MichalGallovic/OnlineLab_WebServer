@@ -13,7 +13,9 @@
 */
 
 use App\Services\SystemService;
+use Illuminate\Support\Facades\Hash;
 use Intervention\Image\Facades\Image;
+use Modules\Controller\Entities\Schema;
 use Modules\Experiments\Entities\Device;
 use Modules\Experiments\Entities\Server;
 use Modules\Experiments\Entities\Experiment;
@@ -82,5 +84,5 @@ Route::group(['as'  =>  'user::', 'middleware'  =>  'auth'], function() {
 });
 
 Route::get('test/data', function() {
-    dd(array_reverse(array_keys(Module::getOrdered())));
+
 });
