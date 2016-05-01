@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Caffeinated\Modules\Facades\Module;
 
 class OlmMigrateRefresh extends Command
 {
@@ -21,9 +22,10 @@ class OlmMigrateRefresh extends Command
     protected $description = 'Refresh all migrations';
 
     protected $modulesToSeed = [
-        // "Experiments",
+        "Experiments",
         // "Report",
-        // 'Reservation'
+        // 'Reservation',
+        'Controller'
     ];
 
     /**
@@ -43,9 +45,21 @@ class OlmMigrateRefresh extends Command
      */
     public function handle()
     {
-        $this->call("module:migrate-reset");
+        $moduleNames = array_keys(Module::getOrdered());
+        $reversedNames = array_reverse($moduleNames);
+
+        // Since order of migrations depend on the order of moodules
+        // we reverse the order of ordered module keys
+        // in order to reset migrations in decending
+        // order
+        foreach ($reversedNames as $name) {
+            $this->call("module:migrate-reset", ["module" => $name]);
+        }
         $this->call("migrate:refresh");
-        $this->call("module:migrate");
+
+        foreach ($moduleNames as $name) {
+            $this->call("module:migrate", ["module" => $name]);
+        }
         $this->call("db:seed");
         foreach ($this->modulesToSeed as $module) {
             $this->call("module:seed",["module" => $module]);   
