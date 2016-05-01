@@ -8,7 +8,6 @@ use Pingpong\Modules\Routing\Controller;
 use Auth;
 use Input;
 use Validator;
-use File;
 use Illuminate\Http\Request;
 
 class ControllerController extends Controller {
@@ -17,7 +16,7 @@ class ControllerController extends Controller {
 		$myRegulators = Auth::user()->user->regulators;
 		$publicRegulators = Regulator::where('type','public')->get();
 		$pendingRegulators = Regulator::where('type','public_pending')->get();
-		$schemas = Schema::with('experiment.software')->get();
+		$schemas = Schema::all();
 		$softwares = Software::lists('name', 'id');
 
 		$experiments = Experiment::with('device')->whereHas('software', function($q){
@@ -55,7 +54,6 @@ class ControllerController extends Controller {
 			$userRegulator = Request::all();
 			$regulator = Regulator::find($id);
 			if ($regulator->update($userRegulator)) {
-				File::put(storage_path().'/user_uploads/'.$regulator->user->id.'/regulators/'.$regulator->id.'/'.$regulator->id.'.txt', $regulator->body);
 				return redirect()->route('controller.edit', $regulator->id)->with('success', trans('controller::default.CTRL_EDIT_SUCCESS'));
 			} else {
 				return redirect()->route('controller.edit', Input::get('enviroment'))
@@ -66,42 +64,20 @@ class ControllerController extends Controller {
 	}
 
 	public function create($enviroment){
-		$schemas = Schema::whereHas('experiment', function($query) use ($enviroment){
-			$query->whereHas('software', function($q) use ($enviroment){
-				$q->where('name', $enviroment);
-			});
-		})->lists('title', 'id');
+		$schemas = Schema::lists('title', 'id');
+		$schema = Schema::first();
 
-		if(count($schemas)>0){
-			$schema = Schema::whereHas('experiment', function($query) use ($enviroment){
-				$query->whereHas('software', function($q) use ($enviroment){
-					$q->where('name', $enviroment);
-				});
-			})->first();
-			return view('controller::create', compact('enviroment', 'schemas', 'schema'));
-		}else{
-			return view('controller::error', compact('enviroment'));
-		}
-
+		return view('controller::create', compact('enviroment', 'schemas', 'schema'));
 	}
 
-	public function store(Request $request) {
+	public function store() {
 
-		$validArray = [
+		$validator = Validator::make(Input::all(), array(
 			'title' => 'required',
-			'schema_id' => 'required',
+			'body' => 'required',
+			'system_id' => 'required',
 			'type' => 'required'
-		];
-
-		$schemaType = Schema::find($request->schema_id)->type;
-
-		if($schemaType == 'text'){
-			$validArray['body'] = 'required';
-		} else if($schemaType == 'file'){
-			$validArray['filename'] = 'required';
-		}
-
-		$validator = Validator::make($request->all(), $validArray);
+		));
 
 		if ($validator->fails()) {
 			return redirect()->route('controller.create', Input::get('enviroment'))
@@ -109,24 +85,12 @@ class ControllerController extends Controller {
 				->withErrors($validator);
 		} else {
 			$regulator = new Regulator();
-			$regulator->title = $request->title;
+			$regulator->title = Input::get('title');
 			$regulator->user_id = Auth::user()->user->id;
-			$regulator->schema_id = $request->schema_id;
-			$regulator->body = $request->body ? $request->body : null;
-			$regulator->filename = $request->filename ? $request->file('filename')->getClientOriginalName() : null;
-			$regulator->type = $request->type;
+			$regulator->schema_id = Input::get('schema_id');
+			$regulator->body = Input::get('body');
+			$regulator->type = Input::get('type');
 			if($regulator->save()) {
-				$path = storage_path().'/user_uploads/'.$regulator->user->id.'/regulators/'.$regulator->id.'/';
-				if($schemaType == 'text'){
-					$this->createDirectory($path);
-					File::put($path . '/'.$regulator->id.'.txt', $regulator->body);
-				}else if($schemaType == 'file'){
-					$this->createDirectory($path);
-					if ($request->file('filename')->isValid()) {
-						$request->file('filename')->move($path, $request->file('filename')->getClientOriginalName()); // uploading file to given path
-					}
-				}
-
 				return redirect()->route('controller.edit', $regulator->id)->with('success', trans('controller::default.CTRL_CREATE_SUCCESS'));
 			} else {
 				return redirect()->route('controller.create', Input::get('enviroment'))
@@ -136,12 +100,6 @@ class ControllerController extends Controller {
 		}
 	}
 
-	private function createDirectory($path){
-		if(!File::Exists($path)){
-			File::makeDirectory($path, 0775 , true);
-		}
-	}
-/*
 	public function upload(Request $request){
 		$validator = Validator::make($request->all(), array(
 			'title' => 'required',
@@ -176,7 +134,7 @@ class ControllerController extends Controller {
 			}
 		}
 	}
-*/
+
 	public function approve($id){
 		$regulator = Regulator::find($id);
 		$regulator->type = 'public';
@@ -190,7 +148,7 @@ class ControllerController extends Controller {
 	public function destroy($id){
 		$regulator = Regulator::find($id);
 		if($regulator->filename){
-			File::Delete(storage_path().'/user_uploads/'.$regulator->user->id.'/regulators/'.$regulator->filename);
+			\File::Delete(storage_path().'/user_uploads/'.$regulator->user->id.'/regulators/'.$regulator->filename);
 		}
 		$regulator->delete();
 		return redirect()->route('controller.index')->with('success', trans('controller::default.CTRL_DELETE_SUCCESS'));
