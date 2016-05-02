@@ -13,6 +13,7 @@ use Modules\Experiments\Entities\PhysicalDevice;
 use Modules\Experiments\Entities\ServerExperiment;
 use Modules\Experiments\Entities\PhysicalExperiment;
 use Modules\Experiments\Transformers\DeviceTransformer;
+use Illuminate\Contracts\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Modules\Experiments\Http\Requests\RunExperimentRequest;
 use Modules\Experiments\Http\Requests\QueueExperimentRequest;
@@ -79,19 +80,30 @@ class ApiController extends ApiBaseController {
 	public function run(RunExperimentRequest $request, $id)
 	{
 		$experiment = Experiment::findOrFail($id);
-		$experimentService = new ExperimentService($experiment, $request->input());
-		$experimentService->run();
-
-		return $this->respondWithSuccess("Experiment requested!");
+		try {
+			$experimentService = new ExperimentService($experiment, $request->input());
+			$experimentService->run();
+			return $this->respondWithSuccess("Experiment requested successfully!");
+		} catch(ValidationException $e) {
+			return $this->errorWrongArgs($e->errors()->toArray());
+		} catch(ModelNotFoundException $e) {
+			return $this->errorForbidden("This experiment cannot be run!");
+		}
 	}
 
 	public function queue(QueueExperimentRequest $request, $id)
 	{
 		$experiment = Experiment::findOrFail($id);
-		$experimentService = new ExperimentService($experiment, $request->input());
-		$experimentService->queue();
 
-		return $this->respondWithSuccess("Experiment queued successfully!");
+		try {
+			$experimentService = new ExperimentService($experiment, $request->input());
+			$experimentService->queue();
+			return $this->respondWithSuccess("Experiment queued successfully!");
+		} catch(ValidationException $e) {
+			return $this->errorWrongArgs($e->errors()->toArray());
+		} catch(ModelNotFoundException $e) {
+			return $this->errorForbidden("This experiment cannot be run!");
+		}
 	}
 
 	public function updateStatus(Request $request)
