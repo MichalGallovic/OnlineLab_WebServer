@@ -79,8 +79,8 @@ class ApiController extends ApiBaseController {
 
 	public function run(RunExperimentRequest $request, $id)
 	{
-		$experiment = Experiment::findOrFail($id);
 		try {
+			$experiment = Experiment::findOrFail($id);
 			$experimentService = new ExperimentService($experiment, $request->input());
 			$experimentService->run();
 			return $this->respondWithSuccess("Experiment requested successfully!");
@@ -93,9 +93,8 @@ class ApiController extends ApiBaseController {
 
 	public function queue(QueueExperimentRequest $request, $id)
 	{
-		$experiment = Experiment::findOrFail($id);
-
 		try {
+			$experiment = Experiment::findOrFail($id);
 			$experimentService = new ExperimentService($experiment, $request->input());
 			$experimentService->queue();
 			return $this->respondWithSuccess("Experiment queued successfully!");
