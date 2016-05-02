@@ -41,6 +41,20 @@ class Reservation extends Model {
     	});
     }
 
+    public function scopeToday($query)
+    {
+        $startOfDay = Carbon::today()->startOfDay();
+        $endOfDay = Carbon::today()->endOfDay();
+        return $query->where('start', '>=', $startOfDay)->where('end','<=',$endOfDay);   
+    }
+
+    public function scopeForDay($query, Carbon $day)
+    {
+        $startOfDay = $day->copy()->startOfDay();
+        $endOfDay = $day->copy()->endOfDay();
+        return $query->where('start', '>=', $startOfDay)->where('end','<=',$endOfDay);   
+    }
+
     public function scopeCurrent($query)
     {
         $now = Carbon::now();

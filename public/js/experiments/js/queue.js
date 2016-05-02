@@ -231,6 +231,15 @@ Vue.config.devtools = true;
                     type: 'success'
                 });
             },
+            flashWarning: function(text) {
+                noty ({
+                    text : text,
+                    theme: "relax",
+                    layout: "topRight",
+                    timeout : 5000,
+                    type: 'warning'
+                });
+            },
 			runExperiment: function() {
 				var me = this;
 				var promises = [];
@@ -243,11 +252,20 @@ Vue.config.devtools = true;
 
 				$.when.apply($, promises).then(function() {
 					var data = me.makeRequestData(arguments);
-                    console.log(data);
-					// me.postQueueExperiment(data)
-					// .done(function(response) {
-					// 	me.flashSuccess(response.success.message);
-					// });
+
+					me.postQueueExperiment(data)
+					.done(function(response) {
+						me.flashSuccess(response.success.message);
+					}).fail(function(response) {
+                        response = JSON.parse(response.responseText);
+                        var message = "";
+                        _.object(_.each(response.error.message, function(field) {
+                            message += field
+                            message += "<br>";
+                        }));
+                        
+                        me.flashWarning(message);
+                    });
 				});
 			},
             isSchemaInput: function(input) {
@@ -294,7 +312,6 @@ Vue.config.devtools = true;
                         request.input[input.command][input.name] = value;
                     }
 
-                    console.log(value);
 				});
 
                 request.instance = this.selected.instance;

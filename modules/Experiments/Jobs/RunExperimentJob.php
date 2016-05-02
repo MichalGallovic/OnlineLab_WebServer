@@ -6,6 +6,7 @@ use App\User;
 use App\Jobs\Job;
 use Illuminate\Support\Arr;
 use App\Services\ReportService;
+use App\Services\ExperimentValidator;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use App\Classes\ApplicationServer\Server;
@@ -17,6 +18,7 @@ use Modules\Experiments\Jobs\RunExperimentJob;
 use Modules\Experiments\Entities\PhysicalDevice;
 use Modules\Experiments\Entities\ServerExperiment;
 use Modules\Experiments\Entities\PhysicalExperiment;
+use Illuminate\Contracts\Validation\ValidationException;
 /**
 * Run experiment job
 */
@@ -58,6 +60,14 @@ class RunExperimentJob extends Job implements SelfHandling, ShouldQueue
 
         if($physicalDevice) {
             $physicalExperiment = PhysicalExperiment::where('experiment_id', $this->experiment->id)->where('physical_device_id', $physicalDevice->id)->first();
+
+            $validator = new ExperimentValidator($physicalExperiment->rules->toArray(), $this->input['input']);
+
+            if($validator->fails()) {
+                return false;
+                // throw new ValidationException($validator->errors());
+            }
+
             $report = new ReportService();
             $reportId = $report->create($this->user, $physicalExperiment, $this->input);
             $this->input = array_merge($this->input, [

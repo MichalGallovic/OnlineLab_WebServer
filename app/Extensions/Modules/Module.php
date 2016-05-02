@@ -1,9 +1,12 @@
 <?php namespace App\Extensions\Modules;
 
+use Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Str;
-use Request;
+use Pingpong\Modules\Facades\Module as ModuleFacade;
 
 class Module extends \Pingpong\Modules\Module
 {
@@ -15,6 +18,15 @@ class Module extends \Pingpong\Modules\Module
     public function routes()
     {
         return $this->get('routes');
+    }
+
+    public function settings($key = "")
+    {
+        if(!empty($key)) {
+            return Arr::get($this->get('settings'), $key, null);
+        }
+
+        return $this->get('settings');
     }
 
     /**
@@ -114,8 +126,13 @@ class Module extends \Pingpong\Modules\Module
     public function hasUrlSegment($segment)
     {
         $url = $this->mainRoute();
+        $segments = array_filter(explode('/',parse_url($url, PHP_URL_PATH)));
 
-        return Str::contains($url, $segment);
+        if(count($segments) > 0) {
+            return (new Collection($segments))->first() == $segment;
+        } else {
+            return false;
+        }
     }
 
     public function isActive($activeClass = "selected", $inactiveClass = "")
