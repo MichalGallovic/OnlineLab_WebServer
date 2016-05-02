@@ -14,5 +14,8 @@
     ],
     "routes" : {
         "main" : "experiments.index"
+    },
+    "settings" : {
+        "before_reservation" : 300
     }
 }
