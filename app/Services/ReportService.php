@@ -38,9 +38,7 @@ class ReportService
 			$this->report->save();
 		}
 
-		if($output) {
-			$this->report->filled = true;
-			$this->report->save();
-		}
+		$this->report->filled = true;
+		$this->report->save();
 	}
 }

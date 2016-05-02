@@ -15,5 +15,9 @@
     ],
     "routes": {
         "main": "reservation.calendar"
+    },
+    "settings" : {
+        "max_reservations_per_user" : 8,
+        "max_reservation_time" : 100
     }
 }

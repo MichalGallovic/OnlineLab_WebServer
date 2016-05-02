@@ -12,6 +12,7 @@
 |
 */
 
+use Carbon\Carbon;
 use App\Services\SystemService;
 use Illuminate\Support\Facades\Hash;
 use Intervention\Image\Facades\Image;
@@ -84,5 +85,7 @@ Route::group(['as'  =>  'user::', 'middleware'  =>  'auth'], function() {
 });
 
 Route::get('test/data', function() {
-
+    $today = Carbon::today();
+    var_dump($today->startOfDay(), $today->endOfDay());
+    dd(Auth::user()->user->reservations()->where('start','>=',$today->startOfDay())->where('end','<',$today->endOfDay())->get());
 });
