@@ -3,11 +3,17 @@
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use App\Services\ReservationService;
 use Illuminate\Support\Facades\Auth;
+use Pingpong\Modules\Facades\Module;
 use Pingpong\Modules\Routing\Controller;
+use App\Exceptions\Reservations\Collides;
+use App\Exceptions\Reservations\BeforeNow;
 use App\Http\Controllers\ApiBaseController;
+use App\Exceptions\Reservations\MaxDuration;
 use Modules\Reservation\Entities\Reservation;
 use Modules\Experiments\Entities\PhysicalDevice;
+use App\Exceptions\Reservations\TooManyForOneUser;
 use Modules\Experiments\Entities\ServerExperiment;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Modules\Reservation\Http\Requests\NewReservationRequest;
@@ -32,29 +38,24 @@ class ApiController extends ApiBaseController {
 
 	public function createReservation(NewReservationRequest $request)
 	{
-		$physicalDevice = PhysicalDevice::ofDevice($request->input('device'))
-		->ofName($request->input('physical_device'))->first();
+		try {
+			$user = Auth::user()->user;
+			$reservation = new ReservationService($user, $request);
+			$message = $reservation->create();
+			return $this->respondWithSuccess($message);
 
-		$now = Carbon::now();
-		$start = new Carbon($request->input('start'));
-
-		if($now->gt($start)) {
+		} catch(ModelNotFoundException $e) {
+			return $this->errorForbidden("Requested device for reservation was not found!");
+		} catch(BeforeNow $e) {
 			return $this->errorForbidden("Reservation cannot start before current time.");
+		} catch(TooManyForOneUser $e) {
+			$maxReservations = Module::get('Reservation')->settings('max_reservations_per_user');
+			return $this->errorForbidden("You have reached the maximum number of reservations for today.");
+		} catch(MaxDuration $e) {
+			$maxDuration = Module::get('Reservation')->settings('max_reservation_time');
+			return $this->errorForbidden("Maximum reservation time for a device is " . $maxDuration . " minutes.");
 		}
 
-
-		$reservation = Reservation::firstOrCreate([
-				'user_id' => Auth::user()->user->id,
-				'physical_device_id' => $physicalDevice->id,
-				'start' => $request->input('start'),
-				'end'	=>	$request->input('end')
-			]);
-
-		$message = "Device " . $physicalDevice->device->name . ' ' . $physicalDevice->name . " reserved";
-		$message .= "<br>";
-		$message .= "<strong>" . $request->input('start') . "</strong>" . " - <strong>" . $request->input('end') . "</strong>";
-
-		return $this->respondWithSuccess($message);
 	}
 
 	public function deleteReservation(Request $request, $id)
@@ -76,41 +77,24 @@ class ApiController extends ApiBaseController {
 	public function updateReservation(UpdateReservationRequest $request, $id)
 	{
 		try {
-			$reservation = Reservation::findOrFail($id);
+			$user = Auth::user()->user;
+			$reservation = new ReservationService($user, $request);
+			$reservation->update($id);
+			return $this->respondWithSuccess("Reservation updated");	
 		} catch(ModelNotFoundException $e) {
 			return $this->errorNotFound("Reservation not found!");
-		}
-
-
-		$physicalDevice = PhysicalDevice::ofDevice($request->input('device'))
-		->ofName($request->input('physical_device'))->first();
-
-		$now = Carbon::now();
-		$start = new Carbon($request->input('start'));
-		$end = new Carbon($request->input('end'));
-		
-		if($now->gt($start)) {
+		} catch(BeforeNow $e) {
 			return $this->errorForbidden("Reservation cannot start before current time.");
+		} catch(TooManyForOneUser $e) {
+			$maxReservations = Module::get('Reservation')->settings('max_reservations_per_user');
+			return $this->errorForbidden("You have reached the maximum number of reservations for today.");
+		} catch(MaxDuration $e) {
+			$maxDuration = Module::get('Reservation')->settings('max_reservation_time');
+			return $this->errorForbidden("Maximum reservation time for a device is " . $maxDuration . " minutes.");
+		} catch(Collides $e) {
+			return $this->errorForbidden("Reservations collide. Update failed.");
 		}
 
-		$collides = Reservation::collidingWith($start, $end)->get()->where('physical_device_id',$physicalDevice->id);
-
-
-		$collides = $collides->filter(function($item) use($reservation) {
-			return $item->id != $reservation->id;
-		});
-
-		if($collides->count() == 0) {
-			$reservation->update([
-					"physical_device_id" => $physicalDevice->id,
-					"start"	=>	$start,
-					"end"	=>	$end
-				]);
-			
-			return $this->respondWithSuccess("Reservation updated");
-		}
-
-		return $this->errorForbidden("Reservations collide");
 	}
 
 }

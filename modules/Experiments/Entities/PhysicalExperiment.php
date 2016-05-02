@@ -1,5 +1,7 @@
 <?php namespace Modules\Experiments\Entities;
    
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Experiments\Entities\Server;
 use Modules\Experiments\Entities\Experiment;
@@ -28,6 +30,23 @@ class PhysicalExperiment extends Model {
     public function experiment()
     {
     	return $this->belongsTo(Experiment::class);
+    }
+
+    public function getRulesAttribute()
+    {
+        return (new Collection($this->commands))->map(function($command) {
+            return (new Collection($command))->map(function($input) {
+                $rule = Arr::get($input,'rules','');
+                if(!empty($rule)) {
+                    return [
+                        $input["name"] => $rule
+                    ];
+                } 
+                return [];
+            })->filter(function($input) {
+                return count($input) > 0;
+            })->collapse()->toArray();
+        });
     }
 
     public function server()
