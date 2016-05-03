@@ -23,14 +23,17 @@ class Reservation extends Model {
 
     public function scopeCollidingWith($query, Carbon $start, Carbon $end)
     {
-    	return $query->where('start','>=', $start) // vnutri hranice
-    	->where('end','<=',$end)->orWhere(function($query) use ($start, $end) {
-    		$query->where('start','<',$start)->where('end','>',$start); // zlava prekryva
-    	})->orWhere(function($query) use ($start, $end) {
-    		$query->where('start','<',$end)->where('end','>',$end); //sprava prekryva
-    	})->orWhere(function($query) use ($start, $end) {
-    		$query->where('start','<',$start)->where('end','>',$end); // hranica je vnutri
-    	});
+    	return $query->where(function($query) use ($start, $end) {
+            $query->where(function($query) use ($start, $end) {
+                $query->where('start','>=', $start)->where('end','<=',$end); // vnutri hranice
+            })->orWhere(function($query) use ($start, $end) {
+                $query->where('start','<',$start)->where('end','>',$start); // zlava prekryva
+            })->orWhere(function($query) use ($start, $end) {
+                $query->where('start','<',$end)->where('end','>',$end); //sprava prekryva
+            })->orWhere(function($query) use ($start, $end) {
+                $query->where('start','<',$start)->where('end','>',$end); // hranica je vnutri
+            });
+        });
     }
 
     public function scopeNotCollidingWith($query, Carbon $start, Carbon $end)

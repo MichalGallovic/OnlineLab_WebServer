@@ -45,11 +45,11 @@ class PhysicalDevice extends Model {
     {
         $beforeReservation = intval(Module::get('Experiments')->settings("before_reservation"));
         $beforeReservation += $additionalSeconds;
-        
-        $busyTime = Carbon::now()->addSeconds($beforeReservation);
 
+        $busyTime = Carbon::now()->addSeconds($beforeReservation);
+        
         return $query->whereHas('reservations', function($q) use ($busyTime) {
-            $q->where('start','<=', $busyTime);
+            $q->collidingWith(Carbon::now(), $busyTime);
         },'=',0);
     }
 
