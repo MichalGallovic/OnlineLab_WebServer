@@ -11,6 +11,7 @@ use App\Exceptions\Experiments\DeviceNotReady;
 use Modules\Experiments\Entities\PhysicalDevice;
 use Modules\Experiments\Entities\PhysicalExperiment;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Exceptions\Experiments\DeviceReservedForThisTime;
 
 /**
 * Experiment Runner
@@ -40,6 +41,7 @@ class ExperimentRunner
 		$this->user = $user;
 		$this->experiment = $experiment;
 		$this->input = $input;
+		$this->duration = $this->parseDuration();
 	}
 
 	public function run()
@@ -72,17 +74,27 @@ class ExperimentRunner
 		// in Experiments module.json file
 
 		$instanceName = Arr::get($this->input,"instance");
-		$physicalDevice = PhysicalDevice::ready()->ofDevice($this->input['device']);
+		
+		$possibleDevices = PhysicalDevice::ofDevice($this->input['device']);
 
 		if($instanceName) {
-			$physicalDevice = $physicalDevice->ofName($instanceName);
+			$possibleDevices = $possibleDevices->ofName($instanceName);
 		}
 
-		try {
-			return $physicalDevice->firstOrFail();
-		} catch(ModelNotFoundException $e) {
+
+		if($possibleDevices->ready()->count() == 0) {
 			throw new DeviceNotReady;
 		}
+
+		// ziskat dobu simulacie z inputu pre experiment
+		// zo start commandu vyparsovat meaning "experiment_duration"
+
+		if($possibleDevices->notReserved($this->duration)->count() == 0) {
+			var_dump($possibleDevices->count());
+			throw new DeviceReservedForThisTime($possibleDevices->get(), $this->duration);
+		}
+
+		return $possibleDevices->first();
 	}
 
 	protected function pickPhysicalExperiment(PhysicalDevice $physicalDevice)
@@ -99,5 +111,9 @@ class ExperimentRunner
 	    ]);
 	}
 
+	protected function parseDuration()
+	{
+		return intval(Arr::get($this->input, 'duration',0));
+	}
 	
 }

@@ -48,11 +48,24 @@ class Reservation extends Model {
         return $query->where('start', '>=', $startOfDay)->where('end','<=',$endOfDay);   
     }
 
+    public function scopeEndAfterNow($query)
+    {
+        $now = Carbon::now();
+        return $query->where('end','>=',$now);
+    }
+
     public function scopeForDay($query, Carbon $day)
     {
         $startOfDay = $day->copy()->startOfDay();
         $endOfDay = $day->copy()->endOfDay();
         return $query->where('start', '>=', $startOfDay)->where('end','<=',$endOfDay);   
+    }
+
+    public function scopeHasExistingDevice($query)
+    {
+        return $query->whereHas('physicalDevice', function($q) {
+            $q->whereNull('deleted_at')->ready();
+        });
     }
 
     public function scopeCurrent($query)

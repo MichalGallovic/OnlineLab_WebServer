@@ -276,7 +276,9 @@ Vue.config.devtools = true;
 				var request = {
 					device: this.selectedExperiment.device,
 					software: this.selectedExperiment.software,
-					input: {}
+					input: {},
+                    duration: 0,
+                    sampling_rate: 0
 				};
 
 				$.each(this.selectedExperiment.experiment_commands, function(index, command) {
@@ -284,7 +286,7 @@ Vue.config.devtools = true;
 				});
 				$.each(inputs, function(index, input) {
                     var value = input.value;
-
+                    console.log(input);
                     if(me.isSchemaInput(input)) {
                         switch(input.meaning) {
                             case 'parent_schema': {
@@ -306,6 +308,13 @@ Vue.config.devtools = true;
                                 break;
                             }
                         }
+                    }
+
+                    if(input.meaning == 'experiment_duration') {
+                        request.duration = parseInt(value);
+                    }
+                    if(input.meaning == 'sampling_rate') {
+                        request.sampling_rate = parseInt(value);
                     }
 
                     if(input.command) {

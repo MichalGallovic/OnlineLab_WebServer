@@ -21,6 +21,7 @@ use Modules\Experiments\Entities\PhysicalDevice;
 use Modules\Experiments\Entities\ServerExperiment;
 use Modules\Experiments\Entities\PhysicalExperiment;
 use Illuminate\Contracts\Validation\ValidationException;
+use App\Exceptions\Experiments\DeviceReservedForThisTime;
 /**
 * Run experiment job
 */
@@ -61,6 +62,9 @@ class RunExperimentJob extends Job implements SelfHandling, ShouldQueue
             // The experiment should be postponed
             // $e->nextTrySeconds();
             $job = (new RunExperimentJob($this->user, $this->experiment, $this->input))->delay(5);
+            $this->dispatch($job);
+        } catch(DeviceReservedForThisTime $e) {
+            $job = (new RunExperimentJob($this->user, $this->experiment, $this->input))->delay($e->nextTrySeconds());
             $this->dispatch($job);
         }
     }
