@@ -14,6 +14,7 @@
 
 use App\Job;
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 use App\Services\SystemService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -99,6 +100,5 @@ Route::get('test/data', function() {
     //         $q->collidingWith(Carbon::now(), $busyTime);
     //     })->get();
     // dd($physicalDevices);
-    $system = new SystemService();
-    $system->syncWithServers();
+    dd(Arr::has(PhysicalExperiment::first()->commands,'stop'));
 });

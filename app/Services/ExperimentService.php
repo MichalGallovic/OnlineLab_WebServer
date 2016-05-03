@@ -35,14 +35,10 @@ class ExperimentService
 
 	public function run()
 	{
-		try {
-		    $runner = new ExperimentRunner(
-		        $this->user, $this->experiment, $this->experimentInput
-		    );
-		    $runner->run();
-		} catch(DeviceNotReady $e) {
-		    // The experiment should be ready, we should tell somebody
-		}
+		$runner = new ExperimentRunner(
+		    $this->user, $this->experiment, $this->experimentInput
+		);
+		$runner->run();
 	}
 
 	public function queue()
