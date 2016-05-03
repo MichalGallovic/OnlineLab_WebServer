@@ -22,18 +22,18 @@ class DeviceReservedForThisTime extends \Exception
 
 	public function nextTrySeconds() {
 		// From physical devices pick one, thats ending soonest among all
-		$minSeconds = 5;
-		var_dump($this->physicalDevices->count());
+		$minSeconds = 1;
+
 		$soonestEnd = $this->physicalDevices->map(function($physicalDevice) {
 		    return $physicalDevice->reservations()->endAfterNow()->orderBy('end')->first();
 		})->filter(function($reservation) {
 		    return !is_null($reservation);
 		})->min('end');
-		var_dump($soonestEnd);
+		// var_dump($soonestEnd);
 		// get that ending time in seconds from now
 		if(is_string($soonestEnd)) {
+			var_dump($soonestEnd);
 		    $soonestEnd = Carbon::now()->diffInSeconds(new Carbon($soonestEnd));
-		    var_dump($soonestEnd);
 		    $minSeconds = ($soonestEnd > $minSeconds) ? $soonestEnd : $minSeconds;
 		}
 

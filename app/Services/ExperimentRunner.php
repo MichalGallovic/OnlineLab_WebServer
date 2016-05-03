@@ -56,6 +56,8 @@ class ExperimentRunner
 	    if($server->success()) {
 	        $physicalDevice->status = "experimenting";
 	        $physicalDevice->save();
+	    } else {
+	    	// server is not responding ???
 	    }
 	}
 
@@ -80,6 +82,7 @@ class ExperimentRunner
 		if($instanceName) {
 			$query = $query->ofName($instanceName);
 		}
+
 		$possibleDevices = $query->get();
 
 		if($query->ready()->count() == 0) {
@@ -88,10 +91,8 @@ class ExperimentRunner
 
 		// ziskat dobu simulacie z inputu pre experiment
 		// zo start commandu vyparsovat meaning "experiment_duration"
-		var_dump($possibleDevices->count());
 		if($query->notReserved($this->duration)->count() == 0) {
-			var_dump($possibleDevices->count());
-			throw new DeviceReservedForThisTime($possibleDevices->get(), $this->duration);
+			throw new DeviceReservedForThisTime($possibleDevices, $this->duration);
 		}
 
 		return $query->first();
