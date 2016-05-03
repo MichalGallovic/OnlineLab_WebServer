@@ -14,6 +14,7 @@
 
 use Carbon\Carbon;
 use App\Services\SystemService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Intervention\Image\Facades\Image;
 use Modules\Controller\Entities\Schema;
@@ -86,10 +87,15 @@ Route::group(['as'  =>  'user::', 'middleware'  =>  'auth'], function() {
 });
 
 Route::get('test/data', function() {
+    DB::enableQueryLog();
+    $beforeReservation = intval(Module::get('Experiments')->settings("before_reservation"));
 
-    $physicalDevices = PhysicalDevice::all();
-
-    // dd($physicalDevices->first);
-    $pd = PhysicalDevice::ofDevice('tos1a');
-    dd($pd->ofName('r1'));
+    $busyTime = Carbon::now()->addSeconds($beforeReservation);
+    $dev = PhysicalDevice::ofDevice('tos1a')->ofName('r2')->ready()->first();
+    dd($dev->reservations()->collidingWith(Carbon::now(), $busyTime)->first());
+    // dd(DB::getQueryLog());
+    $physicalDevices = PhysicalDevice::ofDevice('tos1a')->ofName('r1')->whereHas('reservations', function($q) use ($busyTime) {
+            $q->collidingWith(Carbon::now(), $busyTime);
+        })->get();
+    dd($physicalDevices);
 });
