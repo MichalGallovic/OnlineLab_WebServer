@@ -45,9 +45,30 @@ class ExperimentRunner
 		$this->duration = $this->parseDuration();
 	}
 
+	public function queue()
+	{
+		$physicalDevice = $this->pickPhysicalDeviceForQueue();
+		$physicalExperiment = $this->pickPhysicalExperiment($physicalDevice);
+		$this->preCreateReport($physicalExperiment);
+
+	    $server = new Server($physicalDevice->server->ip);
+	    $server->queueExperiment($this->input);
+
+	    if($server->success()) {
+	        $physicalDevice->status = "experimenting";
+	        $physicalDevice->save();
+	    } else {
+	    	$system = new SystemService();
+	    	$system->syncWithServers();
+	    	// server is not responding ???
+	    	var_dump("server offline ajajaaj");
+	    	throw new \Exception;
+	    }
+	}
+
 	public function run()
 	{
-		$physicalDevice = $this->pickPhysicalDevice();
+		$physicalDevice = $this->pickPhysicalDeviceForRealtime();
 		$physicalExperiment = $this->pickPhysicalExperiment($physicalDevice);
 		$this->preCreateReport($physicalExperiment);
 
@@ -72,7 +93,7 @@ class ExperimentRunner
 	 * DeviceNotReady exception
 	 * @return 
 	 */
-	protected function pickPhysicalDevice()
+	protected function pickPhysicalDeviceForQueue()
 	{
 		// Check if nothing is reserved for this time
 		// Nothing is reserved in duration + before_reservation time
@@ -90,6 +111,42 @@ class ExperimentRunner
 
 		$possibleDevices = $query->get();
 
+		$this->areThereFreeDevices($query);
+		$this->arentDevicesReserved($query, $possibleDevices);
+		$this->areDevicesReady($query);		
+
+
+		return $query->first();
+	}
+
+	protected function pickPhysicalDeviceForRealtime()
+	{
+		// Check if nothing is reserved for this time
+		// Nothing is reserved in duration + before_reservation time
+		// Check if nothing is reserved ahaed of time
+		// number of minutes to check ahead is defined
+		// in Experiments module.json file
+
+		$instanceName = Arr::get($this->input,"instance");
+		
+		$query = PhysicalDevice::ofDevice($this->input['device']);
+
+		if($instanceName) {
+			$query = $query->ofName($instanceName);
+		}
+
+		$possibleDevices = $query->get();
+
+		$this->areThereFreeDevices($query);
+		// $this->isntDeviceReserved($query, $possibleDevices);
+		$this->areDevicesReady($query);		
+
+
+		return $query->first();
+	}
+
+	protected function areThereFreeDevices($query)
+	{
 		// Ther eshould be at least one physicaldevice queryable at this
 		// section of code
 		// If it is 0, it means there was some kind of error, end we should fail
@@ -97,18 +154,22 @@ class ExperimentRunner
 			var_dump('Yep. Error ... possible server outage. :D');
 			throw new \Exception;
 		}
+	}
 
+	protected function arentDevicesReserved($query, $possibleDevices)
+	{
 		// ziskat dobu simulacie z inputu pre experiment
 		// zo start commandu vyparsovat meaning "experiment_duration"
 		if($query->notReserved($this->duration)->count() == 0) {
 			throw new DeviceReservedForThisTime($possibleDevices, $this->duration);
 		}
+	}
 
+	protected function areDevicesReady($query)
+	{
 		if($query->ready()->count() == 0) {
 			throw new DeviceNotReady;
 		}
-
-		return $query->first();
 	}
 
 	protected function pickPhysicalExperiment(PhysicalDevice $physicalDevice)

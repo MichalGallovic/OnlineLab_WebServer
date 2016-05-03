@@ -13,6 +13,14 @@
 						<option v-for='experiment in experiments' v-bind:value="experiment">@{{ experiment.device }} - @{{ experiment.software }}</option>
 					</select>
 				</div>
+				<div class="btn-group btn-group-justified">
+					<div class="btn-group">
+						<button type="button" class="btn btn-primary" v-on:click="showExperiment">Experiment</button>
+					</div>
+					<div class="btn-group" v-show="selectedExperiment.commands.change">
+						<button type="button" class="btn btn-primary" v-on:click="showChange">Change</button>
+					</div>
+				</div>
 				<div class="form-group" v-show="experiments && selectedExperiment">
 					<div class="row" style="margin-top:10px">
 						<div v-el:input class="form-group">
@@ -43,10 +51,15 @@
 							:values="input.values"
 							:placeholder="input.placeholder"
 							:command="commandName"
+							:meaning="input.meaning"
 							>
 					</olm-input>
 				</div>
 				<div class="form-group" v-show="selectedExperiment.experiment_commands.length > 0">
+					<a
+					 class="btn btn-danger pull-left"
+					 v-on:click="stopCommand"
+					 v-show="selectedExperiment.commands.stop">Stop</a>
 					<button class="btn btn-success pull-right" type="submit">Run experiment</button>
 				</div>
 			</form>

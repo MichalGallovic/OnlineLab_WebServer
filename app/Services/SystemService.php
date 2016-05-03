@@ -140,6 +140,7 @@ class SystemService
 
 			$experimentCommands = Arr::get($rtPhysicalExperiment,"experiment_commands.data");
 			$commands = Arr::get($rtPhysicalExperiment,"input_arguments.data");
+
 			$physicalExperiment->commands = empty($commands) ? null : $commands;
 			$physicalExperiment->output_arguments = Arr::get($rtPhysicalExperiment,"output_arguments.data");
 			$physicalExperiment->experiment_commands = empty($experimentCommands) ? null : $experimentCommands;
