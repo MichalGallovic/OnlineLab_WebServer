@@ -104,6 +104,8 @@ class SystemService
 			$availablePhysicalDevices->push($physicalDevice);
 		}
 		PhysicalDevice::whereNotIn('id',$availablePhysicalDevices->lists('id')->toArray())->get()->each(function($physicalDevice) {
+			$physicalDevice->status = "offline";
+			$physicalDevice->save();
 			$physicalDevice->delete();
 		});
 	}
