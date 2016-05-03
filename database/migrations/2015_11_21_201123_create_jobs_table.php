@@ -22,6 +22,7 @@ class CreateJobsTable extends Migration
             $table->unsignedInteger('available_at');
             $table->unsignedInteger('created_at');
             $table->index(['queue', 'reserved', 'reserved_at']);
+            $table->timestamp('updated_at');
         });
     }
 

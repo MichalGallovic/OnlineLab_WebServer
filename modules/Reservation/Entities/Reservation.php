@@ -1,5 +1,6 @@
 <?php namespace Modules\Reservation\Entities;
    
+use App\Job;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -19,6 +20,19 @@ class Reservation extends Model {
     public function physicalDevice()
     {
     	return $this->belongsTo(PhysicalDevice::class)->withTrashed();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function($reservation) {
+            Job::retryAll();
+        });
+
+        static::updating(function($reservation) {
+            Job::retryAll();
+        });
     }
 
     public function scopeCollidingWith($query, Carbon $start, Carbon $end)

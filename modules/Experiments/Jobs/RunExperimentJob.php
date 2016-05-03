@@ -62,7 +62,7 @@ class RunExperimentJob extends Job implements SelfHandling, ShouldQueue
             // The experiment should be postponed
             // $e->nextTrySeconds();
             var_dump("not ready");
-            $job = (new RunExperimentJob($this->user, $this->experiment, $this->input))->delay(1);
+            $job = (new RunExperimentJob($this->user, $this->experiment, $this->input))->delay(5);
             $this->dispatch($job);
         } catch(DeviceReservedForThisTime $e) {
             var_dump("reserved");
