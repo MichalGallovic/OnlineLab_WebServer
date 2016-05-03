@@ -17,6 +17,6 @@
         "main" : "experiments.index"
     },
     "settings" : {
-        "before_reservation" : 300
+        "before_reservation" : 600
     }
 }
