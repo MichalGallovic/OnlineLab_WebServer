@@ -176,6 +176,15 @@ class Server
 		return $this->postQueueExperiment($input);
 	}
 
+	public function stopCommand($device, $software, $instance)
+	{
+		return $this->post('commands/stop',[
+				"device"	=>	$device,
+				"software"	=>	$software,
+				"instance"	=>	$instance
+			]);
+	}
+
 	protected function postQueueExperiment(array $input)
 	{
 		$body = $this->post("experiments/queue", $input);
