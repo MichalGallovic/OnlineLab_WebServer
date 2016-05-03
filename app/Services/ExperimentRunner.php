@@ -75,26 +75,26 @@ class ExperimentRunner
 
 		$instanceName = Arr::get($this->input,"instance");
 		
-		$possibleDevices = PhysicalDevice::ofDevice($this->input['device']);
+		$query = PhysicalDevice::ofDevice($this->input['device']);
 
 		if($instanceName) {
-			$possibleDevices = $possibleDevices->ofName($instanceName);
+			$query = $query->ofName($instanceName);
 		}
+		$possibleDevices = $query->get();
 
-
-		if($possibleDevices->ready()->count() == 0) {
+		if($query->ready()->count() == 0) {
 			throw new DeviceNotReady;
 		}
 
 		// ziskat dobu simulacie z inputu pre experiment
 		// zo start commandu vyparsovat meaning "experiment_duration"
-
-		if($possibleDevices->notReserved($this->duration)->count() == 0) {
+		var_dump($possibleDevices->count());
+		if($query->notReserved($this->duration)->count() == 0) {
 			var_dump($possibleDevices->count());
 			throw new DeviceReservedForThisTime($possibleDevices->get(), $this->duration);
 		}
 
-		return $possibleDevices->first();
+		return $query->first();
 	}
 
 	protected function pickPhysicalExperiment(PhysicalDevice $physicalDevice)
