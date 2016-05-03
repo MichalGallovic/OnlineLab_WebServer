@@ -25,7 +25,6 @@ class Module extends \Pingpong\Modules\Module
         if(!empty($key)) {
             return Arr::get($this->get('settings'), $key, null);
         }
-
         return $this->get('settings');
     }
 

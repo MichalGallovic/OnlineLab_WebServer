@@ -12,7 +12,7 @@ class DashboardController extends Controller
     public function dashboard() {
     	$user = Auth::user()->user;
 
-    	$reservations = $user->reservations()->current()->get();
+    	$reservations = $user->reservations()->current()->hasExistingDevice()->get();
 
         return view('user.dashboard.home',compact('reservations'));
     }

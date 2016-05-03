@@ -86,7 +86,23 @@ Route::group(['as'  =>  'user::', 'middleware'  =>  'auth'], function() {
 });
 
 Route::get('test/data', function() {
-    $today = Carbon::today();
-    var_dump($today->startOfDay(), $today->endOfDay());
-    dd(Auth::user()->user->reservations()->where('start','>=',$today->startOfDay())->where('end','<',$today->endOfDay())->get());
+
+    $physicalDevices = PhysicalDevice::all();
+
+    // dd($physicalDevices->first);
+
+    $minSeconds = 5;
+
+    $soonestEnd = $physicalDevices->map(function($physicalDevice) {
+        return $physicalDevice->reservations()->endAfterNow()->orderBy('end')->first();
+    })->filter(function($reservation) {
+        return !is_null($reservation);
+    })->min('end');
+
+    if(is_string($soonestEnd)) {
+        $soonestEnd = Carbon::now()->diffInSeconds(new Carbon($soonestEnd));
+        $minSeconds = ($soonestEnd > $minSeconds) ? $soonestEnd : $minSeconds;
+    }
+
+    dd($minSeconds);
 });
