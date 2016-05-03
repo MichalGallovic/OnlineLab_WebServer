@@ -28,8 +28,7 @@ class ExperimentService
 	{
 		$this->experiment = $experiment;
 		$this->experimentInput = $experimentInput;
-		// $this->user = Auth::user()->user;
-		$this->user = User::find(1);
+		$this->user = Auth::user()->user;
 
 		$this->isInputValid();
 	}

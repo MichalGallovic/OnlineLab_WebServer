@@ -22,7 +22,7 @@ class DeviceReservedForThisTime extends \Exception
 
 	public function nextTrySeconds() {
 		// From physical devices pick one, thats ending soonest among all
-		$minSeconds = 1;
+		$minSeconds = 5;
 
 		$soonestEnd = $this->physicalDevices->map(function($physicalDevice) {
 		    return $physicalDevice->reservations()->endAfterNow()->orderBy('end')->first();

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\User;
 use Illuminate\Support\Arr;
 use App\Services\ReportService;
+use App\Services\SystemService;
 use App\Classes\ApplicationServer\Server;
 use Modules\Experiments\Entities\Experiment;
 use App\Exceptions\Experiments\DeviceNotReady;
@@ -57,7 +58,11 @@ class ExperimentRunner
 	        $physicalDevice->status = "experimenting";
 	        $physicalDevice->save();
 	    } else {
+	    	$system = new SystemService();
+	    	$system->syncWithServers();
 	    	// server is not responding ???
+	    	var_dump("server offline ajajaaj");
+	    	throw new \Exception;
 	    }
 	}
 
@@ -85,14 +90,22 @@ class ExperimentRunner
 
 		$possibleDevices = $query->get();
 
-		if($query->ready()->count() == 0) {
-			throw new DeviceNotReady;
+		// Ther eshould be at least one physicaldevice queryable at this
+		// section of code
+		// If it is 0, it means there was some kind of error, end we should fail
+		if($query->count() == 0) {
+			var_dump('Yep. Error ... possible server outage. :D');
+			throw new \Exception;
 		}
 
 		// ziskat dobu simulacie z inputu pre experiment
 		// zo start commandu vyparsovat meaning "experiment_duration"
 		if($query->notReserved($this->duration)->count() == 0) {
 			throw new DeviceReservedForThisTime($possibleDevices, $this->duration);
+		}
+
+		if($query->ready()->count() == 0) {
+			throw new DeviceNotReady;
 		}
 
 		return $query->first();
