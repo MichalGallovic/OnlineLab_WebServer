@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Pingpong\Modules\Facades\Module;
 use Illuminate\Support\Facades\Request;
 use App\Exceptions\Reservations\Collides;
+use App\Exceptions\Reservations\BeforeNow;
 use App\Exceptions\Reservations\MaxDuration;
 use Modules\Reservation\Entities\Reservation;
 use Modules\Experiments\Entities\PhysicalDevice;
@@ -122,10 +123,10 @@ class ReservationService
 		$end = new Carbon($this->request->input('end'));
 		
 		$this->checkCollisionsFor($start, $end, $physicalDevice, $reservation);
-		
-		if($this->user->role == 'admin') return;
-
 		$this->isAfterNow($start);
+
+		if($this->user->role == 'admin') return;
+		
 		$this->lastsLessThanLimit($start, $end);
 		$this->lessReservationsThanLimit($start);
 	}
