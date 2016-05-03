@@ -1,6 +1,7 @@
 <?php namespace Modules\Experiments\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Services\CommandService;
 use Illuminate\Support\Collection;
 use App\Services\ExperimentService;
 use Illuminate\Support\Facades\Log;
@@ -9,6 +10,7 @@ use Pingpong\Modules\Routing\Controller;
 use App\Http\Controllers\ApiBaseController;
 use App\Services\ExperimentInstanceService;
 use Modules\Experiments\Entities\Experiment;
+use App\Exceptions\Experiments\DeviceNotReady;
 use Modules\Experiments\Entities\PhysicalDevice;
 use Modules\Experiments\Entities\ServerExperiment;
 use Modules\Experiments\Entities\PhysicalExperiment;
@@ -88,7 +90,21 @@ class ApiController extends ApiBaseController {
 			return $this->errorWrongArgs($e->errors()->toArray());
 		} catch(ModelNotFoundException $e) {
 			return $this->errorForbidden("This experiment cannot be run!");
+		} catch(DeviceNotReady $e) {
+		    return $this->errorForbidden("This experiment cannot be run at this moment!");
 		}
+	}
+
+	public function stop(Request $request, $id)
+	{
+		try {
+			$experiment = Experiment::findOrFail($id);
+			$command = new CommandService($experiment, $request->input());
+			$command->execute();
+		} catch(ModelNotFoundException $e) {
+			return $this->errorForbidden("This command cannot be run!");
+		}
+
 	}
 
 	public function queue(QueueExperimentRequest $request, $id)

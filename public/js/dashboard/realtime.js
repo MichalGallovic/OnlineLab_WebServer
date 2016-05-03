@@ -1,5 +1,128 @@
 !(function($) {
 	Vue.config.devtools = true;
+	    Vue.component('olm-input',{
+	    	template: "#input-template",
+	    	props: {
+	    		label:null,
+	    		type : {
+	    			default : function() {
+	    				return "text";
+	    			}
+	    		},
+	    		placeholder: {
+	    			default : function() {
+	    				return "This is placeholder";
+	    			}
+	    		},
+	    		values: [],
+	    		name : null,
+	    		command: null,
+	            default: null,
+	            meaning: null,
+	            visible: true
+	    	},
+	    	data: function() {
+	    		return {
+	    			input : null
+	    		}
+	    	},
+	    	ready: function() {
+
+	    	},
+	        events: {
+	            'schema:changed': function(msg) {
+
+	                if(this.meaning == 'child_schema') {
+	                	console.log(msg);
+	                    var values = [];
+	                    values.push({
+	                        name: 'Select regulator',
+	                        data: null
+	                    });
+
+	                    var regulators = msg.map(function(regulator) {
+	                        return {
+	                            name: regulator.name,
+	                            data: regulator.id
+	                        };
+	                    });
+
+	                    this.values = values.concat(regulators);
+
+	                    if(regulators.length == 0) {
+	                        this.visible = false;
+	                    } else {
+	                        this.visible = true;
+	                    }
+	                }
+	            }
+	        }, 
+	        watch : {
+	            values : function(val, oldVal) {
+	                if(this.default != "none" || this.values.length == 1) {
+	                    if(this.type == "checkbox") {
+	                        this.input = [];
+	                    }
+	                    if(this.type == "select" && !this.meaning) {
+	                        this.input = this.values[0];
+	                    } else {
+	                        this.input = null;
+	                    }
+
+	                    if(this.type == "radio") {
+	                        this.input = this.values[0];
+	                    }
+	                }
+	            },
+	            input: function(val, oldVal) {
+	                if(this.meaning == 'parent_schema') {
+	                	console.log(this.input);
+	                    this.$dispatch('schema:changed', this.input);
+	                }
+	            }
+	        },
+	    	methods : {
+	    		getInputValues: function() {
+	    			var me = this;
+	    			var deferred = $.Deferred();
+	    			if(this.type == "file") {
+	    				var formData = new FormData();
+	    				var blob = $(this.$els.input).find(":input").get(0).files[0];
+	    				formData.append(this.name, blob);
+
+	    				this.uploadFile(formData).done(function(response) {
+	    					var promise = {
+	    						command: me.command,
+	    						name : me.name,
+	    						value: response,
+	                            meaning: this.meaning
+	    					};
+	    					deferred.resolve(promise);
+	    				});
+
+	    			} else {
+	    				var promise = {
+	    						command: this.command,
+	    						name : this.name,
+	    						value : this.input,
+	                            meaning: this.meaning
+						};
+	    				deferred.resolve(promise);
+	    			}
+
+	    			return deferred.promise();
+	    		},
+	    		uploadFile: function(formData) {
+	    			return $.ajax({
+	    				url: "/api/file",
+	    				type: "POST",
+	    				data: formData,
+	    				processData: false,
+	    				contentType: false
+	    			});
+	    		}
+	    	}
+	    });
 	Vue.component('olm-graph', {
 		template: "#graph-template",
 		props: {
@@ -106,6 +229,16 @@
 		ready: function() {
 			this.init();
 		},
+		events : {
+			'schema:changed': function(msg) {
+			    var child_schemas = _.findWhere(this.selectedExperiment.schemas, {id:msg});
+			    if(child_schemas) {
+			        this.$broadcast('schema:changed', child_schemas.regulators);
+			    } else {
+			        this.$broadcast('schema:changed', []);
+			    }
+			}
+		},
 		methods: {
 			init: function() {
 				var me = this;
@@ -114,18 +247,31 @@
 				this.getExperiments().done(function(response) {
 	                me.physicalExperiments = _.chain(response.data).map(function(experiment) {
 	                	experiment.commands = experiment.commands.data;
+	                	experiment.schemas = experiment.schemas.data;
 	                    _.object(_.map(experiment.commands,function(command) {
-	                    	return command.map(function(input) {
-	                    		if(input.type == "file" && input.meaning == 'parent_schema') {
-	                    			input.type = "select";
-	                    			input.values = ["Tak","To","urcite"];
-	                    		}
-	                    		if(input.type == "file" && input.meaning == 'child_schema') {
-	                    			input.type = "select";
-	                    			input.values = ["Tak","To","urcite","detska","schema"];
-	                    		}
-	                    		return input;
-	                    	});
+	                        return command.map(function(input) {
+	                            if(input.type == "file" && input.meaning == 'parent_schema') {
+	                                input.type = "select";
+	                                var values = [];
+	                                values.push({
+	                                    name: 'Select schema',
+	                                    data: null
+	                                });
+	                                experiment.schemas.forEach(function(schema) {
+	                                    values.push({
+	                                        name: schema.name,
+	                                        data: schema.id
+	                                    });
+	                                });
+
+	                                input.values = values;
+	                            }
+	                            if(input.type == "file" && input.meaning == 'child_schema') {
+	                                input.type = "select";
+	                                input.values = [];
+	                            }
+	                            return input;
+	                        });
 	                    }));
 	                    experiment.experiment_commands = experiment.experiment_commands.data;
 	                    experiment.output_arguments = experiment.output_arguments.data;
@@ -157,18 +303,29 @@
 				this.servers.forEach(function(server) {
 					var socket = io(server.ip + ":" + server.node_port);
 					socket.on('experiment-data:' + me.user_id, function(message) {
-
-						me.series = me.formatGraphInput(
-							message.data,
-							me.selected.samplingRate,
-							me.selectedExperiment.output_arguments
-						);
+						console.log(me.selected.instance, message.settings.instance);
+						if(me.selected.instance == message.settings.instance) {
+							me.series = me.formatGraphInput(
+								message.data,
+								me.selected.samplingRate,
+								me.selectedExperiment.output_arguments
+							);
+						}
 					});
 				});
 			},
 			getExperiments: function() {
 				var ids = _.chain(Laravel.Reservations).pluck('physical_device').pluck('id').value();
-				return $.getJSON('api/experiments?include=commands,experiment_commands,output_arguments&physical_device=' + ids.join(','));
+				return $.getJSON('api/experiments?include=commands,experiment_commands,output_arguments,schemas&physical_device=' + ids.join(','));
+			},
+			flashWarning: function(text) {
+			    noty ({
+			        text : text,
+			        theme: "relax",
+			        layout: "topRight",
+			        timeout : 5000,
+			        type: 'warning'
+			    });
 			},
 			flashSuccess: function(text) {
                 noty ({
@@ -192,27 +349,89 @@
 				$.when.apply($, promises).then(function() {
 					var data = me.makeRequestData(arguments);
                     me.selected.samplingRate = parseInt(data.input.start[me.samplingRateField.name]);
-                    console.log(data);
-					// me.postRunExperiment(data)
-					// .done(function(response) {
-					// 	me.flashSuccess(response.success.message);
-					// });
+					me.postRunExperiment(data)
+					.done(function(response) {
+						me.flashSuccess(response.success.message);
+					}).fail(function(response) {
+                        response = JSON.parse(response.responseText);
+                        var message = "";
+                        if(typeof response.error.message == 'string') {
+                        	message = response.error.message;
+                        } else {
+                        	_.object(_.each(response.error.message, function(field) {
+                        	    message += field
+                        	    message += "<br>";
+                        	}));
+                        }
+                        
+                        me.flashWarning(message);
+                    });
 				});
 			},
+			stopCommand: function() {
+				var me = this;
+				return $.ajax({
+					"type" : "POST",
+					"url" : "/api/experiments/" + me.selectedExperiment.experiment_id +"/stop",
+					"data" : {
+						device : me.selected.device,
+						software: me.selected.software,
+						instance: me.selected.instance
+					}
+				});
+			},
+			isSchemaInput: function(input) {
+			    return input.meaning == 'parent_schema' || input.meaning == 'child_schema';
+			},
 			makeRequestData: function(inputs) {
+                var me = this;
 				var request = {
 					device: this.selectedExperiment.device,
 					software: this.selectedExperiment.software,
-					input: {}
+					input: {},
+                    duration: 0,
+                    sampling_rate: 0
 				};
 
 				$.each(this.selectedExperiment.experiment_commands, function(index, command) {
 					request.input[command] = {};
 				});
 				$.each(inputs, function(index, input) {
+                    var value = input.value;
+                    if(me.isSchemaInput(input)) {
+                        switch(input.meaning) {
+                            case 'parent_schema': {
+                                var schema = _.first(_.where(me.selectedExperiment.schemas,{id: input.value}));
+                                if(schema) {
+                                    value = schema.url;
+                                }
+
+                                break;
+                            }
+                            case 'child_schema': {
+                                var regulator = _.first(_.chain(_.pluck(me.selectedExperiment.schemas,'regulators'))
+                                    .flatten().where({id: input.value}).value());                             
+
+                                if(regulator) {
+                                    value = regulator.url;
+                                }
+
+                                break;
+                            }
+                        }
+                    }
+
+                    if(input.meaning == 'experiment_duration') {
+                        request.duration = parseInt(value);
+                    }
+                    if(input.meaning == 'sampling_rate') {
+                        request.sampling_rate = parseInt(value);
+                    }
+
                     if(input.command) {
-                        request.input[input.command][input.name] = input.value;
-                    } 
+                        request.input[input.command][input.name] = value;
+                    }
+
 				});
 
                 request.instance = this.selected.instance;
@@ -249,6 +468,11 @@
 
 				return series;
 			},
+		},
+		computed: {
+			description: function() {
+				return this.selected.software + " on " + this.selected.software + " : " + this.selected.instance;
+			}
 		},
 		watch: {
 		    selectedExperiment: function(newSelection, oldVal) {
