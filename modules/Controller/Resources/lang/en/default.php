@@ -54,6 +54,7 @@ return [
     "CTRL_SCHEMA_UPDATE_FAIL"    =>  'An error occured while updating the new schema.',
     "CTRL_SCHEMA_UPDATE_SUCCESS"    =>  'The schema was succesfully updated',
     "CTRL_SCHEMA_SOFTWARE" => 'Software',
+    "CTRL_SCHEMA_NONEXIST" => 'There is no schema defined for this software',
     "CTRL_MATLAB" => 'Matlab',
     "CTRL_OPENMODELICA" => 'Openmodelica',
     "CTRL_SCILAB" => 'Scilab',

@@ -7,19 +7,27 @@ use Validator;
 use Image;
 use File;
 use Modules\Controller\Entities\Regulator;
+use Modules\Experiments\Entities\Software;
+use Modules\Experiments\Entities\Experiment;
 
 class SchemaController extends Controller {
 
 
 	public function show($id){
-		$regulator = Regulator::all()->first();
+		$regulator = Regulator::find($id);
 		return view('controller::show', compact('regulator'));
 	}
 
 	public function edit($id){
 		$schema=Schema::find($id);
 		$file = $schema->getFileContent();
-		return view('controller::schema',compact('schema', 'file'));
+		$schemas = Schema::all();
+		$softwares = Software::lists('name', 'id');
+		$experiments = Experiment::with('device')->whereHas('software', function($q){
+			$q->where('name', 'matlab');
+		})->join('devices', 'devices.id', '=', 'experiments.device_id')->lists('name', 'experiments.id');
+
+		return view('controller::schema',compact('schema', 'file', 'softwares', 'schemas', 'experiments'));
 	}
 
 	public function getImage($id)

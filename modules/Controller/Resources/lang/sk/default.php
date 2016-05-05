@@ -55,6 +55,7 @@ return [
     "CTRL_SCHEMA_UPDATE_FAIL"    =>  'Nastala chyba pri ukladaní zmien schémy.',
     "CTRL_SCHEMA_UPDATE_SUCCESS"    =>  'Schéma bola úspešne zmenená',
     "CTRL_SCHEMA_SOFTWARE"    =>  'Software',
+    "CTRL_SCHEMA_NONEXIST"    =>  'Pre tento softvér nie je definovaná žiadna schéma',
     "CTRL_MATLAB" => 'Matlab',
     "CTRL_OPENMODELICA" => 'Openmodelica',
     "CTRL_SCILAB" => 'Scilab',
