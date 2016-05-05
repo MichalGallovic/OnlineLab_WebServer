@@ -99,7 +99,7 @@
 					<th class="col-sm-2">{{ trans("controller::default.CTRL_SCHEMA_TITLE") }}</th>
 					<th class="col-sm-1">{{ trans("controller::default.CTRL_SCHEMA_TYPE") }}</th>
 					<th class="col-sm-2">{{ trans("controller::default.CTRL_DATE") }}</th>
-					<th class="col-sm-2"></th>
+					<th class="col-sm-2">{{ trans("controller::default.CTRL_SCHEMA_SOFTWARE") }}</th>
 					<th class="col-sm-1"></th>
 					<th class="col-sm-1"></th>
 					<th class="col-sm-1"></th>
@@ -114,7 +114,7 @@
 						<td>{{ $schema->title }}</td>
 						<td>{{ $schema->type }}</td>
 						<td>{{ $schema->created_at }}</td>
-						<td></td>
+						<td>{{ $schema->experiment->software->name }}</td>
 						<td></td>
 						<td><a href="{{route('controller.schema.show',$schema->id)}}" class="btn btn-sm btn-block btn-info"><span class="glyphicon glyphicon-save-file"></span> {{ trans("controller::default.CTRL_DOWNLOAD_FILE") }}</a></td>
 						<td><a href="{{route('controller.schema.edit',$schema->id)}}" class="btn btn-sm btn-block btn-warning"><span class="glyphicon glyphicon-edit"></span> {{ trans("controller::default.SETTINGS_TITLE") }}</a></td>
@@ -134,6 +134,9 @@
 					<th>{{ trans("controller::default.CTRL_SCHEMA_TITLE") }}</th>
 					<th>{{ trans("controller::default.CTRL_SCHEMA_TYPE") }}</th>
 					<th>{{ trans("controller::default.CTRL_DATE") }}</th>
+					<th>{{ trans("controller::default.CTRL_SCHEMA_SOFTWARE") }}</th>
+					<th></th>
+					<th></th>
 					<th></th>
 					<th></th>
 				</tr>
@@ -162,13 +165,13 @@
 							<p>{!! $errors->first('title') !!}</p>
 						@endif
 					</div>
-					<div class="form-group {!! ($errors->has('experiment_id')) ? 'has-error' : '' !!}">
+					<div class="form-group">
 						{!! Form::label("software", trans("controller::default.CTRL_SCHEMA_SOFTWARE"), ['class' => 'control-label']) !!}
 						{!! Form::select("software", $softwares, null, ['class' => 'form-control', 'id' => 'software']) !!}
 					</div>
 
 					<div class="form-group">
-						{!! Form::label("experiment_id", trans("controller::default.CTRL_SCHEMA_TYPE"), ['class' => 'control-label']) !!}
+						{!! Form::label("experiment_id", trans("controller::default.LABEL_SYSTEM"), ['class' => 'control-label']) !!}
 						{!! Form::select("experiment_id", $experiments, null, ['class' => 'form-control', 'id' => 'experiment']) !!}
 					</div>
 

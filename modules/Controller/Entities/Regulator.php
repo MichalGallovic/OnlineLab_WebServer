@@ -7,7 +7,7 @@ class Regulator extends Model {
     protected $fillable = ['user_id', 'type', 'body', 'experiment_id', 'title'];
 
     public function getFilePath() {
-        return storage_path() . '/user_uploads/'.$this->user->id.'/regulators/' . $this->filename;;
+        return storage_path() . '/user_uploads/'.$this->user->id.'/regulators/'.$this->id. '/' . $this->filename;;
     }
 
     public function user() {

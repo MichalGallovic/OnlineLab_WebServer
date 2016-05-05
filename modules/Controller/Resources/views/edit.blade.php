@@ -24,8 +24,23 @@
     <script type="text/javascript">
         $('#schema').on('change', function() {
             $('#schema-image').attr('src', '{{route('controller.schema.image')}}'+'/'+this.value);
-            $.get('{{route('controller.schema.filecontent')}}', {id: this.value} ,function(data, status){
-                $('#schema-body').val(data)
+            $.get('{{route('controller.schema.data')}}', {id: this.value} ,function(data, status){
+                $('#schema-body').val(data.fileContent);
+
+                switch (data.type){
+                    case "{{trans("controller::default.CTRL_SCHEMA_FILE")}}":
+                        $(".text-div").hide();
+                        $(".file-div").show();
+                        break;
+                    case "{{trans("controller::default.CTRL_SCHEMA_TEXT")}}":
+                        $(".file-div").hide();
+                        $(".text-div").show();
+                        break;
+                    case "{{trans("controller::default.CTRL_SCHEMA_NONE")}}":
+                        $(".text-div").hide();
+                        $(".file-div").hide();
+                        break;
+                }
             });
         });
 

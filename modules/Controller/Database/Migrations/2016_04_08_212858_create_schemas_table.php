@@ -24,8 +24,7 @@ class CreateSchemasTable extends Migration {
 
             $table->foreign('experiment_id')
                 ->references('id')
-                ->on('experiments')
-                ->onUpdate('cascade');
+                ->on('experiments');
         });
     }
 
