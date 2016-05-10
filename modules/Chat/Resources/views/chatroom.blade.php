@@ -91,6 +91,10 @@
     <script type="text/javascript">
         //var socket = io.connect();
         $(document).ready(function(){
+
+            @if($openChatroomJoin)
+                socket.emit('addMember', {user_id: {{$user_id}}, user_name: "{{$user_name}}"});
+            @endif
             var members = {!!json_encode($members)!!};
             var messages = {!!json_encode($messages->reverse()->slice(15))!!};
 
@@ -284,7 +288,6 @@
                 @foreach(Auth::user()->user->chatrooms as $chatroom)
                     @if($chatroom->id != $room->id)
                         socket.on('notification-channel:chat{{$chatroom->id}}', function(){
-                            console.log("notifikacia");
                             if($('#notification_chat_{{$chatroom->id}}').length > 0){
                                 var count = parseInt($('#notification_chat_{{$chatroom->id}}').text());
                                 $('#notification_chat_{{$chatroom->id}}').text(++count);

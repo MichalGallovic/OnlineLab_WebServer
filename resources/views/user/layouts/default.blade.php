@@ -59,7 +59,7 @@
 <script type="text/javascript">
    // var ROOT_PATH = '{ROOT_PATH}';
     var ROOT_PATH = 'http://iolab.sk:8013/';
-    // var socket = io.connect('{{env('SOCKETIO_ADDRESS')}}');
+    var socket = io.connect('{{env('SOCKETIO_ADDRESS')}}');
 
     $(function () {
         $('[data-toggle="popover"]').popover();
