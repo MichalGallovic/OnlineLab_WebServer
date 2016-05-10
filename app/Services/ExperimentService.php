@@ -29,12 +29,12 @@ class ExperimentService
 		$this->experiment = $experiment;
 		$this->experimentInput = $experimentInput;
 		$this->user = Auth::user()->user;
-
 		$this->isInputValid();
 	}
 
 	public function run()
 	{
+		$this->experimentInput['requested_by'] = $this->user->id;
 		$runner = new ExperimentRunner(
 		    $this->user, $this->experiment, $this->experimentInput
 		);
