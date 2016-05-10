@@ -302,8 +302,8 @@
 				var me = this;
 				this.servers.forEach(function(server) {
 					var socket = io(server.ip + ":" + server.node_port);
+					console.log('experiment-data:' + me.user_id);
 					socket.on('experiment-data:' + me.user_id, function(message) {
-						console.log(me.selected.instance, message.settings.instance);
 						if(me.selected.instance == message.settings.instance) {
 							me.series = me.formatGraphInput(
 								message.data,
