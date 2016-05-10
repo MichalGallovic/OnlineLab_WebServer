@@ -9,7 +9,7 @@
             <li role="presentation" {{$enviroment=='scilab' ? 'class=active' : ''}}><a href="{{route('controller.create','scilab')}}">Scilab</a></li>
         </ul>
     </div>
-    {!! Form::open(['method' => 'POST','route'=>'controller.store', 'class' => 'form-horizontal', 'id' => 'controllerForm']) !!}
+    {!! Form::open(['method' => 'POST','route'=>'controller.store', 'class' => 'form-horizontal', 'id' => 'controllerForm', 'files'=>true]) !!}
     @include('controller::partials.form')
     @if($enviroment=='openmodelica')
         <div class="form-group text-div" {!! ($schema->type != trans("controller::default.CTRL_SCHEMA_TEXT")) ? 'style="display: none"' : ''!!}>

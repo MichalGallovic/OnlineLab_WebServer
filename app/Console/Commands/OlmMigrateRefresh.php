@@ -23,8 +23,8 @@ class OlmMigrateRefresh extends Command
 
     protected $modulesToSeed = [
         "Experiments",
-        // "Report",
-        // 'Reservation',
+        "Report",
+        'Reservation',
         'Controller'
     ];
 
@@ -57,9 +57,13 @@ class OlmMigrateRefresh extends Command
         }
         $this->call("migrate:refresh");
 
-        foreach ($moduleNames as $name) {
-            $this->call("module:migrate", ["module" => $name]);
-        }
+        $this->call("module:migrate", ["module" => "Experiments"]);
+        $this->call("module:migrate", ["module" => "Controller"]);
+        $this->call("module:migrate", ["module" => "Chat"]);
+        $this->call("module:migrate", ["module" => "Forum"]);
+        $this->call("module:migrate", ["module" => "Report"]);
+        $this->call("module:migrate", ["module" => "Reservation"]);
+
         $this->call("db:seed");
         foreach ($this->modulesToSeed as $module) {
             $this->call("module:seed",["module" => $module]);   
