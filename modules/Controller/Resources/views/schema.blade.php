@@ -19,9 +19,16 @@
     </div>
 
     <div class="form-group">
-        {!! Form::label("type", trans("controller::default.CTRL_SCHEMA_SOFTWARE"), ['class' => 'col-sm-2 control-label']) !!}
+        {!! Form::label("software", trans("controller::default.CTRL_SCHEMA_SOFTWARE"), ['class' => 'col-sm-2 control-label']) !!}
         <div class="col-sm-10">
-            {!! Form::select("software", ['matlab' => 'Matlab', 'openmodelica' => 'Openmodelica', 'scilab' => 'Scilab'], null, ['class' => 'form-control']) !!}
+            {!! Form::select("software", $softwares, $schema->experiment->software->id, ['class' => 'form-control', 'id' => 'software']) !!}
+        </div>
+    </div>
+
+    <div class="form-group">
+        {!! Form::label("experiment_id", trans("controller::default.LABEL_SYSTEM"), ['class' => 'col-sm-2 control-label']) !!}
+        <div class="col-sm-10">
+            {!! Form::select("experiment_id", $experiments, $schema->experiment->id, ['class' => 'form-control', 'id' => 'experiment']) !!}
         </div>
     </div>
 
@@ -78,4 +85,23 @@
         </div>
     </div>
     {!! Form::close() !!}
+@stop
+
+
+@section('page_js')
+    @parent
+    <script type="text/javascript">
+        $('#software').on('change', function() {
+
+            $.get(ROOT_PATH + 'experiments/software/'+this.value, function(data, status){
+                $('#experiment').empty();
+                $.each(data , function(i, val) {
+                    $('#experiment').append($('<option>', {
+                        text: val.device.name,
+                        value: val.id
+                    }))
+                });
+            });
+        });
+    </script>
 @stop

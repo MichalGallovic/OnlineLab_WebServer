@@ -8,16 +8,6 @@
     </div>
 </div>
 
-<div class="form-group {!! ($errors->has('system_id')) ? 'has-error' : '' !!}">
-    {!! Form::label('system_id', trans("controller::default.LABEL_SYSTEM").':', ['class' => 'col-sm-2 control-label']) !!}
-    <div class="col-sm-10">
-        {!! Form::text('system_id',null,['class'=>'form-control']) !!}
-        @if($errors->has('system_id'))
-            <span class="errors">{!! $errors->first('system_id') !!}</span>
-        @endif
-    </div>
-</div>
-
 <div class="form-group {!! ($errors->has('type')) ? 'has-error' : '' !!}">
     {!! Form::label('type', trans("controller::default.CTRL_ACCESSIBILITY").':', ['class' => 'col-sm-2 control-label']) !!}
     <div class="col-sm-10">
