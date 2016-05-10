@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 
 class CreateAccountAccessesTable extends Migration
 {
@@ -18,9 +19,8 @@ class CreateAccountAccessesTable extends Migration
             $table->string('ip');
             $table->string('os');
             $table->timestamp('created_at')->useCurrent();
-
-
         });
+        DB::statement('ALTER TABLE account_accesses ADD location POINT' );
     }
 
     /**

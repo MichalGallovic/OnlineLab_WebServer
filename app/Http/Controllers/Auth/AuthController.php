@@ -86,7 +86,8 @@ class AuthController extends Controller
      */
     public function getLogin()
     {
-        return view('guest.auth.temp.login');
+        $items = LoginData::all();
+        return view('guest.auth.temp.login', compact('items'));
     }
 
     /**
@@ -148,8 +149,6 @@ class AuthController extends Controller
                 Auth::login($account, true);
 
                 $this->logLogin($account);
-                //$account->password = Hash::make($credentials['password']);
-
 
                 return redirect()->route('user::linkAccounts');
             }
@@ -247,10 +246,22 @@ class AuthController extends Controller
             $ip = $remote;
         }
 
-        LoginData::create([
-            'user_account_id' =>  $account->id,
-            'ip' => $ip
-        ]);
+
+        $ch = curl_init();
+        // Disable SSL verification
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        // Will return the response, if false it print the response
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        // Set the url
+        curl_setopt($ch, CURLOPT_URL,"ipinfo.io/217.67.31.67");
+
+        $result = json_decode(curl_exec($ch), true);
+        curl_close($ch);
+
+        $loginData = new LoginData();
+        $loginData->account()->associate($account);
+        $loginData->setLocationAttribute($result['loc']);
+        $loginData->ip = $ip;
     }
 
 }

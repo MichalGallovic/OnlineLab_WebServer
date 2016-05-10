@@ -30,8 +30,7 @@ class CreateRegulatorsTable extends Migration {
 
             $table->foreign('schema_id')
                 ->references('id')
-                ->on('schemas')
-                ->onUpdate('cascade');
+                ->on('schemas');
         });
     }
 

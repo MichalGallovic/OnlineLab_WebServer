@@ -51,12 +51,12 @@ class ProfileController extends Controller {
 
 
 		if ($validator->passes()) {
+			$userUpdate=$request->all();
+
 			if ($request->file('avatar') && $request->file('avatar')->isValid()) {
 				$request->file('avatar')->move(storage_path().'/user_uploads/'.$user->id.'/', $request->file('avatar')->getClientOriginalName()); // uploading file to given path
 				$userUpdate['avatar'] = $request->file('avatar')->getClientOriginalName();
 			}
-
-			$userUpdate=$request->all();
 
 			if(!$user->hasAccount('local')){
 				$acc = new Account();

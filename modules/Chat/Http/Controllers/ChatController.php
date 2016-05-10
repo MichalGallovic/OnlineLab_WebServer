@@ -34,24 +34,27 @@ class ChatController extends Controller {
 		$user_name = $user->getFullName();
 
 		$members = [];
-		foreach ($room->users as $user) {
-			$members[$user->id] = $user->getFullName();
+		foreach ($room->users as $member) {
+			$members[$member->id] = $member->getFullName();
 		}
 		//event(new UserSignedUp(Auth::user(), $id));
 
 		$perm = Permission::where(['user_id' => $user->id, 'chatroom_id' => $id])->get();
 
+		$openChatroomJoin = false;
 
-		if(count($perm)==0){
-			if($room->type == 'public_open'){
+		if(count($perm)==0) {
+			if ($room->type == 'public_open') {
 				Permission::create(['user_id' => $user->id, 'chatroom_id' => $id, 'type' => 'member']);
-			}else if($room->type == 'public_closed'){
+				$openChatroomJoin = true;
+			} else if ($room->type == 'public_closed') {
 				Permission::create(['user_id' => $user->id, 'chatroom_id' => $id, 'type' => 'spectator']);
+				$openChatroomJoin = true;
 			}
 		}
 
 		$messages = Message::with('user')->where('chatroom_id', $id)->get();
-		return view('chat::chatroom', compact('user_id', 'user_name', 'room', 'members', 'messages'));
+		return view('chat::chatroom', compact('user_id', 'user_name', 'room', 'members', 'messages', 'openChatroomJoin'));
 	}
 
 	public function findUsers(Request $request){

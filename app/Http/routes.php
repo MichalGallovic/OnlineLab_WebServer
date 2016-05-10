@@ -53,10 +53,9 @@ Route::post('auth/register', 'Auth\AuthController@postRegister');
 // Password routes
 
 Route::get('password/email', 'Auth\PasswordController@getEmail');
-
-// LDAP authentication
-
-//Route::post('auth/ldap', ['as' => 'auth.ldap', 'uses' => 'Auth\AuthController@postLdap']);
+Route::post('password/email', 'Auth\PasswordController@postEmail');
+Route::get('password/reset/{token}', 'Auth\PasswordController@getReset');
+Route::post('password/reset', 'Auth/PasswordController@postReset');
 
 // 3rd party authentication
 Route::get('auth/provider/{provider}/', 'Auth\AuthController@redirectToProvider');
