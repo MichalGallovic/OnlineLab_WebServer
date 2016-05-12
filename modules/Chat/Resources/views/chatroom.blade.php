@@ -88,6 +88,7 @@
 
 @stop
 @section('page_js')
+    <script type="text/javascript" src="{{ asset('js/chat/select2.full.min.js') }}"></script>
     <script type="text/javascript">
         //var socket = io.connect();
         $(document).ready(function(){
@@ -149,27 +150,19 @@
             $("#search-box").select2({
                 width: "100%",
                 ajax: {
-                    type: "POST",
                     url: "findUsers",
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
                     dataType: "JSON",
                     delay: 250,
                     data: function (params) {
                        return {
                            q: params.term, // search term
-                           page: params.page,
                            chatroom: {{$room->id}}
                        };
                     },
                     processResults: function (data, params) {
                         params.page = params.page || 1;
                         return {
-                            results: data.items,
-                            pagination: {
-                                more: (params.page * 30) < data.total_count
-                            }
+                            results: data.items
                         };
                     },
                     cache: true

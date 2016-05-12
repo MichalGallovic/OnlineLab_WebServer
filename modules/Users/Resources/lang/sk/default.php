@@ -1,6 +1,7 @@
 <?php
 
 return [
+    "name" => "Správa užívateľov",
     "USR_LOGIN"    =>  "Používateľské meno",
     "USR_NAME"    =>  "Meno a priezvisko",
     "USR_MAIL"    =>  "E-mail",

@@ -19,6 +19,11 @@ class CreateAccountAccessesTable extends Migration
             $table->string('ip');
             $table->string('os');
             $table->timestamp('created_at')->useCurrent();
+
+            $table->foreign('account_id')
+                ->references('id')
+                ->on('accounts');
+
         });
         DB::statement('ALTER TABLE account_accesses ADD location POINT' );
     }

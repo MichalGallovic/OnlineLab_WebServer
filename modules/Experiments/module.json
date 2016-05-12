@@ -4,7 +4,8 @@
     "description": "",
     "keywords": [],
     "active": 1,
-    "order": 0,
+    "order": 10,
+    "admin": true,
     "providers": [
         "Modules\\Experiments\\Providers\\ExperimentsServiceProvider"
     ],

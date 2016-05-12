@@ -21,10 +21,9 @@
         <p>{!! nl2br($thread->body) !!}</p>
     </div>
 
-    @foreach($thread->comments as $comment)
+    @foreach($comments as $comment)
         <div class="well">
-            <h4>By: {!! $comment->user->name !!} on {!! $comment->created_at !!}</h4>
-            <hr>
+            <h4>By: {!! $comment->user->getFullName() !!} on {!! $comment->created_at !!}</h4>
             <p>{!! nl2br($comment->body) !!}</p>
             @if(Auth::check() && Auth::user()->user->isAdmin())
                 {!! Form::open(['method' => 'DELETE', 'route'=>['forum.delete.comment', $comment->id]]) !!}
@@ -33,6 +32,8 @@
             @endif
         </div>
     @endforeach
+
+    {!! $comments->render() !!}
 
     {!! Form::open(array('method' => 'post', 'route' => ['forum.store.comment', $thread->id])) !!}
     <div class="form-group">

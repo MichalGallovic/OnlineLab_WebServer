@@ -130,7 +130,7 @@ class ProfileController extends Controller {
 			if ($ldapconn) {
 
 				// binding to ldap server
-				$ldapbind = ldap_bind($ldapconn, $ldaprdn, $credentials['ldap_password']);
+				@$ldapbind = ldap_bind($ldapconn, $ldaprdn, $credentials['ldap_password']);
 
 				// verify binding
 				if ($ldapbind) {

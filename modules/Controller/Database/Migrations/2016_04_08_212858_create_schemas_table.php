@@ -19,6 +19,7 @@ class CreateSchemasTable extends Migration {
             $table->string('title')->unique();
             $table->string('filename');
             $table->string('image')->nullable();
+            $table->text('note')->nullable();
             $table->enum('type', ['file', 'text', 'none']);
             $table->timestamps();
 

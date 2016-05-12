@@ -6,7 +6,7 @@
         <a href="{{ route('user::dashboard') }}">{!! trans('default.DASHBOARD') !!}</a>
     </li>
     @foreach(Module::getOrdered() as $module)
-        @if($module->isVisible())
+        @if($module->isVisible() && (!$module->admin || $module->admin && Auth::user()->user->isAdmin()))
         <li ><a href="{{ $module->mainRoute() }}" style="{SECT_BORDER_BOTTOM}" class="{{ $module->isActive() }}" title="{{ $module->localizedName() }}">{{ $module->localizedName() }}</a></li>
         @endif
     @endforeach

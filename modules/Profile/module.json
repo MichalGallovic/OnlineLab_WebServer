@@ -4,7 +4,7 @@
     "description": "",
     "keywords": [],
     "active": 1,
-    "order": 0,
+    "order": 8,
     "visible": true,
     "providers": [
         "Modules\\Profile\\Providers\\ProfileServiceProvider"

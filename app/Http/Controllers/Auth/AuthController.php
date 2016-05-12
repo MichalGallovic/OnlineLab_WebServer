@@ -66,6 +66,7 @@ class AuthController extends Controller
     {
         $user = new User;
         $user->name = $data['name'];
+        $user->surname = $data['surname'];
         $user->role = 'user';
         $user->save();
 

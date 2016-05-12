@@ -1,7 +1,7 @@
 <?php
 
 return [
-    "name"  =>  "Profil používateľa",
+    "name"  =>  "Osobné údaje",
     "PROFILE_EMTPY_FILEDS"    =>  "Prosím vyplňte označené polia.",
     "PROFILE_CONFIIRM_PASS_EMPTY"    =>  "Prosím yplňte potvrdenie hesla.",
     "PROFILE_PASS_EMPTY"    =>  "Ak chcete zmenmiť heslo ,musí byť zadané nové heslo aj jeho potvrdenie.",
