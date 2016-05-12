@@ -1,7 +1,7 @@
 <?php
 
 return [
-    "name"  =>  "User's profile",
+    "name"  =>  "Personal Data",
     "PROFILE_EMTPY_FILEDS"    =>  "Please fill in the marked boxes.",
     "PROFILE_CONFIIRM_PASS_EMPTY"    =>  "Please fill in password confirmation.",
     "PROFILE_PASS_EMPTY"    =>  "To change the password must be entered new password and its confirmation.",

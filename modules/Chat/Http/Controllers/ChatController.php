@@ -10,6 +10,7 @@ use Modules\Chat\Entities\Permission;
 use Pingpong\Modules\Routing\Controller;
 use Illuminate\Http\Request;
 use Validator;
+use DB;
 
 class ChatController extends Controller {
 	
@@ -22,7 +23,36 @@ class ChatController extends Controller {
 		$myChatrooms = $user->chatrooms;
 		//$myChatrooms = Chatroom::where('type', 'private')->get();
 
-		return view('chat::index', compact('publicChatrooms', 'myChatrooms', 'user_id'));
+		$words = [];
+		$tagCloud = [];
+
+		foreach (Message::lists('body') as $message) {
+			foreach (explode(" ",$message) as $word){
+				$key = str_replace(array(':', '\\', '/', '*'), ' ', $word);
+				if(strlen($key) > 4){
+					if(array_key_exists($key, $words)){
+						$words[$key]++;
+					}else{
+						$words[$key] = 1;
+					}
+				}
+			}
+		}
+
+		foreach ($words as $word=>$weight) {
+			array_push($tagCloud, ['text' => $word, 'weight' => $weight]);
+		}
+
+		usort($tagCloud, function($a, $b)
+		{
+			if ($a==$b) return 0;
+			return ($a['weight']<$b['weight'])?1:-1;
+		});
+
+		$tagCloud = array_slice($tagCloud,0,40);
+
+
+		return view('chat::index', compact('publicChatrooms', 'myChatrooms', 'user_id', 'tagCloud'));
 	}
 
 	public function chatroom($id){
@@ -58,16 +88,13 @@ class ChatController extends Controller {
 	}
 
 	public function findUsers(Request $request){
-		$users = User::where(function($query) use ($request){
-			$query->where('name', 'like', $request->q.'%')->orWhere('surname', 'like', $request->q.'%');
-		})->whereDoesntHave('chatrooms', function($query) use ($request){
+		$users = User::select('id', DB::raw('CONCAT(name, " ", surname) AS text'))
+		->whereDoesntHave('chatrooms', function($query) use ($request){
 			$query->where('id', $request->chatroom);
-		})->get();
-		$result = [];
-		foreach ($users as $user) {
-			array_push($result, ['id'=>$user->id, 'text'=>$user->getFullName()]);
-		}
-		return  response()->json(['items'=>$result]);
+		})
+		->where('name', 'like', $request->q.'%')->orWhere('surname', 'like', $request->q.'%')
+		->get();
+		return  response()->json(['items'=>$users]);
 	}
 
 	public function addUser(Request $request){
@@ -136,20 +163,28 @@ class ChatController extends Controller {
 				->withErrors($validator)
 				->with('modal', '#video_modal');
 		} else {
-
+/*
 			$chatroom = new Chatroom();
 			$chatroom->title = $request->title;
 			$chatroom->type = $request->type;
-
+*/
 		}
 			$room = $request->title;
 		$invite = $request->invite;
 
 		$addedUserName = User::find($invite)->getFullName();
-		$id = substr(\Hash::make('title' + Auth::user()->user->name),0,8);
+		$id = substr($this->base64url_encode(mt_rand()),0,8);
 		event(new MemberAdded($invite, $addedUserName, Auth::user()->user->getFullName(), $room, $id, true));
 
 		return redirect()->route('chat.video', [$id])->with('caller', true);
 		//return view('chat::video', compact('isInit', 'room', 'invite'));
+	}
+
+	private function base64url_encode($data, $pad = null) {
+		$data = str_replace(array('+', '/'), array('-', '_'), base64_encode($data));
+		if (!$pad) {
+			$data = rtrim($data, '=');
+		}
+		return $data;
 	}
 }

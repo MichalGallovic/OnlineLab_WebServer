@@ -52,8 +52,7 @@
 <div class="breaker"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js" type="text/javascript"></script>
 <script type="text/javascript" src="{{ asset('js/jquery.js') }}"></script>
-
-<script type="text/javascript" src="{{ asset('js/select2.full.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/default.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/bootstrap.min.js') }}"></script>
 
 <script type="text/javascript">
@@ -100,10 +99,10 @@
         $('#notifications').popover('show');
     }
 
-    // socket.on('notification-channel:App\\Events\\MemberAdded{{Auth::user()->user->id}}', myNotify);
+   socket.on('notification-channel:App\\Events\\MemberAdded{{Auth::user()->user->id}}', myNotify);
 
     @foreach(Auth::user()->user->threads as $thread)
-        // socket.on('notification-channel:App\\Events\\CommentAdded{{$thread->id}}', myNotify);
+        socket.on('notification-channel:App\\Events\\CommentAdded{{$thread->id}}', myNotify);
     @endforeach
     var Laravel = {
         user: {

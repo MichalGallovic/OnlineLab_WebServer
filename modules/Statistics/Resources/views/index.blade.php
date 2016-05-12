@@ -22,7 +22,7 @@
 
 		</div>
 		<div class="col-lg-6">
-			<div id="my_favorite_latin_words" class="center-block" style="height: 350px;"></div>
+			<div id="tag-cloud" class="center-block" style="height: 350px;"></div>
 		</div>
 	</div>
 
@@ -54,7 +54,7 @@
 		//AmCharts.themes.none={};
 		var word_list = {!! json_encode($tagCloud) !!};
 		$(function() {
-			$("#my_favorite_latin_words").jQCloud(word_list, {shape: "rectangular"});
+			$("#tag-cloud").jQCloud(word_list, {shape: "rectangular"});
 		});
 
 		var chart = AmCharts.makeChart("chartdiv", {

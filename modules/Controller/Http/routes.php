@@ -1,6 +1,6 @@
 <?php
 
-Route::group(['namespace' => 'Modules\Controller\Http\Controllers'], function() {
+Route::group(['namespace' => 'Modules\Controller\Http\Controllers', 'middleware' => 'auth'], function() {
 	Route::resource('controller', 'ControllerController', ['except' => ['create']]);
 	Route::group(['prefix' => 'controller'], function() {
 		Route::get('schema/data/', ['as' => 'controller.schema.data', 'uses' => 'SchemaController@getData']);

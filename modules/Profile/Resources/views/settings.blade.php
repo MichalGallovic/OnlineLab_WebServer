@@ -72,7 +72,7 @@
 
         <div class="form-group">
             <div class="col-sm-10">
-                <a href="{{ url('users')}}" class="btn btn-default">Back</a>
+
                 {!! Form::submit('Update', ['class' => 'btn btn-primary']) !!}
             </div>
         </div>
@@ -80,12 +80,13 @@
     {!! Form::close() !!}
 
         <hr>
+    <div class="col-md-10 col-md-offset-2">
         @if ($user->hasAccount('ldap'))
-            <h4 class="col-sm-offset-1">AIS STUBA account</h4>
+            <h4>AIS STUBA account</h4>
             <br>
             <div class="form-horizontal">
                 <div class="form-group">
-                    {!! Form::label('ismail', 'e-mail:', ['class' => 'col-sm-2 control-label']) !!}
+                    {!! Form::label('ismail', 'e-mail:', ['class' => 'col-md-1 control-label']) !!}
                     <div class="col-sm-10">
                         {!! Form::email('ismail',$user->getEmail('ldap'),['class'=>'form-control', 'readonly']) !!}
                     </div>
@@ -94,9 +95,7 @@
             <hr>
         @else
             <div class="form-group">
-                <div class="col-sm-offset-2">
-                    <a href="#" class="btn btn-info" data-toggle="modal" data-target="#ldap_form">Connect with IS STU</a>
-                </div>
+                <a href="#" class="btn btn-info" data-toggle="modal" data-target="#ldap_form">Connect with IS STU</a>
             </div>
 
             <div class="modal fade" id="ldap_form" tabindex="-1" role="dialog" aria-hidden="true">
@@ -141,22 +140,20 @@
         @endif
         @if (!$user->hasAccount('facebook'))
             <div class="form-group">
-                <div class="col-sm-offset-2">
-                    <a class="btn btn-info" href="provider/facebook" role="button">Connect account with Facebook</a>
-                </div>
+                <a class="btn btn-info" href="provider/facebook" role="button">Connect account with Facebook</a>
             </div>
         @else
-            <h4 class="col-sm-offset-1">Facebook account</h4>
+            <h4>Facebook account</h4>
             <br>
             {!! Form::open(['method' => 'DELETE', 'route'=>['profile.destroy', $user->getAccount('facebook')->id], 'class' => 'form-horizontal']) !!}
             <div class="form-group">
-                {!! Form::label('fbemail', 'e-mail:', ['class' => 'col-sm-2 control-label']) !!}
+                {!! Form::label('fbemail', 'e-mail:', ['class' => 'col-sm-1 control-label']) !!}
                 <div class="col-sm-10">
                     {!! Form::email('fbemail',$user->getEmail('facebook'),['class'=>'form-control', 'readonly']) !!}
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
+                <div class="col-sm-10">
                     {!! Form::submit('Delete account', ['class' => 'btn btn-danger']) !!}
                 </div>
             </div>
@@ -165,23 +162,21 @@
         @endif
         @if (!$user->hasAccount('google'))
             <div class="form-group">
-                <div class="col-sm-offset-2">
-                    <a class="btn btn-info" href="provider/google" role="button">Connect account with Google</a>
-                </div>
+                <a class="btn btn-info" href="provider/google" role="button">Connect account with Google</a>
             </div>
         @else
-            <h4 class="col-sm-offset-1">Google account</h4>
+            <h4>Google account</h4>
             <br>
             {!! Form::open(['method' => 'DELETE', 'route'=>['profile.destroy', $user->getAccount('google')->id], 'class' => 'form-horizontal']) !!}
             <div class="form-group">
 
-                {!! Form::label('gmail', 'e-mail:', ['class' => 'col-sm-2 control-label']) !!}
+                {!! Form::label('gmail', 'e-mail:', ['class' => 'col-sm-1 control-label']) !!}
                 <div class="col-sm-10">
                     {!! Form::email('gmail',$user->getEmail('google'),['class'=>'form-control', 'readonly']) !!}
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
+                <div class="col-sm-offset-1 col-sm-10">
                     {!! Form::submit('Delete account', ['class' => 'btn btn-danger']) !!}
                 </div>
             </div>
@@ -189,6 +184,8 @@
             {!! Form::close() !!}
             <hr>
         @endif
+    </div>
+
 @endsection
 
 @section('page_js')

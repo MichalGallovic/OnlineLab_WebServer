@@ -2,7 +2,9 @@
 
 @section('content')
 
-	<h1>Hello World</h1>
+	<div class="row">
+		<div id="tag-cloud" class="center-block" style="height: 260px; width:50%"></div>
+	</div>
 
 
 
@@ -63,11 +65,8 @@
 						@endif
 					</div>
 					<div class="form-group" {!! ($errors->has('invite')) ? 'has-error' : '' !!}>
-						<meta name="csrf-token" content="{{ csrf_token() }}">
 						<select name="invite" id="search-box" class="form-control"></select>
-						<div id="suggesstion-box">
-							<ul></ul>
-						</div>
+
 						@if($errors->has('invite'))
 							<p>{!! $errors->first('invite') !!}</p>
 						@endif
@@ -116,14 +115,26 @@
 	</div>
 @stop
 
+@section("page_css")
+	@parent
+	<link rel="stylesheet" type="text/css" href="{{ asset('css/statistics/jqcloud.css') }}">
+@stop
+
 @section('page_js')
 	@parent
+	<script type="text/javascript" src="{{ asset('js/chat/select2.full.min.js') }}"></script>
+	<script src="{{ asset('js/statistics/jqcloud-1.0.4.min.js') }}"></script>
 	<script type="text/javascript">
 		@if(Session::has('modal'))
 			$("{!! Session::get('modal') !!}").modal('show');
 		@endif
 
 		$(document).ready(function(){
+
+			var word_list = {!! json_encode($tagCloud) !!};
+			$(function() {
+				$("#tag-cloud").jQCloud(word_list, {autoResize: true});
+			});
 
 			socket.on('connect', function(){
 				socket.emit('getVideoChatrooms', {user_id: {{$user_id}}});
@@ -146,11 +157,7 @@
 			$("#search-box").select2({
 				width: "100%",
 				ajax: {
-					type: "POST",
 					url: "chat/findUsers",
-					headers: {
-						'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-					},
 					dataType: "JSON",
 					delay: 250,
 					data: function (params) {

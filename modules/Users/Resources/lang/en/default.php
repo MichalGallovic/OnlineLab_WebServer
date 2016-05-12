@@ -1,6 +1,7 @@
 <?php
 
 return [
+    "name" => "User Settings",
     "USR_LOGIN"    =>  "User login",
     "USR_NAME"    =>  "Name and surname",
     "USR_MAIL"    =>  "E-mail",

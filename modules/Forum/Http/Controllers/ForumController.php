@@ -15,12 +15,8 @@ use Mail;
 class ForumController extends Controller {
 	
 	public function index()
-
-
 	{
-
 		$groups = ForumGroup::all();
-
 		return view('forum::index', compact('groups'));
 	}
 
@@ -64,10 +60,11 @@ class ForumController extends Controller {
 
 	public function thread($id){
 		$thread = ForumThread::find($id);
+		$comments = ForumComment::where('thread_id', $id)->paginate(10);
 		if($thread == null){
 			return redirect()->route('forum.index')->with('fail', "That thread does not exist.");
 		}
-		return view('forum::thread', compact('thread'));
+		return view('forum::thread', compact('thread', 'comments'));
 	}
 
 	public function storeCategory($groupId){
