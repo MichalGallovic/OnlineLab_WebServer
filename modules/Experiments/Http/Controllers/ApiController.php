@@ -12,6 +12,7 @@ use App\Services\ExperimentInstanceService;
 use Modules\Experiments\Entities\Experiment;
 use App\Exceptions\Experiments\DeviceNotReady;
 use Modules\Experiments\Entities\PhysicalDevice;
+use App\Exceptions\Experiments\DeviceNotReserved;
 use Modules\Experiments\Entities\ServerExperiment;
 use Modules\Experiments\Entities\PhysicalExperiment;
 use Modules\Experiments\Transformers\DeviceTransformer;
@@ -92,6 +93,8 @@ class ApiController extends ApiBaseController {
 			return $this->errorForbidden("This experiment cannot be run!");
 		} catch(DeviceNotReady $e) {
 		    return $this->errorForbidden("This experiment cannot be run at this moment!");
+		} catch(DeviceNotReserved $e) {
+			return $this->errorForbidden("Your reservation expired!");
 		}
 	}
 
@@ -100,7 +103,19 @@ class ApiController extends ApiBaseController {
 		try {
 			$experiment = Experiment::findOrFail($id);
 			$command = new CommandService($experiment, $request->input());
-			$command->execute();
+			$command->stop();
+		} catch(ModelNotFoundException $e) {
+			return $this->errorForbidden("This command cannot be run!");
+		}
+
+	}
+
+	public function change(Request $request, $id)
+	{
+		try {
+			$experiment = Experiment::findOrFail($id);
+			$command = new CommandService($experiment, $request->input());
+			$command->change();
 		} catch(ModelNotFoundException $e) {
 			return $this->errorForbidden("This command cannot be run!");
 		}

@@ -10,6 +10,7 @@ use App\Classes\ApplicationServer\Server;
 use Modules\Experiments\Entities\Experiment;
 use App\Exceptions\Experiments\DeviceNotReady;
 use Modules\Experiments\Entities\PhysicalDevice;
+use App\Exceptions\Experiments\DeviceNotReserved;
 use Modules\Experiments\Entities\PhysicalExperiment;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Exceptions\Experiments\DeviceReservedForThisTime;
@@ -42,6 +43,7 @@ class ExperimentRunner
 		$this->user = $user;
 		$this->experiment = $experiment;
 		$this->input = $input;
+		$this->input['requested_by'] = $this->user->id;
 		$this->duration = $this->parseDuration();
 	}
 
@@ -69,6 +71,11 @@ class ExperimentRunner
 	public function run()
 	{
 		$physicalDevice = $this->pickPhysicalDeviceForRealtime();
+
+		if(!$this->user->deviceReserved($physicalDevice)) {
+			throw new DeviceNotReserved;
+		}
+
 		$physicalExperiment = $this->pickPhysicalExperiment($physicalDevice);
 		$this->preCreateReport($physicalExperiment);
 

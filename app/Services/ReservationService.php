@@ -64,7 +64,15 @@ class ReservationService
 		$physicalDevice = PhysicalDevice::ofDevice($this->request->input('device'))
 		->ofName($this->request->input('physical_device'))->first();
 
-		$this->checkValidity($physicalDevice, $reservation);
+		$start = new Carbon($this->request->input('start'));
+		$end = new Carbon($this->request->input('end'));
+		
+		$this->checkCollisionsFor($start, $end, $physicalDevice, $reservation);
+		$this->isAfterNow($start, $end);
+
+		if($this->user->role == 'admin') return;
+		
+		$this->lastsLessThanLimit($start, $end);
 
 		$reservation->update([
 				"physical_device_id" => $physicalDevice->id,
@@ -88,11 +96,11 @@ class ReservationService
 		}
 	}
 
-	protected function isAfterNow($start)
+	protected function isAfterNow($start, $end)
 	{
 		$now = Carbon::now();
 
-		if($now->gt($start)) {
+		if($now->gt($start) && $now->gt($end)) {
 			throw new BeforeNow;
 		}
 	}
@@ -123,7 +131,7 @@ class ReservationService
 		$end = new Carbon($this->request->input('end'));
 		
 		$this->checkCollisionsFor($start, $end, $physicalDevice, $reservation);
-		$this->isAfterNow($start);
+		$this->isAfterNow($start, $end);
 
 		if($this->user->role == 'admin') return;
 		

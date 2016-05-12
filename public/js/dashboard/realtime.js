@@ -134,7 +134,8 @@
 			description: {
 				type: String,
 				default: "Empty graph"
-			}
+			},
+			status: "idle"
 		},
 		ready: function() {
 			this.initGraph(this.series);
@@ -224,7 +225,11 @@
                 samplingRate: null
             },
             series: null,
-            samplingRateField: null
+            samplingRateField: null,
+            canSwitch: true,
+            status: "idle",
+            mode: "experiment",
+            filteredCommands: []
 		},
 		ready: function() {
 			this.init();
@@ -291,6 +296,7 @@
 	                }).value();
 
 	    			me.selectedExperiment = me.experiments[0]
+	    			me.filteredCommands = me.selectedExperiment.experiment_commands;
 				}).then(this.initWebSockets);
 			},
 			parseServers: function() {
@@ -302,14 +308,22 @@
 				var me = this;
 				this.servers.forEach(function(server) {
 					var socket = io(server.ip + ":" + server.node_port);
-					console.log('experiment-data:' + me.user_id);
 					socket.on('experiment-data:' + me.user_id, function(message) {
-						if(me.selected.instance == message.settings.instance) {
-							me.series = me.formatGraphInput(
-								message.data,
-								me.selected.samplingRate,
-								me.selectedExperiment.output_arguments
-							);
+
+						switch(message.event) {
+							case "streaming": {
+								me.status = "experimenting";
+								me.series = me.formatGraphInput(
+									message.data,
+									me.selected.samplingRate,
+									me.selectedExperiment.output_arguments
+								);
+								break;
+							}
+							case "finished": {
+								me.canSwitch = true;
+								break;
+							}
 						}
 					});
 				});
@@ -336,22 +350,51 @@
                     type: 'success'
                 });
             },
-			runExperiment: function() {
-				var me = this;
-				var promises = [];
-
-				$.each(this.$children, function(index, component) {
+            collectInputData: function() {
+            	var promises = [];
+            	$.each(this.$children, function(index, component) {
 					if($.isFunction(component.getInputValues)) {
 						promises.push(component.getInputValues());
 					}
 				});
 
+				return promises;
+            },
+            postChange: function() {
+            	var me = this;
+            	var promises = this.collectInputData();
+
+            	$.when.apply($, promises).then(function() {
+					var data = me.makeRequestData(arguments);
+					data = {
+						device : data.device,
+						software: data.software,
+						instance: data.instance,
+						input : data.input
+					};
+					me.postChangeCommand(data)
+					.done(function(response) {
+						me.flashSuccess("Change");
+
+					}).fail(function(response) {
+                       
+                    });
+				});
+
+            },
+			runExperiment: function() {
+				var me = this;
+				var promises = this.collectInputData();
+
 				$.when.apply($, promises).then(function() {
 					var data = me.makeRequestData(arguments);
                     me.selected.samplingRate = parseInt(data.input.start[me.samplingRateField.name]);
+
 					me.postRunExperiment(data)
 					.done(function(response) {
 						me.flashSuccess(response.success.message);
+						me.canSwitch = false;
+						me.status = "initializing";
 					}).fail(function(response) {
                         response = JSON.parse(response.responseText);
                         var message = "";
@@ -393,7 +436,7 @@
                     sampling_rate: 0
 				};
 
-				$.each(this.selectedExperiment.experiment_commands, function(index, command) {
+				$.each(this.filteredCommands, function(index, command) {
 					request.input[command] = {};
 				});
 				$.each(inputs, function(index, input) {
@@ -446,6 +489,14 @@
 					"data" : data
 				});
 			},
+			postChangeCommand: function(data) {
+				var me = this;
+				return $.ajax({
+					"type" : "POST",
+					"url" : "/api/experiments/" + me.selectedExperiment.experiment_id +"/change",
+					"data" : data
+				});
+			},
 			formatGraphInput: function(data, rate, output_arguments) {
 				rate = parseInt(rate);
 				var me = this;
@@ -468,6 +519,14 @@
 
 				return series;
 			},
+			showExperiment: function() {
+				this.mode = "experiment";
+				this.filteredCommands = this.selectedExperiment.experiment_commands;
+			},
+			showChange: function() {
+				this.mode = "change";
+				this.filteredCommands = ["change"];
+			}
 		},
 		computed: {
 			description: function() {
@@ -484,16 +543,18 @@
 		    selected : {
 		        handler: function(val, oldVal) {
 		            var me = this;
-		            if(Laravel.user.role == 'admin') {
-		                var selectedExperiment = _.find(this.physicalExperiments, function(experiment) {
-		                    return experiment.physical_device == me.selected.instance &&
-		                    experiment.software == me.selected.software &&
-		                    experiment.device == me.selected.device;
-		                });
 
-		                this.selectedExperiment.commands = selectedExperiment.commands;
-		                this.selectedExperiment.experiment_commands = selectedExperiment.experiment_commands;
-		            }
+	                var selectedExperiment = _.find(this.physicalExperiments, function(experiment) {
+	                    return experiment.physical_device == me.selected.instance &&
+	                    experiment.software == me.selected.software &&
+	                    experiment.device == me.selected.device;
+	                });
+
+	                this.selectedExperiment.commands = selectedExperiment.commands;
+	                this.selectedExperiment.experiment_commands = selectedExperiment.experiment_commands;
+	                this.filteredCommands = this.selectedExperiment.experiment_commands;
+	                this.showExperiment();
+
 		        },
 		        deep: true
 		    }
