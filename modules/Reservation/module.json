@@ -17,7 +17,7 @@
         "main": "reservation.calendar"
     },
     "settings" : {
-        "max_reservations_per_user" : 10,
+        "max_reservations_per_user" : 2,
         "max_reservation_time" : 100
     }
 }

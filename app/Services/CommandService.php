@@ -26,7 +26,7 @@ class CommandService
 		$this->physicalDevice = $this->pickPhysicalDevice();
 	}
 
-	public function execute()
+	public function stop()
 	{
 		$server = new Server($this->physicalDevice->server->ip);
 		
@@ -35,6 +35,18 @@ class CommandService
 		$instance = $this->input['instance'];
 
 		return $server->stopCommand($device, $software, $instance);
+	}
+
+	public function change()
+	{
+		$server = new Server($this->physicalDevice->server->ip);
+		
+		$device = $this->input['device'];
+		$software = $this->input['software'];
+		$instance = $this->input['instance'];
+		$input = Arr::get($this->input['input'], 'change');
+
+		return $server->changeCommand($device, $software, $instance, $input);
 	}
 
 	protected function pickPhysicalDevice()

@@ -34,7 +34,6 @@ class ExperimentService
 
 	public function run()
 	{
-		$this->experimentInput['requested_by'] = $this->user->id;
 		$runner = new ExperimentRunner(
 		    $this->user, $this->experiment, $this->experimentInput
 		);

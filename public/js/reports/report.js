@@ -116,16 +116,19 @@
 				});
 			},
 			formatReport: function(report) {
-				var input_arguments = report.input_arguments;
-				_.object(_.map(input_arguments, function(command, commandName) {
-					_.object(_.map(command, function(input, key) {
-						input.data = report.input[commandName][input.name];
-						return input;
+				var input = {};
+				_.object(_.each(report.input, function(command, commandName) {
+					input[commandName] = [];
+					_.object(_.each(command, function(value, key) {
+						input[commandName].push({
+							data: value,
+							title: _.findWhere(report.input_arguments[commandName], {name:key}).title
+						});
 					}));
-					return command;
 				}));
+				
 
-				report.input = input_arguments;
+				report.input = input
 				return report;
 			},
 			formatGraphInput: function(data, rate, output_arguments) {
