@@ -97,7 +97,7 @@ class Server
 
 		$this->client = new Client([
 			"base_uri"	=>	"http://" . $this->ip,
-			"timeout"	=>	2.0	
+			"timeout"	=>	5.0	
 		]);
 
 		$this->check();
