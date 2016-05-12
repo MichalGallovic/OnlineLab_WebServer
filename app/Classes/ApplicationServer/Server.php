@@ -185,6 +185,16 @@ class Server
 			]);
 	}
 
+	public function changeCommand($device, $software, $instance, $input)
+	{
+		return $this->post('commands/change',[
+				"device"	=>	$device,
+				"software"	=>	$software,
+				"instance"	=>	$instance,
+				"input"	=>	$input
+			]);
+	}	
+
 	protected function postQueueExperiment(array $input)
 	{
 		$body = $this->post("experiments/queue", $input);

@@ -24,7 +24,7 @@ class OlmMigrateRefresh extends Command
     protected $modulesToSeed = [
         "Experiments",
         "Report",
-        'Reservation',
+        // 'Reservation',
         'Controller'
     ];
 
