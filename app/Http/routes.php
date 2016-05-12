@@ -89,16 +89,6 @@ Route::group(['as'  =>  'user::', 'middleware'  =>  'auth'], function() {
 });
 
 Route::get('test/data', function() {
-    // DB::enableQueryLog();
-    // $beforeReservation = intval(Module::get('Experiments')->settings("before_reservation"));
-
-    // $busyTime = Carbon::now()->addSeconds($beforeReservation);
-    // $dev = PhysicalDevice::ofDevice('tos1a')->ofName('r2')->ready()->first();
-    // dd($dev->reservations()->collidingWith(Carbon::now(), $busyTime)->first());
-    // // dd(DB::getQueryLog());
-    // $physicalDevices = PhysicalDevice::ofDevice('tos1a')->ofName('r1')->whereHas('reservations', function($q) use ($busyTime) {
-    //         $q->collidingWith(Carbon::now(), $busyTime);
-    //     })->get();
-    // dd($physicalDevices);
-    dd(Arr::has(PhysicalExperiment::first()->commands,'stop'));
+    $service = new SystemService();
+    $service->syncWithServers();
 });

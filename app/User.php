@@ -5,9 +5,9 @@ namespace App;
 use Modules\Chat\Entities\Chatroom;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
-
 use Modules\Reservation\Entities\Reservation;
 use Illuminate\Auth\Passwords\CanResetPassword;
+use Modules\Experiments\Entities\PhysicalDevice;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
@@ -146,5 +146,11 @@ class User extends Model implements AuthorizableContract
 
     public function reservations() {
         return $this->hasMany(Reservation::class);
+    }
+
+    public function deviceReserved(PhysicalDevice $physicalDevice) {
+        return $this->reservations()->whereHas('physicalDevice', function($q) use ($physicalDevice) {
+            $q->where('id', $physicalDevice->id);
+        })->count() != 0;
     }
 }
