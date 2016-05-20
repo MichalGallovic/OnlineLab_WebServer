@@ -17,7 +17,7 @@
                     @foreach ($messages->slice(-15) as $message)
                         <li class="media">
                             <div class="media-left media-middle">
-                                {!! Html::image('images/profile/' . $message->user->id, 'Generic placeholder image', ['class' => 'media-object','style' => 'max-height: 30px; max-width: 30px']) !!}
+                                {!! Html::image('images/thumb/' . $message->user->id, 'Generic placeholder image', ['class' => 'media-object img-rounded','style' => 'max-height: 30px; max-width: 30px']) !!}
                             </div>
                             <div class="media-body">
                                 <p>{{$message->body}}</p>
@@ -54,7 +54,7 @@
             <div class="panel-footer">
                 <div class="input-group select2-bootstrap-append">
                     <meta name="csrf-token" content="{{ csrf_token() }}">
-                    <select id="search-box" class="form-control"></select>
+                    <select id="search-box" class="form-control" multiple></select>
                     <span class="input-group-btn">
                         <button id="addUser" class="btn btn-default" type="button"><span class="glyphicon glyphicon-plus" style="color:green"></span></button>
                     </span>
@@ -93,7 +93,7 @@
         //var socket = io.connect();
         $(document).ready(function(){
 
-            @if($openChatroomJoin)
+            @if($publicChatroomJoin)
                 socket.emit('addMember', {user_id: {{$user_id}}, user_name: "{{$user_name}}"});
             @endif
             var members = {!!json_encode($members)!!};
@@ -119,10 +119,10 @@
                             class: "media-left media-middle"
                         }).append(
                             $("<img>", {
-                                class: "media-object",
+                                class: "media-object img-rounded",
                                 height: "30px",
                                 alt: "Generic placeholder image",
-                                src: ROOT_PATH+"images/profile/"+messages[0].user.id
+                                src: ROOT_PATH+"images/thumb/"+messages[0].user.id
                             })
                         )
                     ).append(
@@ -224,9 +224,11 @@
                         id: 'user_id_'+key,
                         class: "list-group-item",
                         text: $('<div/>').html(members[key]).text()
-                    }).append($('<span>', {
-                        class: "label label-as-badge pull-right "+(data[key] ? "label-success" : "label-default"),
-                        text: " "
+                    }).append($('<i>', {
+                        class: "fa fa-circle pull-right",
+                        css: {
+                            color: (data[key] ? "green" : "grey")
+                        }
                     })));
                 }
             });
@@ -239,10 +241,10 @@
                         class: "media-left media-middle",
                     }).append(
                         $("<img>", {
-                            class: "media-object",
+                            class: "media-object img-rounded",
                             height: "30px",
                             alt: "Generic placeholder image",
-                            src: ROOT_PATH+"images/profile/"+user_id
+                            src: ROOT_PATH+"images/thumb/"+user_id
                         })
                     )
                 ).append($("<div>", {

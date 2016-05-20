@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 
+use DB;
 use Illuminate\Http\Request;
 use Auth;
 use Socialite;
@@ -39,7 +40,8 @@ class AuthController extends Controller
         $this->middleware('guest', ['except' => ['getLogout', 'handleProviderCallback']]);
     }
 
-    protected $redirectPath = '/forum';
+    protected $loginPath = '/auth/login';
+    protected $redirectPath = '/dashboard';
 
     /**
      * Get a validator for an incoming registration request.
@@ -87,7 +89,7 @@ class AuthController extends Controller
      */
     public function getLogin()
     {
-        $items = LoginData::all();
+        $items = LoginData::select('country', DB::raw('count(id) as total'))->groupby('country')->lists('total', 'country');
         return view('guest.auth.temp.login', compact('items'));
     }
 
@@ -108,6 +110,21 @@ class AuthController extends Controller
         }elseif(isset($request->ldap)){
             return $this->postLdap($request);
         }
+    }
+
+    public function postRegister(Request $request)
+    {
+        $validator = $this->validator($request->all());
+
+        if ($validator->fails()) {
+            $this->throwValidationException(
+                $request, $validator
+            );
+        }
+
+        Auth::login($this->create($request->all()));
+
+        return redirect()->route('profile.settings');
     }
 
     public function postLdap($credentials){
@@ -147,7 +164,7 @@ class AuthController extends Controller
                 $account->user()->associate($user);
                 $account->save();
 
-                Auth::login($account, true);
+                 Auth::login($account, true);
 
                 $this->logLogin($account);
 
@@ -159,7 +176,7 @@ class AuthController extends Controller
             $this->logLogin($account);
 
             //return var_dump($info);
-            return redirect()->route('forum.index');
+            return redirect()->route('user::dashboard');
         } else if (ldap_get_option($ldapconn, 0x0032, $extended_error)) {
             return redirect('auth/login')->with('fail', "Error Binding to LDAP: $extended_error")->withInput();
         } else {
@@ -199,8 +216,7 @@ class AuthController extends Controller
             return redirect()->route('user::linkAccounts');
         }
 
-        return redirect()->route('forum.index');
-        //Todo domovská stránka
+        return redirect()->route('user::dashboard');
     }
 
     private function findOrCreateUser($user, $provider){
@@ -254,15 +270,19 @@ class AuthController extends Controller
         // Will return the response, if false it print the response
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         // Set the url
-        curl_setopt($ch, CURLOPT_URL,"ipinfo.io/217.67.31.67");
+        //curl_setopt($ch, CURLOPT_URL,"ipinfo.io/217.67.31.67");
+        curl_setopt($ch, CURLOPT_URL,"ipinfo.io/".$ip);
 
         $result = json_decode(curl_exec($ch), true);
         curl_close($ch);
 
-        $loginData = new LoginData();
-        $loginData->account()->associate($account);
-        $loginData->setLocationAttribute($result['loc']);
-        $loginData->ip = $ip;
+        if(array_key_exists('loc', $result) && array_key_exists('country', $result)){
+            $loginData = new LoginData();
+            $loginData->account()->associate($account);
+            $loginData->setLocationAttribute($result['loc']);
+            $loginData->ip = $ip;
+        }
+
     }
 
 }

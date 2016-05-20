@@ -1,6 +1,6 @@
 <?php
 
-Route::group(['prefix' => 'forum', 'namespace' => 'Modules\Forum\Http\Controllers', 'middlware' => 'auth'], function()
+Route::group(['prefix' => 'forum', 'namespace' => 'Modules\Forum\Http\Controllers', 'middleware' => 'auth'], function()
 {
 	Route::get('/', ['as' => 'forum.index', 'uses' => 'ForumController@index']);
 	Route::get('/category/{id}', array('uses' => 'ForumController@category', 'as' => 'forum.category'));

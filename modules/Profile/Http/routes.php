@@ -1,6 +1,6 @@
 <?php
 
-Route::group(['prefix' => 'profile', 'namespace' => 'Modules\Profile\Http\Controllers', 'middlware' => 'auth'], function()
+Route::group(['prefix' => 'profile', 'namespace' => 'Modules\Profile\Http\Controllers', 'middleware' => 'auth'], function()
 {
 	Route::get('/settings', ['as' => 'profile.settings', 'uses' => 'ProfileController@getSettings']);
 	Route::PUT('/', ['as' => 'profile.update', 'uses' => 'ProfileController@update']);

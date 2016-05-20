@@ -6,7 +6,7 @@
 		<div class="panel-heading">
 			<div class="clearfix">
 				<h3 class="panel-title pull-left">{{trans("controller::default.CTRL_HEADING_MY")}}</h3>
-				<a href="{{route('controller.create', 'matlab')}}" class="btn btn-success btn-xs pull-right" >{{ trans("controller::default.NEW_CONTROLLER_TITLE") }}</a>
+				<a href="{{route('controller.create')}}" class="btn btn-success btn-xs pull-right" >{{ trans("controller::default.NEW_CONTROLLER_TITLE") }}</a>
 			</div>
 		</div>
 		@include('controller::partials.panel', ['regulators' => $myRegulators])
@@ -36,8 +36,9 @@
 					<th class="col-sm-2">{{ trans("controller::default.CTRL_NAME") }}</th>
 					<th class="col-sm-1">{{ trans("controller::default.LABEL_SYSTEM") }}</th>
 					<th class="col-sm-2">{{ trans("controller::default.CTRL_DATE") }}</th>
-					<th class="col-sm-2">{{ trans("controller::default.CTRL_AUTHOR") }}</th>
-					<th class="col-sm-1">{{ trans("controller::default.CTRL_ACCESSIBILITY") }}</th>
+					<th class="col-sm-1">{{ trans("controller::default.CTRL_AUTHOR") }}</th>
+					<th class="col-sm-1"></th>
+					<th class="col-sm-1"></th>
 					<th class="col-sm-1"></th>
 					<th class="col-sm-1"></th>
 					<th class="col-sm-1"></th>
@@ -49,17 +50,21 @@
 					<tr>
 						<td>{{ $regulator->id }}</td>
 						<td>{{ $regulator->title }}</td>
-						<td>{{$regulator->system_id}}</td>
+						<td>{{$regulator->schema->experiment->device->name}}</td>
 
 						<td>{{ $regulator->created_at }}</td>
 						<td>{{$regulator->user->getFullName()}}</td>
-						<td>{{ $regulator->type }}</td>
 						<td></td>
-
 						<td class="col-md-1"><a href="{{url('controller',$regulator->id)}}" class="btn btn-sm btn-block btn-primary"><span class="glyphicon glyphicon-search"></span> {{ trans("controller::default.PREVIEW_TITLE") }}</a></td>
+						<td><a href="{{route('controller.download',$regulator->id)}}" class="btn btn-sm btn-block btn-info"><span class="glyphicon glyphicon-save-file"></span> {{ trans("controller::default.CTRL_DOWNLOAD_FILE") }}</a></td>
 						<td class="col-md-1">
 							{!! Form::open(['method' => 'PATCH', 'route'=>['controller.approve', $regulator->id]]) !!}
 							{!! Form::button('<span class="glyphicon glyphicon-ok"></span> '. trans("controller::default.CTRL_APPROVE"), ['class' => 'btn btn-sm btn-block btn-success', 'type'=>'submit']) !!}
+							{!! Form::close() !!}
+						</td>
+						<td class="col-md-1">
+							{!! Form::open(['method' => 'DELETE', 'route'=>['controller.destroy', $regulator->id]]) !!}
+							{!! Form::button('<span class="glyphicon glyphicon-remove"></span> '.trans("controller::default.TRASH_TITLE"), ['class' => 'btn btn-sm btn-block btn-danger', 'type'=>'submit']) !!}
 							{!! Form::close() !!}
 						</td>
 
@@ -74,7 +79,8 @@
 					<th>{{ trans("controller::default.LABEL_SYSTEM") }}</th>
 					<th>{{ trans("controller::default.CTRL_DATE") }}</th>
 					<th>{{ trans("controller::default.CTRL_AUTHOR") }}</th>
-					<th>{{ trans("controller::default.CTRL_ACCESSIBILITY") }}</th>
+					<th></th>
+					<th></th>
 					<th></th>
 					<th></th>
 					<th></th>
@@ -97,9 +103,10 @@
 				<tr>
 					<th class="col-sm-1">{{ trans("controller::default.CTRL_SCHEMA_ID") }}</th>
 					<th class="col-sm-2">{{ trans("controller::default.CTRL_SCHEMA_TITLE") }}</th>
-					<th class="col-sm-1">{{ trans("controller::default.CTRL_SCHEMA_TYPE") }}</th>
+					<th class="col-sm-1">{{ trans("controller::default.LABEL_SYSTEM") }}</th>
 					<th class="col-sm-2">{{ trans("controller::default.CTRL_DATE") }}</th>
-					<th class="col-sm-2">{{ trans("controller::default.CTRL_SCHEMA_SOFTWARE") }}</th>
+					<th class="col-sm-1">{{ trans("controller::default.CTRL_SCHEMA_SOFTWARE") }}</th>
+					<th class="col-sm-1">{{ trans("controller::default.CTRL_SCHEMA_TYPE") }}</th>
 					<th class="col-sm-1"></th>
 					<th class="col-sm-1"></th>
 					<th class="col-sm-1"></th>
@@ -112,11 +119,12 @@
 					<tr>
 						<td>{{ $schema->id }}</td>
 						<td>{{ $schema->title }}</td>
-						<td>{{ $schema->type }}</td>
+						<td>{{ $schema->experiment->device->name }}</td>
 						<td>{{ $schema->created_at }}</td>
 						<td>{{ $schema->experiment->software->name }}</td>
+						<td>{{ $schema->type }}</td>
 						<td></td>
-						<td><a href="{{route('controller.schema.show',$schema->id)}}" class="btn btn-sm btn-block btn-info"><span class="glyphicon glyphicon-save-file"></span> {{ trans("controller::default.CTRL_DOWNLOAD_FILE") }}</a></td>
+						<td><a href="{{route('controller.schema.download',$schema->id)}}" class="btn btn-sm btn-block btn-info"><span class="glyphicon glyphicon-save-file"></span> {{ trans("controller::default.CTRL_DOWNLOAD_FILE") }}</a></td>
 						<td><a href="{{route('controller.schema.edit',$schema->id)}}" class="btn btn-sm btn-block btn-warning"><span class="glyphicon glyphicon-edit"></span> {{ trans("controller::default.SETTINGS_TITLE") }}</a></td>
 						<td class="col-md-1">
 							{!! Form::open(['method' => 'DELETE', 'route'=>['controller.schema.destroy', $schema->id]]) !!}
@@ -132,9 +140,10 @@
 				<tr>
 					<th>{{ trans("controller::default.CTRL_SCHEMA_ID") }}</th>
 					<th>{{ trans("controller::default.CTRL_SCHEMA_TITLE") }}</th>
-					<th>{{ trans("controller::default.CTRL_SCHEMA_TYPE") }}</th>
+					<th>{{ trans("controller::default.LABEL_SYSTEM") }}</th>
 					<th>{{ trans("controller::default.CTRL_DATE") }}</th>
 					<th>{{ trans("controller::default.CTRL_SCHEMA_SOFTWARE") }}</th>
+					<th>{{ trans("controller::default.CTRL_SCHEMA_TYPE") }}</th>
 					<th></th>
 					<th></th>
 					<th></th>
@@ -192,6 +201,13 @@
 						{!! Form::file("image", ["class" => "form-control"]) !!}
 						@if($errors->has('image'))
 							<p>{!! $errors->first('image') !!}</p>
+						@endif
+					</div>
+					<div class="form-group {!! ($errors->has('note')) ? 'has-error' : '' !!}">
+						{!! Form::label("note", trans("controller::default.CTRL_SCHEMA_NOTE"), ['class' => 'control-label']) !!}
+						{!! Form::textarea('note', '', ['class' => 'form-control']) !!}
+						@if($errors->has('note'))
+							<p>{!! $errors->first('note') !!}</p>
 						@endif
 					</div>
 					{!! Form::close() !!}

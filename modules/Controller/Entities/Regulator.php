@@ -11,7 +11,7 @@ class Regulator extends Model {
         if($this->filename){
             return storage_path() . '/user_uploads/'.$this->user->id.'/regulators/'.$this->id. '/' . $this->filename;;
         }
-        return storage_path() . '/user_uploads/'.$this->user->id.'/regulators/'.$this->id. '/' . $this->name.'.txt';
+        return storage_path() . '/user_uploads/'.$this->user->id.'/regulators/'.$this->id. '/' . $this->id.'.txt';
     }
 
     public function user() {

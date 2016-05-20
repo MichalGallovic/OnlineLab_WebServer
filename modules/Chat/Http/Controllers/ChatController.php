@@ -19,7 +19,7 @@ class ChatController extends Controller {
 
 		$user = Auth::user()->user;
 		$user_id = $user->id;
-		$publicChatrooms = Chatroom::whereIn('type', ['public_open', 'public_closed'])->get();
+		$publicChatrooms = Chatroom::where('type', 'public')->get();
 		$myChatrooms = $user->chatrooms;
 		//$myChatrooms = Chatroom::where('type', 'private')->get();
 
@@ -28,7 +28,7 @@ class ChatController extends Controller {
 
 		foreach (Message::lists('body') as $message) {
 			foreach (explode(" ",$message) as $word){
-				$key = str_replace(array(':', '\\', '/', '*'), ' ', $word);
+				$key = str_replace(array(':', '\\', '/', '*', ',', '.'), ' ', $word);
 				if(strlen($key) > 4){
 					if(array_key_exists($key, $words)){
 						$words[$key]++;
@@ -71,20 +71,17 @@ class ChatController extends Controller {
 
 		$perm = Permission::where(['user_id' => $user->id, 'chatroom_id' => $id])->get();
 
-		$openChatroomJoin = false;
+		$publicChatroomJoin = false;
 
 		if(count($perm)==0) {
-			if ($room->type == 'public_open') {
+			if ($room->type == 'public') {
 				Permission::create(['user_id' => $user->id, 'chatroom_id' => $id, 'type' => 'member']);
-				$openChatroomJoin = true;
-			} else if ($room->type == 'public_closed') {
-				Permission::create(['user_id' => $user->id, 'chatroom_id' => $id, 'type' => 'spectator']);
-				$openChatroomJoin = true;
+				$publicChatroomJoin = true;
 			}
 		}
 
 		$messages = Message::with('user')->where('chatroom_id', $id)->get();
-		return view('chat::chatroom', compact('user_id', 'user_name', 'room', 'members', 'messages', 'openChatroomJoin'));
+		return view('chat::chatroom', compact('user_id', 'user_name', 'room', 'members', 'messages', 'publicChatroomJoin'));
 	}
 
 	public function findUsers(Request $request){
@@ -110,7 +107,8 @@ class ChatController extends Controller {
 
 			event(new MemberAdded($user, $members[$user], Auth::user()->user->getFullName(), Chatroom::find($request->chatroom)->title, $request->chatroom));
 		}
-		return response()->json($members);
+
+		return response()->json($request->chatroom);
 	}
 
 	public function storeChatroom(Request $request){
@@ -150,8 +148,6 @@ class ChatController extends Controller {
 	}
 
 	public function createVideo(Request $request){
-
-
 		$validator = Validator::make($request->all(), array(
 			'title' => 'required|min:3',
 			'invite' => 'required'

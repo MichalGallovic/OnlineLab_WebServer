@@ -1,6 +1,6 @@
 <?php
 
-Route::group(['prefix' => 'experiments', 'namespace' => 'Modules\Experiments\Http\Controllers'], function()
+Route::group(['prefix' => 'experiments', 'namespace' => 'Modules\Experiments\Http\Controllers', 'middleware' => ['auth', 'admin']], function()
 {
 	Route::get('/', ['as'	=>	"experiments.index", "uses"	=>	'ExperimentsController@index']);
 	Route::get('refresh', ['as' => 'experiments.refresh', 'uses' => 'ExperimentsController@refresh']);

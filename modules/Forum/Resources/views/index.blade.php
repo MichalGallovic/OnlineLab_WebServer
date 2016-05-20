@@ -7,12 +7,15 @@
 	@foreach($groups as $group)
 		<div class="panel panel-primary">
 			<div class="panel-heading">
+
 				<div class="clearfix">
 					<h3 class="panel-title pull-left">{!! $group->title !!}</h3>
+					@if(Auth::user()->user->isAdmin())
 					<a href="#" id="add-category-{!! $group->id  !!}" class="btn btn-success btn-xs pull-right new_category" data-toggle="modal" data-target="#category_modal_{!! $group->id !!}">New category</a>
 					{!! Form::open(['method' => 'DELETE', 'route'=>['forum.delete.group', $group->id]]) !!}
 					{!! Form::submit('Delete', ['class' => 'btn btn-danger btn-xs pull-right']) !!}
 					{!! Form::close() !!}
+					@endif
 				</div>
 			</div>
 			<div class="panel-body breaker">

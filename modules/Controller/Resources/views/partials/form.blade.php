@@ -39,7 +39,17 @@
     </div>
 
 </div>
-
+@if($schema->note)
+    <div class="form-group {!! ($errors->has('note')) ? 'has-error' : '' !!}">
+        {!! Form::label("note", trans("controller::default.CTRL_SCHEMA_NOTE"), ['class' => 'col-sm-2 control-label']) !!}
+        <div class="col-sm-10">
+            {!! Form::textarea('note', $schema->note, ['class' => 'form-control', 'readonly', 'style' => 'overflow-y: auto; max-height:140px;']) !!}
+        </div>
+        @if($errors->has('note'))
+            <p>{!! $errors->first('note') !!}</p>
+        @endif
+    </div>
+@endif
 <div class="form-group text-div {!! ($errors->has('body')) ? 'has-error' : '' !!}" {!! ($schema->type != trans("controller::default.CTRL_SCHEMA_TEXT")) ? 'style="display: none"' : ''!!}>
     {!! Form::label('body', trans("controller::default.LABEL_BODY_REGULATOR").':', ['class' => 'col-sm-2 control-label']) !!}
     <div class="col-sm-10">
@@ -50,6 +60,7 @@
     </div>
 </div>
 
+
 <div class="form-group file-div {!! ($errors->has('filename')) ? 'has-error' : '' !!}" {!! ($schema->type != trans("controller::default.CTRL_SCHEMA_FILE")) ? 'style="display: none"' : ''!!}>
     {!! Form::label('filename', trans("controller::default.CTRL_UPLOAD_FILE").':', ['class' => 'col-sm-2 control-label']) !!}
     <div class="col-sm-10">
@@ -59,6 +70,7 @@
         @endif
     </div>
 </div>
+
 
 <div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">

@@ -1,6 +1,6 @@
 <?php
 
-Route::group(['prefix' => 'users', 'namespace' => 'Modules\Users\Http\Controllers', 'middlware' => 'auth'], function()
+Route::group(['prefix' => 'users', 'namespace' => 'Modules\Users\Http\Controllers', 'middleware' => ['auth', 'admin']], function()
 {
 	Route::get('/', ['as' => 'users.index', 'uses' => 'UsersController@index']);
 	Route::get('/{user}', ['as' => 'users.show', 'uses' => 'UsersController@show']);

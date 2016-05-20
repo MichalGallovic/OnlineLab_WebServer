@@ -1,5 +1,6 @@
 <?php namespace Modules\Controller\Http\Controllers;
 
+use Illuminate\Database\QueryException;
 use Modules\Controller\Entities\Schema;
 use Pingpong\Modules\Routing\Controller;
 use Illuminate\Http\Request;
@@ -19,12 +20,12 @@ class SchemaController extends Controller {
 	}
 
 	public function edit($id){
-		$schema=Schema::find($id);
+		$schema=Schema::with('experiment.software')->find($id);
 		$file = $schema->getFileContent();
 		$schemas = Schema::all();
-		$softwares = Software::lists('name', 'id');
-		$experiments = Experiment::with('device')->whereHas('software', function($q){
-			$q->where('name', 'matlab');
+		$softwares = Software::where("hasRegulators", true)->lists('name', 'id');
+		$experiments = Experiment::with('device')->whereHas('software', function($q) use ($schema){
+			$q->where('name', $schema->experiment->software->name);
 		})->join('devices', 'devices.id', '=', 'experiments.device_id')->lists('name', 'experiments.id');
 
 		return view('controller::schema',compact('schema', 'file', 'softwares', 'schemas', 'experiments'));
@@ -35,6 +36,8 @@ class SchemaController extends Controller {
 		$schema = Schema::find($id);
 		if($schema->image){
 			$filepath = storage_path() . '/schemas/'.$schema->id.'/image/'.$schema->image;
+		}else{
+			$filepath = public_path() . '/pictures/noschema.jpg';
 		}
 		$img = Image::make($filepath);
 		return $img->response();
@@ -59,6 +62,7 @@ class SchemaController extends Controller {
 			$schema->type = $request->type;
 			$schema->title = $request->title;
 			$schema->type = $request->type;
+			$schema->note = $request->note;
 			$schema->experiment_id = $request->experiment_id;
 			if ($request->file('filename') && $request->file('filename')->isValid()) {
 				File::cleanDirectory($directory.'file/');
@@ -102,6 +106,7 @@ class SchemaController extends Controller {
 				$schema->title = $request->title;
 				$schema->type = $request->type;
 				$schema->experiment_id = $request->experiment_id;
+				$schema->note = $request->note;
 				$schema->filename = $request->file('filename')->getClientOriginalName();
 				if($request->image){
 					$schema->image = $request->file('image')->getClientOriginalName();
@@ -132,10 +137,15 @@ class SchemaController extends Controller {
 
 	public function destroy($id){
 		$schema = Schema::find($id);
-		if($schema->filename){
-			\File::Delete(storage_path().'/schemas/'.$schema->id.'/');
+		$id = $schema->id;
+		try{
+			$schema->delete();
+		}catch(QueryException $e){
+			return redirect()->route('controller.index')->with('fail', trans('controller::default.CTRL_SCHEMA_DELETE_FAIL'));
 		}
-		$schema->delete();
+
+
+		\File::Delete(storage_path().'/schemas/'.$id.'/');
 		return redirect()->route('controller.index')->with('success', trans('controller::default.CTRL_SCHEMA_DELETE_SUCCESS'));
 	}
 }

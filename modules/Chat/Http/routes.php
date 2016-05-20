@@ -10,7 +10,5 @@ Route::group(['prefix' => 'chat', 'namespace' => 'Modules\Chat\Http\Controllers'
 	Route::get('/video/{id}', ['as' => 'chat.video', 'uses' => 'ChatController@joinVideo']);
 	Route::post('/addUser', ['as' => 'chat.addUsers', 'uses' => 'ChatController@addUser']);
 	Route::post('/', ['as' => 'chat.new.chatroom', 'uses' => 'ChatController@storeChatroom']);
-	/*Route::post('/findUsers', function(){
-		return Response::json('test');
-	});*/
+
 });
