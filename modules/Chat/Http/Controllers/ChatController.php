@@ -104,11 +104,10 @@ class ChatController extends Controller {
 			$permission->type = 'member';
 			$permission->save();
 			$members[$user] = User::find($user)->getFullName();
-
 			event(new MemberAdded($user, $members[$user], Auth::user()->user->getFullName(), Chatroom::find($request->chatroom)->title, $request->chatroom));
 		}
 
-		return response()->json($request->chatroom);
+		return response()->json([$user => $members[$user]]);
 	}
 
 	public function storeChatroom(Request $request){
