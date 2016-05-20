@@ -181,7 +181,6 @@
             $(' #addUser ').click(function(e) {
                 var myData = $('#search-box').val();
                 $('#search-box').select2('val', '');
-                // alert(myData); //example: title=test&desc=something&_token=jhadskljhfaksjhfjksadhkfjh (just made up the token for the example)
                 $.ajax({
                     type: "post",
                     headers: {
@@ -217,6 +216,7 @@
             socket.on('updateUsers', function(data){
                 //data = JSON.parse(data);
                 console.log(data);
+                console.log(members);
                 $("#logged_users").empty();
 
                 for(var key in members) {
