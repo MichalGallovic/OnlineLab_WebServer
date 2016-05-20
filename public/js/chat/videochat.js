@@ -1,8 +1,8 @@
 /**
  * Created by matej-work on 19.04.2016.
  */
-var serverIP = "http://localhost:3000";
-//var serverIP = "http://iolab.sk:3013";
+//var serverIP = "http://localhost:3000";
+var serverIP = "http://iolab.sk:3013";
 
 // RTCPeerConnection Options
 var server = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]};

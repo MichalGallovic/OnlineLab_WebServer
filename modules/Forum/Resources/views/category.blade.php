@@ -14,9 +14,11 @@
         <div class="panel-heading">
             <div class="clearfix">
                 <h3 class="panel-title pull-left">{!! $category->title !!}</h3>
-                {!! Form::open(['method' => 'DELETE', 'route'=>['forum.delete.category', $category->id]]) !!}
-                {!! Form::submit('Delete', ['class' => 'btn btn-danger btn-xs pull-right']) !!}
-                {!! Form::close() !!}
+                @if(Auth::user()->user->isAdmin())
+                    {!! Form::open(['method' => 'DELETE', 'route'=>['forum.delete.category', $category->id]]) !!}
+                    {!! Form::submit('Delete', ['class' => 'btn btn-danger btn-xs pull-right']) !!}
+                    {!! Form::close() !!}
+                @endif
                 <a href="{!! URL::route('forum.new.thread', $category->id) !!}" class="btn btn-success btn-xs pull-right">New Thread</a>
             </div>
         </div>

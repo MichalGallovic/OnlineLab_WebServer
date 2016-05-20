@@ -60,7 +60,7 @@ class ForumController extends Controller {
 
 	public function thread($id){
 		$thread = ForumThread::find($id);
-		$comments = ForumComment::where('thread_id', $id)->paginate(10);
+		$comments = ForumComment::where('thread_id', $id)->with('user')->paginate(10);
 		if($thread == null){
 			return redirect()->route('forum.index')->with('fail', "That thread does not exist.");
 		}

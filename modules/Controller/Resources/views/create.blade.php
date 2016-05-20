@@ -4,9 +4,9 @@
 
     <div class="navbar">
         <ul class=" nav nav-pills col-sm-offset-1">
-            <li role="presentation" {{$enviroment=='matlab' ? 'class=active' : ''}}><a href="{{route('controller.create','matlab')}}">Matlab</a></li>
-            <li role="presentation" {{$enviroment=='openmodelica' ? 'class=active' : ''}}><a href="{{route('controller.create','openmodelica')}}">Openmodelica</a></li>
-            <li role="presentation" {{$enviroment=='scilab' ? 'class=active' : ''}}><a href="{{route('controller.create','scilab')}}">Scilab</a></li>
+            @foreach($softwares as $software)
+                <li role="presentation" {{$enviroment==$software ? 'class=active' : ''}}><a href="{{route('controller.create',$software)}}">{{$software}}</a></li>
+            @endforeach
         </ul>
     </div>
     {!! Form::open(['method' => 'POST','route'=>'controller.store', 'class' => 'form-horizontal', 'id' => 'controllerForm', 'files'=>true]) !!}
@@ -99,7 +99,8 @@
             });
 
             $("#variables .form-group").each(function(){
-                text += "\t"+$(this).find("select[name = variableType]").first().val()
+                text += "\tUdaqOut cIn\n\tUdaqIn cOut;\n"
+                        +"\t"+$(this).find("select[name = variableType]").first().val()
                         + " "
                         + $(this).find("input[name = variableTitle]").first().val()
                         + ";\n";

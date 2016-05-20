@@ -4,9 +4,9 @@
     {!! Form::model($user,['method' => 'PATCH','route'=>'profile.update', 'class' => 'form-horizontal', 'files' => true]) !!}
     <div class="col-md-2">
         <div class="profile-picture-frame" style=" padding: 15px; min-height: 200px">
-            @if($user->avatar)
-                {!! Html::image('images/profile/' . $user->id, '', ['class' => 'center-block']) !!}
-            @endif
+
+                {!! Html::image('images/profile/' . $user->id, 'Generic placeholder image', ['class' => 'center-block']) !!}
+
         </div>
         <div class="form-group">
             <div class="col-sm-12">
@@ -28,47 +28,51 @@
             </div>
         </div>
         <div class="form-group">
-            {!! Form::label('name', 'Meno:', ['class' => 'col-sm-1 control-label']) !!}
+            {!! Form::label('name', 'Name:', ['class' => 'col-sm-1 control-label']) !!}
             <div class="col-sm-11">
                 {!! Form::text('name',null,['class'=>'form-control']) !!}
             </div>
         </div>
         <div class="form-group">
-            {!! Form::label('surname', 'Priezvisko:', ['class' => 'col-sm-1 control-label']) !!}
+            {!! Form::label('surname', 'Surname:', ['class' => 'col-sm-1 control-label']) !!}
             <div class="col-sm-11">
                 {!! Form::text('surname',null,['class'=>'form-control']) !!}
             </div>
         </div>
         <div class="form-group">
-            {!! Form::label('language_code', 'Jazyk:', ['class' => 'col-sm-1 control-label']) !!}
+            {!! Form::label('language_code', 'Language:', ['class' => 'col-sm-1 control-label']) !!}
             <div class="col-sm-11">
                 {!! Form::select('language_code', array('sk' => 'Slovenský', 'en' => 'English'), null,  ['class'=>'form-control']) !!}
             </div>
         </div>
 
         <div class="form-group">
-            {!! Form::label('password', 'Heslo:', ['class' => 'col-sm-1 control-label']) !!}
+            {!! Form::label('password', 'Password:', ['class' => 'col-sm-1 control-label']) !!}
             <div class="col-sm-11">
                 {!! Form::password('password',['class'=>'form-control']) !!}
             </div>
         </div>
 
         <div class="form-group">
-            {!! Form::label('password_confirmation', 'Potvrdenie hesla:', ['class' => 'col-sm-1 control-label']) !!}
+            {!! Form::label('password_confirmation', 'Confirm password:', ['class' => 'col-sm-1 control-label']) !!}
             <div class="col-sm-11">
                 {!! Form::password('password_confirmation',['class'=>'form-control']) !!}
             </div>
         </div>
 
         <div class="form-group">
-            <h4 class="col-sm-offset-1">Na ktorú e-mailovú adresu chcete dostávať notifikácie?</h4>
+            <h4 class="col-sm-offset-1 col-sm-6">I want to recieve notifications on theese e-mail addresses:</h4>
             @foreach($user->accounts as $account)
-                <div class="checkbox col-sm-offset-2">
-                    {!! Form::checkbox('account[]', $account->id, $account->notify, ['id' => 'checkbox-'.$account->id]) !!}
-                    {!! Form::label('checkbox-'.$account->id, $account->email, ['class' => 'control-label']) !!}
+                <div class="checkbox col-sm-offset-1 col-sm-6">
+                    <label>
+                        {!! Form::checkbox('account[]', $account->id, $account->notify, ['id' => 'checkbox-'.$account->id]) !!}
+                        {{$account->email}}
+                    </label>
                 </div>
+
             @endforeach
         </div>
+
 
         <div class="form-group">
             <div class="col-sm-10">
@@ -95,7 +99,7 @@
             <hr>
         @else
             <div class="form-group">
-                <a href="#" class="btn btn-info" data-toggle="modal" data-target="#ldap_form">Connect with IS STU</a>
+                <a href="#" class="btn btn-default" data-toggle="modal" data-target="#ldap_form">Connect account with IS STU</a>
             </div>
 
             <div class="modal fade" id="ldap_form" tabindex="-1" role="dialog" aria-hidden="true">
@@ -140,7 +144,7 @@
         @endif
         @if (!$user->hasAccount('facebook'))
             <div class="form-group">
-                <a class="btn btn-info" href="provider/facebook" role="button">Connect account with Facebook</a>
+                <a class="btn btn-social btn-facebook" href="provider/facebook" role="button"><span class="fa fa-facebook"></span>Connect account with Facebook</a>
             </div>
         @else
             <h4>Facebook account</h4>
@@ -162,7 +166,7 @@
         @endif
         @if (!$user->hasAccount('google'))
             <div class="form-group">
-                <a class="btn btn-info" href="provider/google" role="button">Connect account with Google</a>
+                <a class="btn btn-social btn-google" href="provider/google" role="button"><span class="fa fa-google"></span>Connect account with Google</a>
             </div>
         @else
             <h4>Google account</h4>
@@ -176,7 +180,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-offset-1 col-sm-10">
+                <div class="col-sm-10">
                     {!! Form::submit('Delete account', ['class' => 'btn btn-danger']) !!}
                 </div>
             </div>

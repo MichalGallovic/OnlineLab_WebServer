@@ -29,11 +29,11 @@
 						<td>{!! $user->language_code !!}</td>
 						<td>{{ $user->role }}</td>
 						<td>{{ $user->created_at }}</td>
-						<td class="col-md-1"><a href="{{url('users',$user->id)}}" class="btn btn-primary">Show</a></td>
-						<td class="col-md-1"><a href="{{route('users.edit',$user->id)}}" class="btn btn-warning">Update</a></td>
+						<td class="col-md-1"><a href="{{url('users',$user->id)}}" class="btn btn-primary btn-block"><span class="glyphicon glyphicon-search"></span> Show</a></td>
+						<td class="col-md-1"><a href="{{route('users.edit',$user->id)}}" class="btn btn-warning btn-block"><span class="glyphicon glyphicon-edit"></span> Update</a></td>
 						<td class="col-md-1">
 							{!! Form::open(['method' => 'DELETE', 'route'=>['users.destroy', $user->id]]) !!}
-							{!! Form::submit('Delete', ['class' => 'btn btn-danger']) !!}
+							{!! Form::button('<span class="glyphicon glyphicon-remove"></span> Delete', ['class' => 'btn btn-danger btn-block', 'type'=>'submit']) !!}
 							{!! Form::close() !!}
 						</td>
 					</tr>

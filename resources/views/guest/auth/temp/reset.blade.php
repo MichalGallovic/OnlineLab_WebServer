@@ -1,4 +1,4 @@
-@extends('app')
+@extends('guest.layouts.default')
 
 @section('content')
 <div class="container-fluid">

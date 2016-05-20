@@ -28,7 +28,7 @@
 						<input type="hidden" name="_token" value="{{ csrf_token() }}">
 
 						<div class="form-group">
-							<label class="col-md-4 control-label">E-Mail Address</label>
+							<label class="col-md-4 control-label">E-Mail Address / AIS username</label>
 							<div class="col-md-6">
 								<input type="text" class="form-control" name="email" value="{{ old('email') }}">
 							</div>
@@ -53,7 +53,7 @@
 
 						<div class="form-group">
 							<div class="col-md-6 col-md-offset-4">
-								<button name="local" type="submit" class="btn btn-info">Login</button>
+								<button name="local" type="submit" class="btn btn-primary">Login</button>
 
 
 								<a class="btn btn-link" href="{{ url('/auth/register') }}">Register</a>
@@ -62,8 +62,9 @@
 
 						<div class="form-group">
 							<div class="col-md-6 col-md-offset-4">
-								<a class="btn btn-primary" href="provider/facebook" role="button">Login with Facebook</a>
-								<a class="btn btn-danger" href="provider/google" role="button">Login with Google</a>
+
+								<a class="btn btn-social btn-facebook" href="provider/facebook" role="button"><span class="fa fa-facebook"></span>Sign in with Facebook</a>
+								<a class="btn btn-social btn-google" href="provider/google" role="button"><span class="fa fa-google"></span>Sign in with Google</a>
 							</div>
 						</div>
 
@@ -80,48 +81,53 @@
 		</div>
 	</div>
 	<div class="row">
-		<div class="col-md-10 col-md-offset-1">
-			<div id="map" style="height: 700px"></div>
+		<div class="col-md-6 col-md-offset-3">
+			<div id="map"></div>
 		</div>
+
 	</div>
 </div>
 @endsection
 
+@section("page_css")
+	@parent
+	<link href="{{ asset('css/bootstrap-social.css') }}" rel="stylesheet" type="text/css" />
+	<link href="{{ asset('css/font-awesome.min.css') }}" rel="stylesheet" type="text/css" />
+@endsection
+
 @section("page_js")
 	@parent
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 	<script>
-		var map, heatmap;
 
-		function initMap() {
-			map = new google.maps.Map(document.getElementById('map'), {
-				zoom: 3,
-				center: {lat: 37.775, lng: 40.434},
-				mapTypeId: google.maps.MapTypeId.TERRAIN,
-				options:{
-					minZoom: 2,
-					maxZoom: 7
-				}
-			});
+		google.charts.load('current', {'packages':['geochart']});
+		google.charts.setOnLoadCallback(drawRegionsMap);
 
-			heatmap = new google.maps.visualization.HeatmapLayer({
-				data: getPoints(),
-				map: map
-			});
+		var countries = {!! json_encode($items) !!}
+		console.log(countries);
 
-			heatmap.set('radius', 20);
+		var map = [['Country code', 'Number of visits']];
+
+
+		for(var i in countries)
+			map.push([i, parseInt(countries [i])]);
+
+
+		console.log(map);
+
+		function drawRegionsMap() {
+
+			var data = google.visualization.arrayToDataTable(map);
+
+			var options = {
+				colorAxis: {colors: ['lightblue', 'blue']}
+			};
+
+			var chart = new google.visualization.GeoChart(document.getElementById('map'));
+
+			chart.draw(data, options);
 		}
 
-
-		function getPoints() {
-			var data = [];
-			@foreach($items as $item)
-				data.push(new google.maps.LatLng({{$item->location}}));
-			@endforeach
-					return data;
-		}
-
-	</script>
-	<script async defer
-			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDqYpSfHr483N-c9yzrqeZ3d56BRdqHq7M&libraries=visualization&callback=initMap">
 	</script>
 @endsection

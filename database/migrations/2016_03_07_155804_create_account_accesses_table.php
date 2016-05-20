@@ -18,6 +18,7 @@ class CreateAccountAccessesTable extends Migration
             $table->integer('account_id')->unsigned();
             $table->string('ip');
             $table->string('os');
+            $table->string('country');
             $table->timestamp('created_at')->useCurrent();
 
             $table->foreign('account_id')
