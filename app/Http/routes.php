@@ -55,7 +55,7 @@ Route::post('auth/register', 'Auth\AuthController@postRegister');
 Route::get('password/email', 'Auth\PasswordController@getEmail');
 Route::post('password/email', 'Auth\PasswordController@postEmail');
 Route::get('password/reset/{token}', 'Auth\PasswordController@getReset');
-Route::post('password/reset', 'Auth/PasswordController@postReset');
+Route::post('password/reset', 'Auth\PasswordController@postReset');
 
 // 3rd party authentication
 Route::get('auth/provider/{provider}/', 'Auth\AuthController@redirectToProvider');
@@ -84,7 +84,23 @@ Route::group(['as'  =>  'user::', 'middleware'  =>  'auth'], function() {
             $constraint->upsize();
         });
         return $img->response();
-        //return Response::download($filepath);
+    });
+
+    Route::get('images/thumb/{userID}', function($userID)
+    {
+        if(\App\User::find($userID)->avatar){
+            $filepath = storage_path() . '/user_uploads/'.$userID.'/' . \App\User::find($userID)->avatar;
+        }else{
+            $filepath = public_path() . '/pictures/default-avatar.png';
+        }
+
+        $img = Image::make($filepath);
+
+        $img->fit(100, 100, function ($constraint) {
+            $constraint->aspectRatio();
+            $constraint->upsize();
+        });
+        return $img->response();
     });
 });
 

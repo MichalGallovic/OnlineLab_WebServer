@@ -3,7 +3,8 @@
 use Illuminate\Database\Eloquent\Model;
 
 class Schema extends Model {
-    protected $fillable = ['title', 'type', 'filename', 'image' , 'software'];
+
+    protected $fillable = ['title', 'type', 'filename', 'image' , 'software', 'note'];
     protected $with = ['regulators'];
 
     public function regulators() {

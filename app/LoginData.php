@@ -35,7 +35,7 @@ class LoginData extends Model
         return parent::newQuery($excludeDeleted)->addSelect('*',DB::raw($raw));
     }
 
-    protected $fillable = ['account_id', 'ip', 'os', 'created_at'];
+    protected $fillable = ['account_id', 'ip', 'os', 'created_at', 'location', 'country'];
 
     public function account() {
         return $this->belongsTo('App\Account','account_id');

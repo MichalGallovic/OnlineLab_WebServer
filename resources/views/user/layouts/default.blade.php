@@ -15,6 +15,8 @@
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
     <link href="{{ asset('css/jquery-ui-custom.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('css/bootstrap-social.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('css/font-awesome.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('css/select2-bootstrap.css') }}" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" type="text/css" href="{{ asset('css/helpers.css') }}">
@@ -52,56 +54,59 @@
 <div class="breaker"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js" type="text/javascript"></script>
 <script type="text/javascript" src="{{ asset('js/jquery.js') }}"></script>
-
-<script type="text/javascript" src="{{ asset('js/select2.full.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/default.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/bootstrap.min.js') }}"></script>
 
 <script type="text/javascript">
-    // var socket = io.connect('{{env('SOCKETIO_ADDRESS')}}');
 
-    // $(function () {
-    //     $('[data-toggle="popover"]').popover();
-    // })
+     var socket = io.connect('{{env('SOCKETIO_ADDRESS')}}');
 
-    // $('body').on('click', function (e) {
-    //     $('[data-toggle=popover]').each(function () {
-    //         // hide any open popovers when the anywhere else in the body is clicked
-    //         if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
-    //             $(this).popover('hide');
-    //         }
-    //     });
-    // });
 
-    // $('#notifications').on('click', function(){
-    //     $('#notifications_count').text('');
-    // });
+     $(function () {
+         $('[data-toggle="popover"]').popover();
+     })
 
-    // function myNotify(data) {
-    //     console.log(data);
-    //     var count = parseInt($('#notifications_count').text());
-    //     if(count){
-    //         $('#notifications_count').text(++count);
-    //     }else{
-    //         $('#notifications_count').text(1);
-    //     }
-    //     if($('#notifications').data('bs.popover')) {
-    //         if($('#notifications').data('bs.popover').options.content.length>0){
-    //             var temp = $('#notifications').data('bs.popover').options.content;
-    //             temp += '<hr>' + data;
-    //             $('#notifications').data('bs.popover').options.html = true;
-    //             $('#notifications').data('bs.popover').options.content = temp;
-    //         }else {
-    //             $('#notifications').data('bs.popover').options.html = true;
-    //             $('#notifications').data('bs.popover').options.content = data;
-    //         }
-    //     }
-    //     $('#notifications').popover('show');
-    // }
+     $('body').on('click', function (e) {
+         $('[data-toggle=popover]').each(function () {
+             // hide any open popovers when the anywhere else in the body is clicked
+             if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+                 $(this).popover('hide');
+             }
+         });
+     });
 
-    // socket.on('notification-channel:App\\Events\\MemberAdded{{Auth::user()->user->id}}', myNotify);
+     $('#notifications').on('click', function(){
+         $('#notifications_count').text('');
+     });
+
+
+
+     function myNotify(data) {
+         console.log(data);
+         var count = parseInt($('#notifications_count').text());
+         if(count){
+             $('#notifications_count').text(++count);
+         }else{
+             $('#notifications_count').text(1);
+         }
+         if($('#notifications').data('bs.popover')) {
+             if($('#notifications').data('bs.popover').options.content.length>0){
+                 var temp = $('#notifications').data('bs.popover').options.content;
+                 temp += '<hr>' + data;
+                 $('#notifications').data('bs.popover').options.html = true;
+                 $('#notifications').data('bs.popover').options.content = temp;
+             }else {
+                 $('#notifications').data('bs.popover').options.html = true;
+                 $('#notifications').data('bs.popover').options.content = data;
+             }
+         }
+         $('#notifications').popover('show');
+     }
+
+   socket.on('notification-channel:App\\Events\\MemberAdded{{Auth::user()->user->id}}', myNotify);
 
     @foreach(Auth::user()->user->threads as $thread)
-        // socket.on('notification-channel:App\\Events\\CommentAdded{{$thread->id}}', myNotify);
+        socket.on('notification-channel:App\\Events\\CommentAdded{{$thread->id}}', myNotify);
     @endforeach
     var Laravel = {
         user: {

@@ -19,10 +19,10 @@
 
 	<div class="row">
 		<div class="col-lg-6" id="chartdiv" style="height: 300px">
-
+			<canvas id="barchart"></canvas>
 		</div>
 		<div class="col-lg-6">
-			<div id="my_favorite_latin_words" class="center-block" style="height: 350px;"></div>
+			<div id="tag-cloud" class="center-block" style="height: 350px;"></div>
 		</div>
 	</div>
 
@@ -54,9 +54,9 @@
 		//AmCharts.themes.none={};
 		var word_list = {!! json_encode($tagCloud) !!};
 		$(function() {
-			$("#my_favorite_latin_words").jQCloud(word_list, {shape: "rectangular"});
+			$("#tag-cloud").jQCloud(word_list, {shape: "rectangular"});
 		});
-
+/*
 		var chart = AmCharts.makeChart("chartdiv", {
 			"theme": "none",
 			"type": "serial",
@@ -255,7 +255,50 @@
 				"tickPosition": "start"
 			}
 		});
+*/
 
+		var experiments = {!! json_encode($experiments) !!};
+
+		var exp = [];
+		var devLab = [];
+
+		experiments.forEach(function(experiment){
+			exp.push(experiment.total);
+			devLab.push(experiment.device);
+		});
+
+
+		console.log(exp);
+		var barData = {
+			labels: devLab,
+			datasets: [
+				{
+					label: "{{trans("statistics::default.STATISTICS_EXPERIMENTS")}}",
+					backgroundColor: "rgba(255,99,132,0.2)",
+					borderColor: "rgba(255,99,132,1)",
+					borderWidth: 1,
+					hoverBackgroundColor: "rgba(255,99,132,0.4)",
+					hoverBorderColor: "rgba(255,99,132,1)",
+					data: exp,
+				}
+			]
+		};
+
+		var ctx = $("#barchart");
+
+		var myBarChart = new Chart(ctx, {
+			type: 'bar',
+			data: barData,
+			options: {
+				scales: {
+					yAxes: [{
+						ticks: {
+							beginAtZero:true
+						}
+					}]
+				}
+			}
+		});
 
 
 		var pieData = {
@@ -264,14 +307,16 @@
 				{
 					data: {!! json_encode($accountData) !!},
 					backgroundColor: [
-						"#FF6384",
-						"#36A2EB",
-						"#FFCE56"
+						"#4BC0C0",
+						"#F44336",
+						"#3B5998",
+						"#831135"
 					],
 					hoverBackgroundColor: [
-						"#FF6384",
-						"#36A2EB",
-						"#FFCE56"
+						"#4BC0C0",
+						"#F44336",
+						"#3B5998",
+						"#831135"
 					]
 				}]
 		};
@@ -292,7 +337,7 @@
 			labels: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"],
 			datasets: [
 				{
-					label: "Počet prihlásení",
+					label: "{!! trans("statistics::default.STATISTICS_TRAFFIC") !!}",
 
 					// Boolean - if true fill the area under the line
 					fill: false,
@@ -382,7 +427,11 @@
 			map = new google.maps.Map(document.getElementById('map'), {
 				zoom: 3,
 				center: {lat: 37.775, lng: 40.434},
-				mapTypeId: google.maps.MapTypeId.TERRAIN
+				mapTypeId: google.maps.MapTypeId.TERRAIN,
+				options:{
+					minZoom: 2,
+					maxZoom: 6
+				}
 			});
 
 			heatmap = new google.maps.visualization.HeatmapLayer({

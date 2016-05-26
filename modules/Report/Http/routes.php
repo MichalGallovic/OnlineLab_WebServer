@@ -1,6 +1,6 @@
 <?php
 
-Route::group(['prefix' => 'report', 'namespace' => 'Modules\Report\Http\Controllers'], function()
+Route::group(['prefix' => 'report', 'namespace' => 'Modules\Report\Http\Controllers', 'middleware' => 'auth'], function()
 {
 	Route::get('/', ['as' => 'report.index', 'uses' => 'ReportController@index']);
 	Route::get('{id}', ['as' => 'report.show', 'uses' => 'ReportController@show']);

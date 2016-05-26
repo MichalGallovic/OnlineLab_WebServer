@@ -70,9 +70,9 @@ class ReservationService
 		$this->checkCollisionsFor($start, $end, $physicalDevice, $reservation);
 		$this->isAfterNow($start, $end);
 
-		if($this->user->role == 'admin') return;
-		
-		$this->lastsLessThanLimit($start, $end);
+		if($this->user->role != 'admin') {
+			$this->lastsLessThanLimit($start, $end);
+		}
 
 		$reservation->update([
 				"physical_device_id" => $physicalDevice->id,

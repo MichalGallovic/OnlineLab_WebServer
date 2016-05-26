@@ -10,7 +10,7 @@ return [
     'EMAIL_NOEXIST_MESSAGE' =>  'The entered email is not in our database.',
 
     //left panel
-    'DASHBOARD' =>  'Dashboard',
+    'DASHBOARD' =>  'Ovládací panel',
     'DASHBOARD_HOME'    =>  'Home',
     'DASHBOARD_LAYOUT'  =>  'Dashboard settings',
     'PRESONAL_SETTINGS' =>   'Personal settings',

@@ -23,9 +23,9 @@ class OlmMigrateRefresh extends Command
 
     protected $modulesToSeed = [
         "Experiments",
-        "Report",
+        // "Report",
         // 'Reservation',
-        'Controller'
+        // 'Controller'
     ];
 
     /**
@@ -45,16 +45,13 @@ class OlmMigrateRefresh extends Command
      */
     public function handle()
     {
-        $moduleNames = array_keys(Module::getOrdered());
-        $reversedNames = array_reverse($moduleNames);
+        $this->call("module:migrate-reset", ["module" => "Reservation"]);
+        $this->call("module:migrate-reset", ["module" => "Report"]);
+        $this->call("module:migrate-reset", ["module" => "Forum"]);
+        $this->call("module:migrate-reset", ["module" => "Chat"]);
+        $this->call("module:migrate-reset", ["module" => "Controller"]);
+        $this->call("module:migrate-reset", ["module" => "Experiments"]);
 
-        // Since order of migrations depend on the order of moodules
-        // we reverse the order of ordered module keys
-        // in order to reset migrations in decending
-        // order
-        foreach ($reversedNames as $name) {
-            $this->call("module:migrate-reset", ["module" => $name]);
-        }
         $this->call("migrate:refresh");
 
         $this->call("module:migrate", ["module" => "Experiments"]);

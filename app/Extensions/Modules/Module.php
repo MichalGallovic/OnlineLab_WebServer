@@ -65,8 +65,9 @@ class Module extends \Pingpong\Modules\Module
     {
         $path = "modules/" . $this->getLowerName() . "/images/icon/" . $this->iconName();
 
-        if(!File::exists($path))
+        if(!File::exists($path)) {
             return "pictures/icon/default.png";
+        }
 
         return $path;
     }

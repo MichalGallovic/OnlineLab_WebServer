@@ -10,7 +10,7 @@ return [
     'EMAIL_NOEXIST_MESSAGE' =>  'Zadaný email sa nenachádza v našej databáze.',
 
     //left panel
-    'DASHBOARD' =>  'Pracovná plocha',
+    'DASHBOARD' =>  'Control panel',
     'DASHBOARD_HOME'    =>  'Hlavná stránka',
     'DASHBOARD_LAYOUT'  =>  'Nastavenie pracovnej plochy',
     'PRESONAL_SETTINGS' =>   'Osobné nastavenia',
