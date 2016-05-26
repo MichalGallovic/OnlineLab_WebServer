@@ -1,19 +1,19 @@
 @extends('user.layouts.default')
 
 @section('content')
-    <h1>New thread</h1>
+    <h1>{{trans("forum::default.FORUM_THREAD_NEW")}}</h1>
 
     {!! Form::open(array('method' => 'post', 'route' => ['forum.store.thread', $category_id])) !!}
     <div class="form-group">
-        {!! Form::label('title', 'Title:') !!}
+        {!! Form::label('title', trans("forum::default.FORUM_THREAD_TITLE").':') !!}
         {!! Form::text('title', '', array('class' => 'form-control', 'id' => 'title')) !!}
     </div>
     <div class="form-group">
-        {!! Form::label('body', 'Body:') !!}
+        {!! Form::label('body', trans("forum::default.FORUM_THREAD_BODY").':') !!}
         {!! Form::textarea('body', '', array('class' => 'form-control', 'id' => 'body')) !!}
     </div>
 
     {!! Form::token() !!}
-    {!! Form::submit('Save thread', array('class' => 'btn btn-primary')) !!}
+    {!! Form::submit(trans("forum::default.FORUM_THREAD_SAVE"), array('class' => 'btn btn-primary')) !!}
     {!! Form::close() !!}
 @stop

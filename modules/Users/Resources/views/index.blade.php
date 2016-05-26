@@ -10,11 +10,11 @@
 			<table class="table table-hover">
 				<thead>
 				<tr>
-					<th>Id.</th>
-					<th>Full name</th>
-					<th>Language</th>
-					<th>Role</th>
-					<th>Registration Date</th>
+					<th>{{trans("users::default.USR_ID")}}</th>
+					<th>{{trans("users::default.USR_NAME_FULL")}}</th>
+					<th>{{trans("users::default.USR_LANGUAGE")}}</th>
+					<th>{{trans("users::default.USR_ROLE")}}</th>
+					<th>{{trans("users::default.USR_REGISTRATION_DATE")}}</th>
 					<th></th>
 					<th></th>
 					<th></th>
@@ -29,11 +29,11 @@
 						<td>{!! $user->language_code !!}</td>
 						<td>{{ $user->role }}</td>
 						<td>{{ $user->created_at }}</td>
-						<td class="col-md-1"><a href="{{url('users',$user->id)}}" class="btn btn-primary btn-block"><span class="glyphicon glyphicon-search"></span> Show</a></td>
-						<td class="col-md-1"><a href="{{route('users.edit',$user->id)}}" class="btn btn-warning btn-block"><span class="glyphicon glyphicon-edit"></span> Update</a></td>
+						<td class="col-md-1"><a href="{{url('users',$user->id)}}" class="btn btn-primary btn-block"><span class="glyphicon glyphicon-search"></span> {{trans("users::default.USR_SHOW")}}</a></td>
+						<td class="col-md-1"><a href="{{route('users.edit',$user->id)}}" class="btn btn-warning btn-block"><span class="glyphicon glyphicon-edit"></span> {{trans("users::default.USR_EDIT")}}</a></td>
 						<td class="col-md-1">
 							{!! Form::open(['method' => 'DELETE', 'route'=>['users.destroy', $user->id]]) !!}
-							{!! Form::button('<span class="glyphicon glyphicon-remove"></span> Delete', ['class' => 'btn btn-danger btn-block', 'type'=>'submit']) !!}
+							{!! Form::button('<span class="glyphicon glyphicon-remove"></span> '.trans("users::default.USR_DELETE"), ['class' => 'btn btn-danger btn-block', 'type'=>'submit']) !!}
 							{!! Form::close() !!}
 						</td>
 					</tr>
@@ -42,11 +42,11 @@
 				</tbody>
 				<tfoot>
 				<tr>
-					<th>Id.</th>
-					<th>Full name</th>
-					<th>Language</th>
-					<th>Role</th>
-					<th>Registration Date</th>
+					<th>{{trans("users::default.USR_ID")}}</th>
+					<th>{{trans("users::default.USR_NAME_FULL")}}</th>
+					<th>{{trans("users::default.USR_LANGUAGE")}}</th>
+					<th>{{trans("users::default.USR_ROLE")}}</th>
+					<th>{{trans("users::default.USR_REGISTRATION_DATE")}}</th>
 					<th></th>
 					<th></th>
 					<th></th>

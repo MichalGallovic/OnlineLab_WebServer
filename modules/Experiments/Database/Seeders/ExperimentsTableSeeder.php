@@ -75,7 +75,8 @@ class ExperimentsTableSeeder extends Seeder {
 		]);
 
 		Software::create([
-			"name" => "openloop"
+			"name" => "openloop",
+			"hasRegulators" => false
 		]);
 		Software::create([
 			"name" => "matlab"

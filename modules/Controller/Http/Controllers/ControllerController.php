@@ -128,6 +128,9 @@ class ControllerController extends Controller {
 			$regulator->user_id = Auth::user()->user->id;
 			$regulator->schema_id = $request->schema_id;
 			$regulator->body = $request->body ? $request->body : null;
+			if($request->openmodelica_final){
+				$regulator->body = $request->openmodelica_final;
+			}
 			$regulator->filename = $request->filename ? $request->file('filename')->getClientOriginalName() : null;
 			if(!Auth::user()->user->isAdmin() && $request->type == 'public'){
 				$regulator->type = "public_pending";
