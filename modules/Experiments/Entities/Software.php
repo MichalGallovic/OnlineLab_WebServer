@@ -5,10 +5,10 @@ use Modules\Experiments\Entities\Experiment;
 
 class Software extends Model {
 
-    protected $fillable = ["name"];
+    protected $fillable = ["name", "hasExperiments"];
 
     public function experiments() {
-    	return $this->belongsToMany(Experiment::class);
+    	return $this->hasMany(Experiment::class);
     }
 
 }

@@ -8,7 +8,7 @@
                 @if($messages->count()>15)
                     <div id="old-messages-div" class="row">
                         <div class="col-md-4 col-md-offset-5">
-                            <a id="old-messages" href="#">load older messages</a>
+                            <a id="old-messages" href="#">{{trans("chat::default.CHAT_MESSAGES_OLD")}}</a>
                         </div>
                     </div>
                 @endif
@@ -31,10 +31,10 @@
             </div>
             <div class="panel-footer">
                 <div class="input-group">
-                    <input id="chat_text" type="text" class="form-control" placeholder="Enter message">
+                    <input id="chat_text" type="text" class="form-control" placeholder="{{trans("chat::default.CHAT_MESSAGE")}}">
 					<span class="input-group-btn">
 						<button id="chat_send" class="btn btn-primary">
-                            Send
+                            {{trans("chat::default.CHAT_SEND")}}
                         </button>
 					</span>
                 </div>
@@ -45,7 +45,7 @@
     <div class="col-md-3">
         <div class="panel panel-default ">
             <div class="panel-heading">
-                <span>Chatroom members</span>
+                <span>{{trans("chat::default.CHAT_MEMBERS")}}</span>
             </div>
             <div class="panel-body">
                 <ul id="logged_users" class="list-group">
@@ -70,7 +70,7 @@
         @if(Auth::user()->user->chatrooms->count()>1)
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <span>Other chatrooms</span>
+                    <span>{{trans("chat::default.CHAT_OTHER")}}</span>
                 </div>
                 <div class="panel-body">
                     <div id="other-chatrooms" class="list-group">

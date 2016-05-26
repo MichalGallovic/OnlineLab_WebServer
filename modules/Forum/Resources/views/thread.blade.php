@@ -3,13 +3,13 @@
 @section('content')
     <div class="clearfix">
         <ol class="breadcrumb pull-left">
-            <li><a href="{!! route('forum.index') !!}">Forums</a></li>
+            <li><a href="{!! route('forum.index') !!}">{{trans("forum::default.FORUM_GROUPS")}}</a></li>
             <li><a href="{!! route('forum.category', $thread->category->id) !!}">{!! $thread->category->title !!}</a></li>
             <li class="active">{{$thread->title}}</li>
         </ol>
         @if(Auth::check() && Auth::user()->user->isAdmin())
         {!! Form::open(['method' => 'DELETE', 'route'=>['forum.delete.thread', $thread->id]]) !!}
-        {!! Form::submit('Delete', ['class' => 'btn btn-danger pull-right']) !!}
+        {!! Form::submit(trans("forum::default.FORUM_DELETE"), ['class' => 'btn btn-danger pull-right']) !!}
         {!! Form::close() !!}
         @endif
     </div>
@@ -45,7 +45,7 @@
                     <p style="margin-top: 10px">{!! nl2br($comment->body) !!}</p>
                     @if(Auth::check() && Auth::user()->user->isAdmin() || Auth::user()->user->id==$comment->user->id)
                         {!! Form::open(['method' => 'DELETE', 'route'=>['forum.delete.comment', $comment->id], 'class' => 'pull-right']) !!}
-                        {!! Form::submit('Delete', ['class' => 'btn btn-danger']) !!}
+                        {!! Form::submit(trans("forum::default.FORUM_DELETE"), ['class' => 'btn btn-danger']) !!}
                         {!! Form::close() !!}
                     @endif
                 </div>
@@ -60,12 +60,12 @@
 
     {!! Form::open(array('method' => 'post', 'route' => ['forum.store.comment', $thread->id])) !!}
     <div class="form-group">
-        {!! Form::label('body', 'Body:') !!}
+        {!! Form::label('body', trans("forum::default.FORUM_COMMENT_BODY").':') !!}
         {!! Form::textarea('body', '', array('class' => 'form-control', 'id' => 'body')) !!}
     </div>
 
     {!! Form::token() !!}
-    {!! Form::submit('Save comment', array('class' => 'btn btn-primary')) !!}
+    {!! Form::submit(trans("forum::default.FORUM_COMMENT_SAVE"), array('class' => 'btn btn-primary')) !!}
     {!! Form::close() !!}
 
 @stop

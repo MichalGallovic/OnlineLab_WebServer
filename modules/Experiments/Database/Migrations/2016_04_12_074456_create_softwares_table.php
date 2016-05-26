@@ -16,6 +16,7 @@ class CreateSoftwaresTable extends Migration {
         {
             $table->increments('id');
             $table->string('name')->unique();
+            $table->boolean('hasRegulators')->default(true);
             $table->timestamps();
         });
     }

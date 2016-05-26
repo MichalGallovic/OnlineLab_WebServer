@@ -1,4 +1,6 @@
 <?php
 return [
-    'name' => 'Štatistika'
+    'name' => 'Štatistika',
+    "STATISTICS_TRAFFIC"    =>  "Počet prihlásení",
+    "STATISTICS_EXPERIMENTS"    =>  "Počet experimentov"
 ];

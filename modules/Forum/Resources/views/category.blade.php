@@ -16,10 +16,10 @@
                 <h3 class="panel-title pull-left">{!! $category->title !!}</h3>
                 @if(Auth::user()->user->isAdmin())
                     {!! Form::open(['method' => 'DELETE', 'route'=>['forum.delete.category', $category->id]]) !!}
-                    {!! Form::submit('Delete', ['class' => 'btn btn-danger btn-xs pull-right']) !!}
+                    {!! Form::submit(trans("forum::default.FORUM_DELETE"), ['class' => 'btn btn-danger btn-xs pull-right']) !!}
                     {!! Form::close() !!}
                 @endif
-                <a href="{!! URL::route('forum.new.thread', $category->id) !!}" class="btn btn-success btn-xs pull-right">New Thread</a>
+                <a href="{!! URL::route('forum.new.thread', $category->id) !!}" class="btn btn-success btn-xs pull-right">{{trans("forum::default.FORUM_THREAD_NEW")}}</a>
             </div>
         </div>
         <div class="panel-body breaker">
@@ -46,7 +46,7 @@
                     <div class="modal-body">
                         {!! Form::open(array('id' => 'target_form', 'method' => 'post', 'route' => 'forum.store.group')) !!}
                         <div class="form-group {!! ($errors->has('group_name')) ? 'has-error' : '' !!}">
-                            <label for="group_name">Group Name:</label>
+                            <label for="group_name">{{trans("forum::default.FORUM_GROUP_TITLE")}}:</label>
                             <input type="text" id="group_name" name="group_name" class="form-control">
                             @if($errors->has('group_name'))
                                 <p>{!! $errors->first('group_name') !!}</p>
@@ -56,8 +56,8 @@
                         {!! Form::close() !!}
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" data-dismiss="modal" id="form_submit">Save</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">{{trans("forum::default.FORUM_CLOSE")}}</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" id="form_submit">{{trans("forum::default.FORUM_SAVE")}}</button>
                     </div>
                 </div>
             </div>

@@ -13,9 +13,9 @@
     @include('controller::partials.form')
     @if($enviroment=='openmodelica')
         <div class="form-group text-div" {!! ($schema->type != trans("controller::default.CTRL_SCHEMA_TEXT")) ? 'style="display: none"' : ''!!}>
-            {!! Form::label('openmodelica-final', 'Final regulator', ['class' => 'control-label col-md-2']) !!}
+            {!! Form::label('openmodelica_final', 'Final regulator', ['class' => 'control-label col-md-2']) !!}
             <div class="col-sm-10">
-                {!! Form::textarea("openmodelica-final",
+                {!! Form::textarea("openmodelica_final",
                     "model\nequation\n\nend ;",
                     ['class' => 'form-control', 'readonly', 'style' => 'font-family:consolas'])
                 !!}
@@ -93,26 +93,27 @@
                         + $(this).find("select[name = parameterType]").first().val()
                         + " "
                         + $(this).find("input[name = parameterTitle]").first().val()
-                        + "="
+                        + "= "
                         + $(this).find("input[name = parameterValue]").first().val()
                         + ";\n";
             });
 
+            text += "\tUdaqOut cIn;\n\tUdaqIn cOut;\n";
             $("#variables .form-group").each(function(){
-                text += "\tUdaqOut cIn\n\tUdaqIn cOut;\n"
-                        +"\t"+$(this).find("select[name = variableType]").first().val()
+                text += "\t"+$(this).find("select[name = variableType]").first().val()
                         + " "
                         + $(this).find("input[name = variableTitle]").first().val()
                         + ";\n";
             });
             text += "equation\n" + $("#controllerForm textarea[name = body]").first().val()
                     + "\nend " + $("#controllerForm input[name = title]").first().val() + ";";
-            $("#openmodelica-final").val(text);
+            $("#openmodelica_final").val(text);
         }
 
         $(function() {
 
             $( ".keyup-refresh" ).keyup(refreshController);
+            $( ".keyup-refresh" ).change(refreshController);
         });
 
         $(".addParameterButton").click(function(){
@@ -203,7 +204,8 @@
                             'class': 'form-control',
                             'name': 'parameterTitle',
                             'placeholder': "Názov",
-                            'keyup': refreshController
+                            'keyup': refreshController,
+                            'change': refreshController,
                         }
                     )
                 )
@@ -218,7 +220,8 @@
                             'class': 'col-sm-2 form-control',
                             'name': 'parameterValue',
                             'placeholder': "Hodnota",
-                            'keyup': refreshController
+                            'keyup': refreshController,
+                            'change': refreshController,
                         }
                     )
                 )
@@ -334,7 +337,8 @@
                                 'class': 'form-control',
                                 'placeholder': "Názov",
                                 'name': "variableTitle",
-                                'keyup': refreshController
+                                'keyup': refreshController,
+                                'change': refreshController
                             }
                         )
                     )
