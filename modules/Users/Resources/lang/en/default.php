@@ -1,11 +1,30 @@
 <?php
 
 return [
+    "name" => "User Settings",
     "USR_LOGIN"    =>  "User login",
-    "USR_NAME"    =>  "Name and surname",
+    "USR_NAME"    =>  "Name",
+    "USR_SURNAME"    =>  "Surname",
+    "USR_NAME_FULL"    =>  "Full name",
     "USR_MAIL"    =>  "E-mail",
     "USR_ROLE"    =>  "Role",
+    "USR_USER"    =>  "User",
+    "USR_ADMIN"    =>  "Administrator",
     "USR_SETTINGS_TITLE"    =>  "Edit user",
-    "USR_TRASH_TITLE"    =>  "Delete user",
+    "USR_ID"    =>  "Id",
+    "USR_LANGUAGE"    =>  "Language",
+    "USR_REGISTRATION_DATE"    =>  "Registration date",
+    "USR_SHOW"    =>  "Show",
+    "USR_EDIT"    =>  "Edit",
+    "USR_DELETE"    =>  "Delete",
+    "USR_EDITED_DATE"    =>  "Last edited",
+    "USR_LOGIN_DATE"    =>  "Last login",
+    "USR_LOGIN_NO"    =>  "No login",
+    "USR_THREADS_NUMBER"    =>  "Number of threads",
+    "USR_COMMENTS_NUMBER"    =>  "Number of comments",
+    "USR_BACK"    =>  "Back",
+    "USR_UPDATE"    =>  "Update",
+    "USR_FACEBOOK"    =>  "Registered with Facebook",
+    "USR_GOOGLE"    =>  "Registered with Google",
     "NO_USRS"    =>  "No users"
 ];

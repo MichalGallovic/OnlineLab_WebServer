@@ -3,7 +3,7 @@
 		<div class="panel-heading" role="tab" id="headingQueue">
 			<h4 class="panel-title">
 			<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseQueue" aria-expanded="false" aria-controls="collapseQueue">
-				<h3>Dávkové experimenty</h3>
+				<h3>{!! trans('dashboard.queue') !!}</h3>
 			</a>
 			</h4>
 		</div>

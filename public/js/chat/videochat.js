@@ -1,8 +1,8 @@
 /**
  * Created by matej-work on 19.04.2016.
  */
-var serverIP = "http://localhost:3000";
-//var serverIP = "http://iolab.sk:3013";
+//var serverIP = "http://localhost:3000";
+var serverIP = "http://iolab.sk:3013";
 
 // RTCPeerConnection Options
 var server = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]};
@@ -11,67 +11,11 @@ var server = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]};
 
 var localPeerConnection, signallingServer;
 
-var btnSend = document.getElementById('btn-send');
-var btnVideoStop = document.getElementById('btn-video-stop');
-var btnVideoStart = document.getElementById('btn-video-start');
-var btnVideoJoin = document.getElementById('btn-video-join');
 var localVideo = document.getElementById('local-video');
 var remoteVideo = document.getElementById('remote-video');
 
-var inputRoomName = document.getElementById('room-name');
 
 var localStream, localIsCaller;
-
-btnVideoStop.onclick = function(e) {
-    e.preventDefault();
-    // stop video stream
-    if (localStream != null) {
-        localStream.getVideoTracks()[0].stop();
-    }
-
-    // kill all connections
-    if (localPeerConnection != null) {
-        localPeerConnection.removeStream(localStream);
-        localPeerConnection.close();
-        signallingServer.close();
-        localVideo.src = "";
-        remoteVideo.src = "";
-    }
-
-    btnVideoStart.disabled = false;
-    btnVideoJoin.disabled = false;
-    btnVideoStop.disabled = true;
-}
-
-btnVideoStart.onclick = function(e) {
-    e.preventDefault();
-    // is starting the call
-    localIsCaller = true;
-    initConnection();
-}
-
-btnVideoJoin.onclick = function(e) {
-    e.preventDefault();
-    // just joining a call, not offering
-    localIsCaller = false;
-    initConnection();
-}
-
-function initConnection() {
-    var room = inputRoomName.value;
-
-    if (room == undefined || room.length <= 0) {
-        alert('Please enter room name');
-        return;
-    }
-
-    // start connection!
-    connect(room);
-
-    btnVideoStart.disabled = true;
-    btnVideoJoin.disabled = true;
-    btnVideoStop.disabled = false;
-}
 
 
 // WEBRTC STUFF STARTS HERE
@@ -211,3 +155,54 @@ function trace(text) {
 function logError(err) {
     console.log(err.toString(), err);
 }
+
+/*
+ function initConnection() {
+ var room = inputRoomName.value;
+
+ if (room == undefined || room.length <= 0) {
+ alert('Please enter room name');
+ return;
+ }
+
+ // start connection!
+ connect(room);
+
+ }
+
+ btnVideoStop.onclick = function(e) {
+ e.preventDefault();
+ // stop video stream
+ if (localStream != null) {
+ localStream.getVideoTracks()[0].stop();
+ }
+
+ // kill all connections
+ if (localPeerConnection != null) {
+ localPeerConnection.removeStream(localStream);
+ localPeerConnection.close();
+ signallingServer.close();
+ localVideo.src = "";
+ remoteVideo.src = "";
+ }
+
+ btnVideoStart.disabled = false;
+ btnVideoJoin.disabled = false;
+ btnVideoStop.disabled = true;
+ }
+
+ btnVideoStart.onclick = function(e) {
+ e.preventDefault();
+ // is starting the call
+ localIsCaller = true;
+ initConnection();
+ }
+
+ btnVideoJoin.onclick = function(e) {
+ e.preventDefault();
+ // just joining a call, not offering
+ localIsCaller = false;
+ initConnection();
+ }
+
+ */

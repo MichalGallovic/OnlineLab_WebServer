@@ -6,7 +6,7 @@
 	@if(!$reservations->isEmpty())
 	<div class="row">
 		<div class="col-lg-12">
-			<h4>Realtime experiment</h4>
+			<h4>{!! trans('dashboard.realtime') !!}</h4>
 		</div>
 		@include('user.partials.realtimeExperiments')
 	</div>

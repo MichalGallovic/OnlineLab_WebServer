@@ -8,7 +8,7 @@
                 @if($messages->count()>15)
                     <div id="old-messages-div" class="row">
                         <div class="col-md-4 col-md-offset-5">
-                            <a id="old-messages" href="#">load older messages</a>
+                            <a id="old-messages" href="#">{{trans("chat::default.CHAT_MESSAGES_OLD")}}</a>
                         </div>
                     </div>
                 @endif
@@ -17,7 +17,7 @@
                     @foreach ($messages->slice(-15) as $message)
                         <li class="media">
                             <div class="media-left media-middle">
-                                {!! Html::image('images/profile/' . $message->user->id, 'Generic placeholder image', ['class' => 'media-object','style' => 'max-height: 30px; max-width: 30px']) !!}
+                                {!! Html::image('images/thumb/' . $message->user->id, 'Generic placeholder image', ['class' => 'media-object img-rounded','style' => 'max-height: 30px; max-width: 30px']) !!}
                             </div>
                             <div class="media-body">
                                 <p>{{$message->body}}</p>
@@ -31,10 +31,10 @@
             </div>
             <div class="panel-footer">
                 <div class="input-group">
-                    <input id="chat_text" type="text" class="form-control" placeholder="Enter message">
+                    <input id="chat_text" type="text" class="form-control" placeholder="{{trans("chat::default.CHAT_MESSAGE")}}">
 					<span class="input-group-btn">
 						<button id="chat_send" class="btn btn-primary">
-                            Send
+                            {{trans("chat::default.CHAT_SEND")}}
                         </button>
 					</span>
                 </div>
@@ -45,7 +45,7 @@
     <div class="col-md-3">
         <div class="panel panel-default ">
             <div class="panel-heading">
-                <span>Chatroom members</span>
+                <span>{{trans("chat::default.CHAT_MEMBERS")}}</span>
             </div>
             <div class="panel-body">
                 <ul id="logged_users" class="list-group">
@@ -54,7 +54,7 @@
             <div class="panel-footer">
                 <div class="input-group select2-bootstrap-append">
                     <meta name="csrf-token" content="{{ csrf_token() }}">
-                    <select id="search-box" class="form-control"></select>
+                    <select id="search-box" class="form-control" multiple></select>
                     <span class="input-group-btn">
                         <button id="addUser" class="btn btn-default" type="button"><span class="glyphicon glyphicon-plus" style="color:green"></span></button>
                     </span>
@@ -70,7 +70,7 @@
         @if(Auth::user()->user->chatrooms->count()>1)
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <span>Other chatrooms</span>
+                    <span>{{trans("chat::default.CHAT_OTHER")}}</span>
                 </div>
                 <div class="panel-body">
                     <div id="other-chatrooms" class="list-group">
@@ -88,11 +88,12 @@
 
 @stop
 @section('page_js')
+    <script type="text/javascript" src="{{ asset('js/chat/select2.full.min.js') }}"></script>
     <script type="text/javascript">
         //var socket = io.connect();
         $(document).ready(function(){
 
-            @if($openChatroomJoin)
+            @if($publicChatroomJoin)
                 socket.emit('addMember', {user_id: {{$user_id}}, user_name: "{{$user_name}}"});
             @endif
             var members = {!!json_encode($members)!!};
@@ -118,10 +119,10 @@
                             class: "media-left media-middle"
                         }).append(
                             $("<img>", {
-                                class: "media-object",
+                                class: "media-object img-rounded",
                                 height: "30px",
                                 alt: "Generic placeholder image",
-                                src: ROOT_PATH+"images/profile/"+messages[0].user.id
+                                src: ROOT_PATH+"images/thumb/"+messages[0].user.id
                             })
                         )
                     ).append(
@@ -149,27 +150,19 @@
             $("#search-box").select2({
                 width: "100%",
                 ajax: {
-                    type: "POST",
                     url: "findUsers",
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
                     dataType: "JSON",
                     delay: 250,
                     data: function (params) {
                        return {
                            q: params.term, // search term
-                           page: params.page,
                            chatroom: {{$room->id}}
                        };
                     },
                     processResults: function (data, params) {
                         params.page = params.page || 1;
                         return {
-                            results: data.items,
-                            pagination: {
-                                more: (params.page * 30) < data.total_count
-                            }
+                            results: data.items
                         };
                     },
                     cache: true
@@ -188,7 +181,6 @@
             $(' #addUser ').click(function(e) {
                 var myData = $('#search-box').val();
                 $('#search-box').select2('val', '');
-                // alert(myData); //example: title=test&desc=something&_token=jhadskljhfaksjhfjksadhkfjh (just made up the token for the example)
                 $.ajax({
                     type: "post",
                     headers: {
@@ -224,6 +216,7 @@
             socket.on('updateUsers', function(data){
                 //data = JSON.parse(data);
                 console.log(data);
+                console.log(members);
                 $("#logged_users").empty();
 
                 for(var key in members) {
@@ -231,9 +224,11 @@
                         id: 'user_id_'+key,
                         class: "list-group-item",
                         text: $('<div/>').html(members[key]).text()
-                    }).append($('<span>', {
-                        class: "label label-as-badge pull-right "+(data[key] ? "label-success" : "label-default"),
-                        text: " "
+                    }).append($('<i>', {
+                        class: "fa fa-circle pull-right",
+                        css: {
+                            color: (data[key] ? "green" : "grey")
+                        }
                     })));
                 }
             });
@@ -246,10 +241,10 @@
                         class: "media-left media-middle",
                     }).append(
                         $("<img>", {
-                            class: "media-object",
+                            class: "media-object img-rounded",
                             height: "30px",
                             alt: "Generic placeholder image",
-                            src: ROOT_PATH+"images/profile/"+user_id
+                            src: ROOT_PATH+"images/thumb/"+user_id
                         })
                     )
                 ).append($("<div>", {

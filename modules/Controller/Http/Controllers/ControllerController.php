@@ -18,10 +18,10 @@ class ControllerController extends Controller {
 		$publicRegulators = Regulator::where('type','public')->get();
 		$pendingRegulators = Regulator::where('type','public_pending')->get();
 		$schemas = Schema::with('experiment.software')->get();
-		$softwares = Software::lists('name', 'id');
+		$softwares = Software::where("hasRegulators", true)->lists('name', 'id');
 
-		$experiments = Experiment::with('device')->whereHas('software', function($q){
-			$q->where('name', 'matlab');
+		$experiments = Experiment::with('device')->whereHas('software', function($q) use ($softwares){
+			$q->where('name', $softwares ? $softwares->first() : '');
 		})->join('devices', 'devices.id', '=', 'experiments.device_id')->lists('name', 'experiments.id');
 
 		return view('controller::index', compact('myRegulators', 'publicRegulators', 'pendingRegulators', 'schemas', 'experiments', 'softwares'));
@@ -33,7 +33,7 @@ class ControllerController extends Controller {
 	}
 
 	public function edit($id) {
-		$schemas = Schema::lists('title', 'id');
+		$schemas = Schema::whereNotIn('type', Auth::user()->user->isAdmin() ? [''] : ['none'])->lists('title', 'id');
 		$regulator=Regulator::find($id);
 		$schema = $regulator->schema;
 		return view('controller::edit',compact('regulator', 'schemas', 'schema'));
@@ -65,25 +65,40 @@ class ControllerController extends Controller {
 		}
 	}
 
-	public function create($enviroment){
+	public function create($enviroment=null){
 
-		$schemas = Schema::whereHas('experiment', function($query) use ($enviroment){
-			$query->whereHas('software', function($q) use ($enviroment){
-				$q->where('name', $enviroment);
+		$softwares = Software::whereHas('experiments', function($query){
+			$query->whereHas('schemas', function($query){
+				if(!Auth::user()->user->isAdmin()){
+					$query->where("type", "!=", "none");
+				}
 			});
-		})->lists('title', 'id');
+		})->lists('name');
 
-		if(count($schemas)>0){
-			$schema = Schema::whereHas('experiment', function($query) use ($enviroment){
+		if($softwares->count()>0){
+			if(!$enviroment){
+				$enviroment = $softwares->first();
+			}
+			$schemas = Schema::whereHas('experiment', function($query) use ($enviroment){
 				$query->whereHas('software', function($q) use ($enviroment){
 					$q->where('name', $enviroment);
 				});
-			})->first();
-			return view('controller::create', compact('enviroment', 'schemas', 'schema'));
-		}else{
-			return view('controller::error', compact('enviroment'));
+			})->whereNotIn('type', Auth::user()->user->isAdmin() ? [''] : ['none'])->lists('title', 'id');
+
+			if(count($schemas)>0){
+				$schema = Schema::whereHas('experiment', function($query) use ($enviroment){
+					$query->whereHas('software', function($q) use ($enviroment){
+						$q->where('name', $enviroment);
+					});
+				})->whereNotIn('type', Auth::user()->user->isAdmin() ? [''] : ['none'])->first();
+				return view('controller::create', compact('enviroment', 'softwares', 'schemas', 'schema'));
+			}else{
+				return view('controller::error', compact('enviroment'));
+			}
 		}
 
+		$enviroment = 'error';
+		return view('controller::error', compact('enviroment'));
 
 	}
 
@@ -115,8 +130,15 @@ class ControllerController extends Controller {
 			$regulator->user_id = Auth::user()->user->id;
 			$regulator->schema_id = $request->schema_id;
 			$regulator->body = $request->body ? $request->body : null;
+			if($request->openmodelica_final){
+				$regulator->body = $request->openmodelica_final;
+			}
 			$regulator->filename = $request->filename ? $request->file('filename')->getClientOriginalName() : null;
-			$regulator->type = $request->type;
+			if(!Auth::user()->user->isAdmin() && $request->type == 'public'){
+				$regulator->type = "public_pending";
+			}else{
+				$regulator->type = $request->type;
+			}
 			if($regulator->save()) {
 				$path = storage_path().'/user_uploads/'.$regulator->user->id.'/regulators/'.$regulator->id.'/';
 				if($schemaType == 'text'){

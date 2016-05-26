@@ -24,7 +24,7 @@ class MemberAdded extends Event implements ShouldBroadcast
         $this->chatroomName = $chatroomName;
         $this->chatroomId = $chatroomId;
         $this->video = $video;
-        $this->body = $addedByName. ' invited you to '.($video ? "video " : "").' chatroom: <a href="'.url(($video ? "chat/video" : "chat"), [$chatroomId]).'">' .$chatroomName. '</a> ';
+        $this->body = $addedByName.($video ?  trans("controller::default.CHAT_VIDEO_NOTIFICATION") : trans("controller::default.CHAT_NOTIFICATION")).' <a href="'.url(($video ? "chat/video" : "chat"), [$chatroomId]).'">' .$chatroomName. '</a> ';
     }
 
     /**

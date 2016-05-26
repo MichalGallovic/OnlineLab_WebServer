@@ -24,7 +24,7 @@
         <div id="dahsboard_user_info">
             <div class="left">
                 <span>{{ trans('default.LOGGED_AS') }}</span>
-                <span class="logged_user"> <a href="#" title="Profil užívateľa">{{ Auth::user()->user->name }}</a></span>
+                <span class="logged_user"> <a href="#" title="Profil užívateľa">{{ Auth::user()->user->getFullName() }}</a></span>
             </div>
             <div class="right">
                 <a class="logout" href="{{ url('auth/logout') }}" title="{!! trans('auth.logout') !!}"></a>

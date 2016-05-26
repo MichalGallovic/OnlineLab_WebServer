@@ -56,16 +56,16 @@
         </div>
     </div>
 
-    <div class=" form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-            <div class="profile-picture-frame " style=" padding: 15px; min-height: 200px">
-                @if($schema->image)
+    @if($schema->image)
+        <div class=" form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <div class="profile-picture-frame " style=" padding: 15px; min-height: 200px">
                     {!! Html::image('controller/schema/image/' . $schema->id, '', ['class' => 'center-block', 'style' => 'max-width:100%;']) !!}
-                @endif
+                </div>
             </div>
-        </div>
 
-    </div>
+        </div>
+    @endif
 
 
     <div class="form-group {!! ($errors->has('image')) ? 'has-error' : '' !!} ">
@@ -78,12 +78,24 @@
         </div>
     </div>
 
+    <div class="form-group {!! ($errors->has('note')) ? 'has-error' : '' !!}">
+        {!! Form::label("note", trans("controller::default.CTRL_SCHEMA_NOTE"), ['class' => 'col-sm-2 control-label']) !!}
+        <div class="col-sm-10">
+            {!! Form::textarea('note', $schema->note, ['class' => 'form-control']) !!}
+        </div>
+        @if($errors->has('note'))
+            <p>{!! $errors->first('note') !!}</p>
+        @endif
+    </div>
+
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
             <a href="{{ url('controller')}}" class="btn btn-default">{{trans('controller::default.BACK_TO_CONTROLLERS')}}</a>
             {!! Form::submit(trans('controller::default.CTRL_SAVE'), ['class' => 'btn btn-primary']) !!}
         </div>
     </div>
+
+
     {!! Form::close() !!}
 @stop
 

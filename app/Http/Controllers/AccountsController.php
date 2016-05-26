@@ -24,15 +24,12 @@ class AccountsController extends Controller
 
     public function getFirstLogin()
     {
-        return redirect()->route('user::dashboard');
+        return redirect()->route('profile.settings');
     }
 
     public function sendVerifMail(/*Request $request*/){
 
         $account = Account::where('email', Input::get('otherEmail'))->first();
-
-        var_dump( Auth::user()->confirmation_code);
-
 
         if($account){
 
@@ -68,9 +65,7 @@ class AccountsController extends Controller
         $account->save();
         $tempUser->forceDelete();
 
-//        Flash::message('You have successfully verified your account.');
-//        Session::flash('message', 'You have successfully verified your account.');
-        Redirect::to('/')->with('message', 'success|Record updated.');
+        return redirect()->route('user::dashboard')->with('success', 'Your accounts were succesfully linked.');
     }
 
 }

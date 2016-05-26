@@ -7,12 +7,15 @@
 	@foreach($groups as $group)
 		<div class="panel panel-primary">
 			<div class="panel-heading">
+
 				<div class="clearfix">
 					<h3 class="panel-title pull-left">{!! $group->title !!}</h3>
-					<a href="#" id="add-category-{!! $group->id  !!}" class="btn btn-success btn-xs pull-right new_category" data-toggle="modal" data-target="#category_modal_{!! $group->id !!}">New category</a>
+					@if(Auth::user()->user->isAdmin())
+					<a href="#" id="add-category-{!! $group->id  !!}" class="btn btn-success btn-xs pull-right new_category" data-toggle="modal" data-target="#category_modal_{!! $group->id !!}">{{trans("forum::default.FORUM_CATEGORY_NEW")}}</a>
 					{!! Form::open(['method' => 'DELETE', 'route'=>['forum.delete.group', $group->id]]) !!}
-					{!! Form::submit('Delete', ['class' => 'btn btn-danger btn-xs pull-right']) !!}
+					{!! Form::submit(trans("forum::default.FORUM_DELETE"), ['class' => 'btn btn-danger btn-xs pull-right']) !!}
 					{!! Form::close() !!}
+					@endif
 				</div>
 			</div>
 			<div class="panel-body breaker">
@@ -32,12 +35,12 @@
 							<span aria-hidden="true"&times;></span>
 							<span class="sr-only">Close</span>
 						</button>
-						<h4 class="modal-title">New Category</h4>
+						<h4 class="modal-title">{{trans("forum::default.FORUM_CATEGORY_NEW")}}</h4>
 					</div>
 					<div class="modal-body">
 						{!! Form::open(array('id' => 'category_form_'.$group->id, 'method' => 'post', 'route' => array('forum.store.category', $group->id))) !!}
 						<div class="form-group {!! ($errors->has('category_name')) ? 'has-error' : '' !!}">
-							<label for="category_name">Category Name:</label>
+							<label for="category_name">{{trans("forum::default.FORUM_CATEGORY_TITLE")}}</label>
 							<input type="text" id="category_name" name="category_name" class="form-control">
 							@if($errors->has('category_name'))
 								<p>{!! $errors->first('category_name') !!}</p>
@@ -47,8 +50,8 @@
 						{!! Form::close() !!}
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						{!! Form::submit('Save', array('form' => 'category_form_'.$group->id, 'class' => 'btn btn-primary')) !!}
+						<button type="button" class="btn btn-default" data-dismiss="modal">{{trans("forum::default.FORUM_CLOSE")}}</button>
+						{!! Form::submit(trans("forum::default.FORUM_SAVE"), array('form' => 'category_form_'.$group->id, 'class' => 'btn btn-primary')) !!}
 						<!--<button type="button" form="category_form_{!! $group->id !!}" class="btn btn-primary" data-dismiss="modal" id="category_submit">Save</button>-->
 					</div>
 				</div>
@@ -65,12 +68,12 @@
 							<span aria-hidden="true"&times;></span>
 							<span class="sr-only">Close</span>
 						</button>
-						<h4 class="modal-title">New Group</h4>
+						<h4 class="modal-title">{{trans("forum::default.FORUM_GROUP_NEW")}}</h4>
 					</div>
 					<div class="modal-body">
 						{!! Form::open(array('id' => 'target_form', 'method' => 'post', 'route' => 'forum.store.group')) !!}
 							<div class="form-group {!! ($errors->has('group_name')) ? 'has-error' : '' !!}">
-								<label for="group_name">Group Name:</label>
+								<label for="group_name">{{trans("forum::default.FORUM_GROUP_TITLE")}}:</label>
 								<input type="text" id="group_name" name="group_name" class="form-control">
 								@if($errors->has('group_name'))
 									<p>{!! $errors->first('group_name') !!}</p>
@@ -80,8 +83,8 @@
 						{!! Form::close() !!}
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						{!! Form::submit('Save', array('form' => 'target_form', 'class' => 'btn btn-primary')) !!}
+						<button type="button" class="btn btn-default" data-dismiss="modal">{{trans("forum::default.FORUM_CLOSE")}}</button>
+						{!! Form::submit(trans("forum::default.FORUM_SAVE"), array('form' => 'target_form', 'class' => 'btn btn-primary')) !!}
 					</div>
 				</div>
 			</div>
@@ -90,7 +93,7 @@
 
 	@if(Auth::check() && Auth::user()->user->isAdmin())
 		<div>
-			<a href="#" class="btn btn-default" data-toggle="modal" data-target="#group_form">Add group</a>
+			<a href="#" class="btn btn-default" data-toggle="modal" data-target="#group_form">{{trans("forum::default.FORUM_GROUP_NEW")}}</a>
 		</div>
 	@endif
 
