@@ -4,7 +4,13 @@
 			:status="status"
 			:description="description"
 			:series="series"
+			v-if="selected.device != 'led_cube'"
 		></olm-graph>
+		<olm-webcam
+		:ip="selectedExperiment.server_ip"
+		v-else
+		>
+		</olm-webcam>
 	</div>
 		<div class="col-lg-4">
 			<form class="form" v-on:submit.prevent="runExperiment">
