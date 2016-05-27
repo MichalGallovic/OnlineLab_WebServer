@@ -62,7 +62,7 @@
 					</span>
 				</div>
 				<div class="col-xs-12" v-if="type == 'textarea'">
-					<textarea v-model="input" class="form-control" rows="3" placeholder="@{{ placeholder }}"></textarea>
+					<textarea v-model="input" class="form-control" rows="3" placeholder="@{{ placeholder }}">@{{ placeholder }}</textarea>
 				</div>
 				<div class="col-xs-6" v-if="type == 'select'">
 					<select class="form-control" name="@{{ name }}" v-model="input" v-if="!meaning">
