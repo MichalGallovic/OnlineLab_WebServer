@@ -18,7 +18,8 @@
 					</select>
 				</div>
 				<div class="btn-group btn-group-justified">
-					<div class="btn-group">
+					<div class="btn-group" 
+					v-if="!(selectedExperiment.experiment_commands.length == 1 && selectedExperiment.experiment_commands[0] == 'change')">
 						<button type="button" class="btn btn-default" v-on:click="showExperiment"
 						v-bind:class="{'btn-primary': mode == 'experiment'}">Experiment</button>
 					</div>

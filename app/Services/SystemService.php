@@ -40,7 +40,7 @@ class SystemService
 
 	public function updateAvailability()
 	{
-		$this->servers = Server::withTrashed()->get();
+		$this->servers = Server::all();
 		$this->system = new System($this->servers->lists('ip')->toArray());
 
 		$servers = $this->system->getServers();
@@ -84,7 +84,7 @@ class SystemService
 	{
 		// Syncing physical devices
 		$rtPhysicalDevices = $this->system->devices();
-
+		dd($rtPhysicalDevices);
 		$availablePhysicalDevices = new Collection();
 		foreach($rtPhysicalDevices as $rtDevice) {
 			$physicalDevice = PhysicalDevice::withTrashed()->whereHas('device', function($q) use ($rtDevice) {

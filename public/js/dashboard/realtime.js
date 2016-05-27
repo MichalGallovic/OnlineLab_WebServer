@@ -297,12 +297,22 @@
 
 	    			me.selectedExperiment = me.experiments[0]
 	    			me.filteredCommands = me.selectedExperiment.experiment_commands;
+
+
 				}).then(this.initWebSockets);
 			},
 			parseServers: function() {
 				this.servers = Laravel.Reservations.map(function(reservation) {
 					return reservation.physical_device.server;
 				});
+			},
+			pickMode: function() {
+				var commands = this.selectedExperiment.experiment_commands;
+				if(commands.length == 1 && commands[0] == 'change') {
+					this.showChange();
+				} else {
+					this.showExperiment();
+				}
 			},
 			initWebSockets: function() {
 				var me = this;
@@ -553,8 +563,7 @@
 	                this.selectedExperiment.commands = selectedExperiment.commands;
 	                this.selectedExperiment.experiment_commands = selectedExperiment.experiment_commands;
 	                this.filteredCommands = this.selectedExperiment.experiment_commands;
-	                this.showExperiment();
-
+	                this.pickMode();
 		        },
 		        deep: true
 		    }
