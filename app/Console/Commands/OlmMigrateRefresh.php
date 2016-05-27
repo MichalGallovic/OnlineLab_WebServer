@@ -22,7 +22,7 @@ class OlmMigrateRefresh extends Command
     protected $description = 'Refresh all migrations';
 
     protected $modulesToSeed = [
-        "Experiments",
+        // "Experiments",
         // "Report",
         // 'Reservation',
         // 'Controller'
