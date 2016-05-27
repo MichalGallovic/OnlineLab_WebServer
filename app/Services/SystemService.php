@@ -84,7 +84,7 @@ class SystemService
 	{
 		// Syncing physical devices
 		$rtPhysicalDevices = $this->system->devices();
-		dd($rtPhysicalDevices);
+
 		$availablePhysicalDevices = new Collection();
 		foreach($rtPhysicalDevices as $rtDevice) {
 			$physicalDevice = PhysicalDevice::withTrashed()->whereHas('device', function($q) use ($rtDevice) {
