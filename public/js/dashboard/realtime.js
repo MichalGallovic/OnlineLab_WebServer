@@ -1,5 +1,26 @@
 !(function($) {
 	Vue.config.devtools = true;
+		Vue.component('olm-webcam', {
+			template: "#webcam-template",
+			props: ["ip"],
+			ready: function() {
+				var mjpeg_img;
+				 var me = this;
+				function reload_img () {
+				  mjpeg_img.src = "http://" + me.ip + "/" + "cam_pic.php?time=" + new Date().getTime();
+				}
+				function error_img () {
+				  setTimeout("mjpeg_img.src = 'cam_pic.php?time=' + new Date().getTime();", 100);
+				}
+				function init() {
+				  mjpeg_img = document.getElementById("mjpeg_dest");
+				  mjpeg_img.onload = reload_img;
+				  mjpeg_img.onerror = error_img;
+				  reload_img();
+				}
+				init();
+			}
+		});
 	    Vue.component('olm-input',{
 	    	template: "#input-template",
 	    	props: {

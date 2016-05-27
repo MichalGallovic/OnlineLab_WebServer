@@ -29,6 +29,7 @@ class AvailableExperimentTransformer extends TransformerAbstract
 			"experiment_id"	=>	$experiment->id,
 			"device" 		=>	$experiment->device->name,
 			"software"	=>	$experiment->software->name,
+			"server_ip"	=>	$physicalExperiment->server->ip,
 			"physical_device"	=>	$physicalExperiment->physicalDevice->name,
 			"production"	=>	(boolean) $physicalExperiment->server->production
 		];

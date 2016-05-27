@@ -83,6 +83,11 @@
 			</div>
 		</div>
 	</template>
+	<template id="webcam-template">
+		<div id="narrow">
+           <img id="mjpeg_dest" />
+       </div>
+	</template>
 @endsection
 
 @section('page_css')
