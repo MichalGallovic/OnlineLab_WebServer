@@ -17,7 +17,7 @@ class CreateChatrooms extends Migration {
             $table->increments('id');
 			$table->string('title');
             $table->timestamps();
-            $table->enum('type', ['private', 'public_open', 'public_closed']);
+            $table->enum('type', ['private', 'public']);
 
         });
     }

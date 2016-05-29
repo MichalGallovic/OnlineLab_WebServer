@@ -25,7 +25,7 @@
 				@foreach ($users as $user)
 					<tr>
 						<td>{{ $user->id }}</td>
-						<td>{{ $user->name.' '.$user->lastName }}</td>
+						<td>{{ $user->getFullName() }}</td>
 						<td>{!! $user->language_code !!}</td>
 						<td>{{ $user->role }}</td>
 						<td>{{ $user->created_at }}</td>

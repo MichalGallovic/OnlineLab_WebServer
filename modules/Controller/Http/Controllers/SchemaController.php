@@ -96,7 +96,12 @@ class SchemaController extends Controller {
 		));
 
 		if ($validator->fails()) {
+			$experiments = Experiment::with('device')->whereHas('software', function($q) use ($request){
+				$q->where('id', $request->software);
+			})->join('devices', 'devices.id', '=', 'experiments.device_id')->lists('name', 'experiments.id');
+
 			return redirect()->route('controller.index')
+				->with('experimentsValid', $experiments)
 				->withInput()
 				->withErrors($validator)
 				->with('modal', '#upload-modal');

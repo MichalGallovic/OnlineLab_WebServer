@@ -61,6 +61,7 @@
 
      var socket = io.connect('{{env('SOCKETIO_ADDRESS')}}');
 
+     var ROOT_PATH = '{{env('ROOT_PATH')}}';
 
      $(function () {
          $('[data-toggle="popover"]').popover();

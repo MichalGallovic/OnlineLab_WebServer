@@ -45,6 +45,4 @@ return [
         'redirect' => 'http://iolab.sk:8013/auth/provider/facebook/callback',
 
     ],
-    //147.175.105.140
-
 ];

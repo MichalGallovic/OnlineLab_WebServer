@@ -262,13 +262,39 @@
 		var exp = [];
 		var devLab = [];
 
+		var devs = [];
+		var sets = [];
+
 		experiments.forEach(function(experiment){
+
+			if(devs[experiment.device]){
+				devs[experiment.device][experiment.software] = experiment.total;
+			}else{
+				devs[experiment.device] = [];
+				devs[experiment.device][experiment.software] = experiment.total;
+			}
+
 			exp.push(experiment.total);
 			devLab.push(experiment.device);
 		});
 
 
-		console.log(exp);
+		for (dev in devs) {
+			console.log(dev)
+			for (soft in devs[dev]) {
+				sets[soft] = [];
+				console.log(soft)
+			}
+		}
+/*
+		devs.forEach(function(dev){
+			dev.forEach(function (soft){
+				console.log(soft);
+			});
+		});
+*/
+
+		console.log(devs);
 		var barData = {
 			labels: devLab,
 			datasets: [
@@ -280,6 +306,16 @@
 					hoverBackgroundColor: "rgba(255,99,132,0.4)",
 					hoverBorderColor: "rgba(255,99,132,1)",
 					data: exp,
+				},
+				{
+					label: "My Second dataset",
+					backgroundColor: "rgba(179,181,198,0.2)",
+					borderColor: "rgba(179,181,198,1)",
+					borderWidth: 1,
+					pointBorderColor: "#fff",
+					hoverBackgroundColor: "rgba(179,181,198,0.2)",
+					hoverBorderColor: "rgba(179,181,198,1)",
+					data: [2, 4, 4, 1, 9]
 				}
 			]
 		};

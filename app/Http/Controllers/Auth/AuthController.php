@@ -148,7 +148,7 @@ class AuthController extends Controller
 
             $info = ldap_get_entries($ldapconn, $sr);
             ldap_close($ldapconn);
-            //return var_dump($info);
+            //return $info;
             $account =  Account::where('type', 'ldap')->whereIn('email', $info[0]['mail'])->first();
 
             if(!$account){
@@ -159,7 +159,7 @@ class AuthController extends Controller
 
                 $account = new Account;
                 $account->type = 'ldap';
-                $account->email = $info[0]['mail'][0];
+                $account->email = $credentials->email . '@stuba.sk';//$info[0]['mail'][0];
                 $account->confirmation_code = str_random(30);
                 $account->user()->associate($user);
                 $account->save();
@@ -281,6 +281,7 @@ class AuthController extends Controller
             $loginData->account()->associate($account);
             $loginData->setLocationAttribute($result['loc']);
             $loginData->ip = $ip;
+            $loginData->save();
         }
 
     }
