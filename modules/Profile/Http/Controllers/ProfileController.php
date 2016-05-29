@@ -143,7 +143,7 @@ class ProfileController extends Controller {
 
 					$account = new Account;
 					$account->type = 'ldap';
-					$account->email = $info[0]['mail'][0];
+					$account->email = $credentials['ldap_login'] . '@stuba.sk';;
 					$account->user()->associate(Auth::user()->user);
 					if($account->save()){
 						return redirect()->route('profile.settings')->with('success', 'The account was connected.');
