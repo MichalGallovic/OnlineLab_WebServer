@@ -36,6 +36,9 @@
             <div id="variables" class="col-md-6">
             </div>
         </div>
+        {!! Form::hidden("fileContent",'',['id' => 'fileContent'])!!}
+
+
     @endif
 
     <div class="form-group">
@@ -87,27 +90,44 @@
         @if($enviroment == 'openmodelica')
         function refreshController(){
 
-            var text = "model "+$("#controllerForm input[name = title]").first().val() + "\n";
+            var json = '{ "variables": "';
+
+            var text = "model"+$("#controllerForm input[name = title]").first().val() + "\n";
             $("#parameters .form-group").each(function(){
-                text += "\tParameter "
+                text += "\tparameter "
                         + $(this).find("select[name = parameterType]").first().val()
                         + " "
                         + $(this).find("input[name = parameterTitle]").first().val()
                         + "= "
                         + $(this).find("input[name = parameterValue]").first().val()
                         + ";\n";
+                json += "parameter "
+                        + $(this).find("select[name = parameterType]").first().val()
+                        + " "
+                        + $(this).find("input[name = parameterTitle]").first().val()
+                        + "= "
+                        + $(this).find("input[name = parameterValue]").first().val()+ "; ";
             });
 
-            text += "\tUdaqOut cIn;\n\tUdaqIn cOut;\n";
             $("#variables .form-group").each(function(){
                 text += "\t"+$(this).find("select[name = variableType]").first().val()
                         + " "
                         + $(this).find("input[name = variableTitle]").first().val()
                         + ";\n";
+                json += $(this).find("select[name = variableType]").first().val()
+                        + " "
+                        + $(this).find("input[name = variableTitle]").first().val()
+                        + "; ";
             });
+            json += '", "equation" : "';
             text += "equation\n" + $("#controllerForm textarea[name = body]").first().val()
                     + "\nend " + $("#controllerForm input[name = title]").first().val() + ";";
+            json += $("#controllerForm textarea[name = body]").first().val();
+
+            json += '"}';
+
             $("#openmodelica_final").val(text);
+            $("#fileContent").val(json);
         }
 
         $(function() {

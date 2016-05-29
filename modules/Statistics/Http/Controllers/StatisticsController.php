@@ -24,7 +24,7 @@ class StatisticsController extends Controller {
 			});
 
 		for($i=0; $i<24; $i++){
-			if($accesses[sprintf('%02d', $i)]){
+			if(isset($accesses[sprintf('%02d', $i)])){
 				$traffic[$i] = sizeof($accesses[sprintf('%02d', $i)]);
 			}else{
 				$traffic[$i] = 0;
@@ -85,21 +85,14 @@ class StatisticsController extends Controller {
 			->get();
 */
 
-/*		$experiments = Device::select('experiments.id as experiment', 'devices.name as device', 'softwares.name as enviroment', DB::raw('count(physical_experiment.id) as total')) //
+		$experiments = Device::select('devices.id as experiment', 'devices.name as device', 'softwares.name as software', 'softwares.id as softwareid', DB::raw('count(physical_experiment.id) as total')) //
 			->join('experiments', 'experiments.device_id', '=', 'devices.id')
-			->join('softwares', 'experiments.software_id', '=', 'softwares.id')
 			->join('physical_experiment', 'physical_experiment.experiment_id', '=', 'experiments.id')
+			->join('softwares', 'softwares.id', '=', 'experiments.software_id')
 			->groupby('devices.id', 'softwares.id')
 			->get();
-*/
-		$experiments = Device::select('experiments.id as experiment', 'devices.name as device', DB::raw('count(physical_experiment.id) as total')) //
-			->join('experiments', 'experiments.device_id', '=', 'devices.id')
-			->join('physical_experiment', 'physical_experiment.experiment_id', '=', 'experiments.id')
-			->groupby('devices.id')
-			->get();
 
-		//map
-
+		//return $experiments;
 
 
 		return view('statistics::index', compact('items', 'tagCloud', 'traffic', 'accountLabels', 'accountData', 'experiments'));

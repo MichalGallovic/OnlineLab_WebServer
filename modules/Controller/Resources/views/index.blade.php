@@ -9,7 +9,7 @@
 				<a href="{{route('controller.create')}}" class="btn btn-success btn-xs pull-right" >{{ trans("controller::default.NEW_CONTROLLER_TITLE") }}</a>
 			</div>
 		</div>
-		@include('controller::partials.panel', ['regulators' => $myRegulators])
+		@include('controller::partials.panel', ['regulators' => $myRegulators, 'public' => false])
 	</div>
 
 	<div class="panel panel-primary">
@@ -18,7 +18,7 @@
 				<h3 class="panel-title pull-left">{{trans("controller::default.CTRL_HEADING_PUBILC")}}</h3>
 			</div>
 		</div>
-		@include('controller::partials.panel', ['regulators' => $publicRegulators])
+		@include('controller::partials.panel', ['regulators' => $publicRegulators, 'public' => true])
 	</div>
 
 	@if(Auth::user()->user->isAdmin())
@@ -89,6 +89,7 @@
 			</table>
 		</div>
 	</div>
+	@endif
 
 	<div class="panel panel-primary">
 		<div class="panel-heading">
@@ -123,14 +124,28 @@
 						<td>{{ $schema->created_at }}</td>
 						<td>{{ $schema->experiment->software->name }}</td>
 						<td>{{ $schema->type }}</td>
-						<td></td>
-						<td><a href="{{route('controller.schema.download',$schema->id)}}" class="btn btn-sm btn-block btn-info"><span class="glyphicon glyphicon-save-file"></span> {{ trans("controller::default.CTRL_DOWNLOAD_FILE") }}</a></td>
-						<td><a href="{{route('controller.schema.edit',$schema->id)}}" class="btn btn-sm btn-block btn-warning"><span class="glyphicon glyphicon-edit"></span> {{ trans("controller::default.SETTINGS_TITLE") }}</a></td>
+
+						@if(Auth::user()->user->isAdmin())
+							<td><button class="btn btn-sm btn-block btn-primary" onclick="setImage({{$schema->id}})"><span class="glyphicon glyphicon-search"></span> Preview</button></td>
+						<td>
+							<a href="{{route('controller.schema.download',$schema->id)}}" class="btn btn-sm btn-block btn-info"><span class="glyphicon glyphicon-save-file"></span> {{ trans("controller::default.CTRL_DOWNLOAD_FILE") }}</a>
+						</td>
+						<td>
+							<a href="{{route('controller.schema.edit',$schema->id)}}" class="btn btn-sm btn-block btn-warning"><span class="glyphicon glyphicon-edit"></span> {{ trans("controller::default.SETTINGS_TITLE") }}</a>
+						</td>
 						<td class="col-md-1">
 							{!! Form::open(['method' => 'DELETE', 'route'=>['controller.schema.destroy', $schema->id]]) !!}
 							{!! Form::button('<span class="glyphicon glyphicon-remove"></span> '.trans("controller::default.TRASH_TITLE"), ['class' => 'btn btn-sm btn-block btn-danger', 'type'=>'submit']) !!}
 							{!! Form::close() !!}
 						</td>
+						@else
+							<td></td>
+							<td></td>
+							<td><button class="btn btn-sm btn-block btn-primary" onclick="setImage({{$schema->id}})"><span class="glyphicon glyphicon-search"></span> Preview</button></td>
+							<td>
+								<a href="{{route('controller.schema.download',$schema->id)}}" class="btn btn-sm btn-block btn-info"><span class="glyphicon glyphicon-save-file"></span> {{ trans("controller::default.CTRL_DOWNLOAD_FILE") }}</a>
+							</td>
+						@endif
 
 					</tr>
 				@endforeach
@@ -153,7 +168,7 @@
 			</table>
 		</div>
 	</div>
-	@endif
+
 
 	<div class="modal fade" id="upload-modal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog">
@@ -181,8 +196,16 @@
 
 					<div class="form-group">
 						{!! Form::label("experiment_id", trans("controller::default.LABEL_SYSTEM"), ['class' => 'control-label']) !!}
-						{!! Form::select("experiment_id", $experiments, null, ['class' => 'form-control', 'id' => 'experiment']) !!}
+						@if(Session::has('experimentsValid'))
+							{!! Form::select("experiment_id", Session::get('experimentsValid'), null, ['class' => 'form-control', 'id' => 'experiment']) !!}
+						@else
+							{!! Form::select("experiment_id", $experiments, null, ['class' => 'form-control', 'id' => 'experiment']) !!}
+						@endif
+
+
 					</div>
+
+
 
 					<div class="form-group">
 						{!! Form::label("type", trans("controller::default.CTRL_SCHEMA_TYPE"), ['class' => 'control-label']) !!}
@@ -219,6 +242,24 @@
 			</div>
 		</div>
 	</div>
+
+
+	<div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title" id="myModalLabel">Image preview</h4>
+				</div>
+				<div class="modal-body">
+					<img src="" id="imagepreview" class="center-block" style="max-width:100%; max-height: 100%;" >
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
 @stop
 
 
@@ -229,6 +270,18 @@
 			@if(Session::has('modal'))
 				$("{!! Session::get('modal') !!}").modal('show');
 			@endif
+
+			function setImage(id){
+				$('#imagepreview').attr('src', ROOT_PATH + "controller/schema/image/"+id); // here asign the image to the modal when the user click the enlarge link
+				$('#imagemodal').modal('show'); // imagemodal is the id attribute assigned to the bootstrap modal, then i use the show function
+			}
+/*
+			$(".schema-preview").on("click", function() {
+				$('#imagepreview').attr('src', $('#schema-image').attr('src')); // here asign the image to the modal when the user click the enlarge link
+				$('#imagemodal').modal('show'); // imagemodal is the id attribute assigned to the bootstrap modal, then i use the show function
+			});
+*/
+
 
             $('#software').on('change', function() {
 
