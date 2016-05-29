@@ -143,7 +143,9 @@ class ControllerController extends Controller {
 				$path = storage_path().'/user_uploads/'.$regulator->user->id.'/regulators/'.$regulator->id.'/';
 				if($schemaType == 'text'){
 					$this->createDirectory($path);
-					File::put($path . '/'.$regulator->id.'.txt', $regulator->body);
+
+					File::put($path . '/'.$regulator->id.'.txt', $request->fileContent ? $request->fileContent : $request->body);
+
 				}else if($schemaType == 'file'){
 					$this->createDirectory($path);
 					if ($request->file('filename')->isValid()) {

@@ -60,7 +60,6 @@
     </div>
 </div>
 
-
 <div class="form-group file-div {!! ($errors->has('filename')) ? 'has-error' : '' !!}" {!! ($schema->type != trans("controller::default.CTRL_SCHEMA_FILE")) ? 'style="display: none"' : ''!!}>
     {!! Form::label('filename', trans("controller::default.CTRL_UPLOAD_FILE").':', ['class' => 'col-sm-2 control-label']) !!}
     <div class="col-sm-10">
