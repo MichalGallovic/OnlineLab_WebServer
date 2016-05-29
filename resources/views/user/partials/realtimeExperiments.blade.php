@@ -69,6 +69,7 @@
 							:placeholder="input.placeholder"
 							:command="commandName"
 							:meaning="input.meaning"
+							:visibleon="input.visible"
 							>
 					</olm-input>
 				</div>
