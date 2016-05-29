@@ -19,7 +19,7 @@
 
 
 	<template id="input-template">
-		<div class="row" style="margin-top:10px">
+		<div class="row" style="margin-top:10px" v-show="visible">
 			<div v-el:input class="form-group">
 				<div
 				v-bind:class="{
@@ -34,14 +34,7 @@
 					'col-xs-12' : (type != 'text')
 				}" v-if="meaning == 'child_schema' && values.length > 1">
 					<label class="control-label">@{{ label }}</label>
-					<!-- <span class="badge">@{{ (values.length - 1) }}</span> -->
-					<!-- <div class="row">
-						<div class="btn-group col-xs-12" v-if="meaning == 'child_schema'">
-							<label class="btn btn-xs btn-primary" v-bind:class="{visible: 'active'}">
-								<input type="checkbox" v-model="visible" autocomplete="off"> Include child schema
-							</label>
-						</div>
-					</div> -->
+					
 				</div>
 
 				<div class="col-xs-6" v-if="type == 'text'">

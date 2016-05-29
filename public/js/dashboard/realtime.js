@@ -40,7 +40,10 @@
 	    		command: null,
 	            default: null,
 	            meaning: null,
-	            visible: true
+	            visible: {
+	            	default: function() {return true;}
+	            },
+	            visibleon: {}
 	    	},
 	    	data: function() {
 	    		return {
@@ -48,9 +51,24 @@
 	    		}
 	    	},
 	    	ready: function() {
-
+	    		if(this.visibleon) {
+	    			this.visible = false;
+	    		}
 	    	},
 	        events: {
+	        	'radio:changed' : function(msg) {
+	        		if(!this.visibleon) {
+	        			return;
+	        		}
+
+	        		if(this.visibleon.name == msg.name) {
+	        			if(this.visibleon.value != msg.value) {
+	        				this.visible = false;
+	        			} else {
+	        				this.visible = true;
+	        			}
+	        		}
+	        	},
 	            'schema:changed': function(msg) {
 
 	                if(this.meaning == 'child_schema') {
@@ -97,8 +115,13 @@
 	            },
 	            input: function(val, oldVal) {
 	                if(this.meaning == 'parent_schema') {
-	                	console.log(this.input);
 	                    this.$dispatch('schema:changed', this.input);
+	                }
+	                if(this.type == 'radio') {
+	                	this.$dispatch('radio:changed', {
+	                		name : this.name,
+	                		value: this.input
+	                	});
 	                }
 	            }
 	        },
@@ -263,6 +286,9 @@
 			    } else {
 			        this.$broadcast('schema:changed', []);
 			    }
+			},
+			'radio:changed' : function(msg) {
+				this.$broadcast('radio:changed', msg);
 			}
 		},
 		methods: {
