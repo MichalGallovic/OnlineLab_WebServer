@@ -46,8 +46,14 @@ class ApiController extends ApiBaseController {
 		if($request->input('type') == 'reservable') {
 			$physicalExperiments->reservable();
 		} else {
-			$physicalExperiments->runnable();
+			$physicalExperiments->runnable()->whereHas('experiment', function($q) {
+				$q->whereHas('device', function($q) {
+					$q->where('name','!=','led_cube');
+				});
+			});
 		}
+
+
 
 		if($request->has('physical_device')) {
 			$physicalExperiments->whereHas('physicalDevice', function($q) use ($request) {

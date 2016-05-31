@@ -66,6 +66,6 @@ class PhysicalExperiment extends Model {
 
     public function scopeReservable($query)
     {
-        return $query->whereNotNull('commands');
+        return $query->runnable()->whereNotNull('commands');
     }
 }
