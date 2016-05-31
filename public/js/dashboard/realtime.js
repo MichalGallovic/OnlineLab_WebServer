@@ -51,11 +51,18 @@
 	    		}
 	    	},
 	    	ready: function() {
+	    		var me = this;
 	    		if(this.visibleon) {
 	    			this.visible = false;
 	    		}
 	    		if(this.meaning == 'child_schema') {
 	    			this.visible = false;
+	    		}
+	    		if(this.type == "textarea") {
+	    			// Resize textareas to content height
+	    			setTimeout(function() {
+	    				me.resizeTextarea();
+	    			}, 1);
 	    		}
 	    	},
 	        events: {
@@ -129,6 +136,19 @@
 	            }
 	        },
 	    	methods : {
+	    		resizeTextarea: function() {
+	    			var resizeIt = function($textarea) {
+		              var str = $textarea.value;
+		              var cols = $textarea.cols;
+
+		              var linecount = 0;
+		              $.each(str.split("\n"), function(index, l) {
+		                  linecount += Math.ceil( l.length / cols ); // Take into account long lines
+		              });
+		              $textarea.rows = linecount + 3;
+		            };
+		            resizeIt($(this.$els.input).find('textarea')[0]);
+	    		},
 	    		getInputValues: function() {
 	    			var me = this;
 	    			var deferred = $.Deferred();
@@ -390,7 +410,7 @@
 			},
 			getExperiments: function() {
 				var ids = _.chain(Laravel.Reservations).pluck('physical_device').pluck('id').value();
-				return $.getJSON('api/experiments?include=commands,experiment_commands,output_arguments,schemas&physical_device=' + ids.join(','));
+				return $.getJSON('api/experiments?type=reservable&include=commands,experiment_commands,output_arguments,schemas&physical_device=' + ids.join(','));
 			},
 			flashWarning: function(text) {
 			    noty ({

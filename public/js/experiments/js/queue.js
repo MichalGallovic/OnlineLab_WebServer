@@ -38,6 +38,9 @@ Vue.config.devtools = true;
                 if(this.visibleon) {
                     this.visible = false;
                 }
+                if(this.meaning == 'child_schema') {
+                    this.visible = false;
+                }
             },
             events: {
                 'radio:changed' : function(msg) {
