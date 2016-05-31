@@ -54,6 +54,9 @@
 	    		if(this.visibleon) {
 	    			this.visible = false;
 	    		}
+	    		if(this.meaning == 'child_schema') {
+	    			this.visible = false;
+	    		}
 	    	},
 	        events: {
 	        	'radio:changed' : function(msg) {
@@ -452,6 +455,9 @@
 						me.flashSuccess(response.success.message);
 						me.canSwitch = false;
 						me.status = "initializing";
+						if(me.selectedExperiment.commands.hasOwnProperty('change')) {
+							me.showChange();
+						}
 					}).fail(function(response) {
                         response = JSON.parse(response.responseText);
                         var message = "";
