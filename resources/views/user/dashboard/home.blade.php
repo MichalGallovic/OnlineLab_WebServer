@@ -10,6 +10,9 @@
 		</div>
 		@include('user.partials.realtimeExperiments')
 	</div>
+	@else
+	<h4>{!! trans('dashboard.norealtime') !!}</h4>
+	<a style="font-size:15px" href="{{ url('reservation/calendar') }}">{!! trans('dashboard.reservations') !!}</a>
 	@endif
 	<div class="row" style="margin-top:20px;">
 		<div class="col-lg-6">

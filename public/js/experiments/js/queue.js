@@ -4,126 +4,155 @@ Vue.config.devtools = true;
 	$.ajaxSetup({
         headers: { 'X-CSRF-TOKEN': $('input[name="_token"]').val() }
     });
-    Vue.component('olm-input',{
-    	template: "#input-template",
-    	props: {
-    		label:null,
-    		type : {
-    			default : function() {
-    				return "text";
-    			}
-    		},
-    		placeholder: {
-    			default : function() {
-    				return "This is placeholder";
-    			}
-    		},
-    		values: [],
-    		name : null,
-    		command: null,
-            default: null,
-            meaning: null,
-            visible: true
-    	},
-    	data: function() {
-    		return {
-    			input : null
-    		}
-    	},
-    	ready: function() {
+        Vue.component('olm-input-queue',{
+            template: "#input-template",
+            props: {
+                label:null,
+                type : {
+                    default : function() {
+                        return "text";
+                    }
+                },
+                placeholder: {
+                    default : function() {
+                        return "This is placeholder";
+                    }
+                },
+                values: [],
+                name : null,
+                command: null,
+                default: null,
+                meaning: null,
+                visible: {
+                    default: function() {return true;}
+                },
+                visibleon: {}
+            },
+            data: function() {
+                return {
+                    input : null
+                }
+            },
+            ready: function() {
 
-    	},
-        events: {
-            'schema:changed': function(msg) {
-                if(this.meaning == 'child_schema') {
-                    var values = [];
-                    values.push({
-                        name: 'Select regulator',
-                        data: null
-                    });
+                if(this.visibleon) {
+                    this.visible = false;
+                }
+            },
+            events: {
+                'radio:changed' : function(msg) {
+                    console.log(msg);
+                    if(!this.visibleon) {
+                        return;
+                    }
 
-                    var regulators = msg.map(function(regulator) {
-                        return {
-                            name: regulator.name,
-                            data: regulator.id
-                        };
-                    });
+                    if(this.visibleon.name == msg.name) {
+                        if(this.visibleon.value != msg.value) {
+                            this.visible = false;
+                        } else {
+                            this.visible = true;
+                        }
+                    }
 
-                    this.values = values.concat(regulators);
+                },
+                'schema:changed': function(msg) {
 
-                    if(regulators.length == 0) {
-                        this.visible = false;
-                    } else {
-                        this.visible = true;
+                    if(this.meaning == 'child_schema') {
+
+                        var values = [];
+                        values.push({
+                            name: 'Select regulator',
+                            data: null
+                        });
+
+                        var regulators = msg.map(function(regulator) {
+                            return {
+                                name: regulator.name,
+                                data: regulator.id
+                            };
+                        });
+
+                        this.values = values.concat(regulators);
+
+                        if(regulators.length == 0) {
+                            this.visible = false;
+                        } else {
+                            this.visible = true;
+                        }
                     }
                 }
-            }
-        }, 
-        watch : {
-            values : function(val, oldVal) {
-                if(this.default != "none" || this.values.length == 1) {
-                    if(this.type == "checkbox") {
-                        this.input = [];
-                    }
-                    if(this.type == "select" && !this.meaning) {
-                        this.input = this.values[0];
-                    } else {
-                        this.input = null;
-                    }
+            }, 
+            watch : {
+                values : function(val, oldVal) {
+                    if(this.default != "none" || this.values.length == 1) {
+                        if(this.type == "checkbox") {
+                            this.input = [];
+                        }
+                        if(this.type == "select" && !this.meaning) {
+                            this.input = this.values[0];
+                        } else {
+                            this.input = null;
+                        }
 
-                    if(this.type == "radio") {
-                        this.input = this.values[0];
+                        if(this.type == "radio") {
+                            this.input = this.values[0];
+                        }
+                    }
+                },
+                input: function(val, oldVal) {
+                    if(this.meaning == 'parent_schema') {
+                        this.$dispatch('schema:changed', this.input);
+                    }
+                    if(this.type == 'radio') {
+                        this.$dispatch('radio:changed', {
+                            name : this.name,
+                            value: this.input
+                        });
                     }
                 }
             },
-            input: function(val, oldVal) {
-                if(this.meaning == 'parent_schema') {
-                    this.$dispatch('schema:changed', this.input);
+            methods : {
+                getInputValues: function() {
+                    var me = this;
+                    var deferred = $.Deferred();
+                    if(this.type == "file") {
+                        var formData = new FormData();
+                        var blob = $(this.$els.input).find(":input").get(0).files[0];
+                        formData.append(this.name, blob);
+
+                        this.uploadFile(formData).done(function(response) {
+                            var promise = {
+                                command: me.command,
+                                name : me.name,
+                                value: response,
+                                meaning: this.meaning
+                            };
+                            deferred.resolve(promise);
+                        });
+
+                    } else {
+                        var promise = {
+                                command: this.command,
+                                name : this.name,
+                                value : this.input,
+                                meaning: this.meaning
+                        };
+                        deferred.resolve(promise);
+                    }
+
+                    return deferred.promise();
+                },
+                uploadFile: function(formData) {
+                    return $.ajax({
+                        url: "/api/file",
+                        type: "POST",
+                        data: formData,
+                        processData: false,
+                        contentType: false
+                    });
                 }
             }
-        },
-    	methods : {
-    		getInputValues: function() {
-    			var me = this;
-    			var deferred = $.Deferred();
-    			if(this.type == "file") {
-    				var formData = new FormData();
-    				var blob = $(this.$els.input).find(":input").get(0).files[0];
-    				formData.append(this.name, blob);
-
-    				this.uploadFile(formData).done(function(response) {
-    					var promise = {
-    						command: me.command,
-    						name : me.name,
-    						value: response,
-                            meaning: this.meaning
-    					};
-    					deferred.resolve(promise);
-    				});
-
-    			} else {
-    				var promise = {
-    						command: this.command,
-    						name : this.name,
-    						value : this.input,
-                            meaning: this.meaning
-					};
-    				deferred.resolve(promise);
-    			}
-
-    			return deferred.promise();
-    		},
-    		uploadFile: function(formData) {
-    			return $.ajax({
-    				url: "/api/file",
-    				type: "POST",
-    				data: formData,
-    				processData: false,
-    				contentType: false
-    			});
-    		}
-    	}
-    });
+        });
 	var vm = new Vue({
 		"el" : "#queueApp",
 		data: {
@@ -347,7 +376,11 @@ Vue.config.devtools = true;
                 } else {
                     this.$broadcast('schema:changed', []);
                 }
+            },
+            'radio:changed' : function(msg) {
+                console.log("hej");
+                this.$broadcast('radio:changed', msg);
             }
-        }
+        },
 	});
 })();

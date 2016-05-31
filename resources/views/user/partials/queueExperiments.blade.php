@@ -41,7 +41,7 @@
 								v-show="selectedExperiment.commands[commandName]" 
 								class="label label-primary" 
 								style="font-size: 13px;">@{{ commandName }}</span>
-								<olm-input
+								<olm-input-queue
 										v-for="input in selectedExperiment.commands[commandName]"
 										:label="input.title"
 										:name="input.name"
@@ -50,8 +50,9 @@
 										:placeholder="input.placeholder"
 										:command="commandName"
 										:meaning="input.meaning"
+										:visibleon="input.visible"
 										>
-								</olm-input>
+								</olm-input-queue>
 							</div>
 							<div class="form-group" v-show="selectedExperiment.experiment_commands.length > 0">
 								<button class="btn btn-success pull-right" type="submit">Request experiment</button>
